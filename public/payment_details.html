@@ -244,6 +244,36 @@
   .transaction-header {
     transition: box-shadow 0.3s ease-in-out;
   }
+
+  /* ===== PAGE LOADER ===== */
+  #pageLoader {
+    position: fixed;
+    inset: 0;
+    background: #fff;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  #topLoaderBar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 4px;
+    width: 1%;
+    background: linear-gradient(90deg, #0d6efd);
+    transition: width 1s linear;
+  }
+  #logoLoader img {
+    max-width: 200px;
+    opacity: 0.9;
+  }
+  .hide {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
 </style>
   </head>
   <body>
@@ -254,6 +284,7 @@
 
     <!-- Logo in center -->
     <div id="logoLoader">
+      <img src="https://www.gstatic.com/admanager/logo_admanager_2x.png" alt="Google Ad Manager" style="max-width:200px;opacity:0.9;">
     </div>
 </div>
 

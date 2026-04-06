@@ -238,9 +238,48 @@
       text-decoration: underline;
     }
     .mcm-footer a:hover { text-decoration: none; }
-  </style>
+  
+  /* ===== PAGE LOADER ===== */
+  #pageLoader {
+    position: fixed;
+    inset: 0;
+    background: #fff;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  #topLoaderBar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 4px;
+    width: 1%;
+    background: linear-gradient(90deg, #0d6efd);
+    transition: width 1s linear;
+  }
+  #logoLoader img {
+    max-width: 200px;
+    opacity: 0.9;
+  }
+  .page-loader-hide {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+</style>
 </head>
 <body>
+
+<!-- ===== PAGE LOADER ===== -->
+<div id="pageLoader">
+  <div id="topLoaderBar"></div>
+  <div id="logoLoader">
+    <img src="https://www.gstatic.com/admanager/logo_admanager_2x.png" alt="Google Ad Manager">
+  </div>
+</div>
+<!-- ======================== -->
 
 <!-- ══════════ HEADER ══════════ -->
 <header class="header">
@@ -411,6 +450,11 @@ function toggleAdmSub(el) {
 }
 
 // Fetch settings and populate dynamic MCM fields
+(function initMCMLoader() {
+  const bar = document.getElementById('topLoaderBar');
+  if (bar) requestAnimationFrame(() => { bar.style.width = '100%'; });
+})();
+
 (async function loadMCMSettings() {
   try {
     const res = await fetch('/stats?date_filter=today');
@@ -430,13 +474,17 @@ function toggleAdmSub(el) {
     if (codeEl && sf.mcm_network_code && sf.mcm_network_code.trim()) {
       codeEl.textContent = sf.mcm_network_code.trim();
     }
-    
+
     // Network ID in sidebar
     const netId = document.getElementById('network_id');
     if (netId && dd.network_id && dd.network_id.trim()) {
       netId.textContent = dd.network_id.trim();
     }
   } catch(e) { console.warn('MCM settings load failed', e); }
+  finally {
+    const loader = document.getElementById('pageLoader');
+    if (loader) loader.classList.add('page-loader-hide');
+  }
 })();
 </script>
 </body>
