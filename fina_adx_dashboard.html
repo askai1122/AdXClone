@@ -1,0 +1,2466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+   <meta name="viewport" content="1200">
+   <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+    <title>Google Ad Manager - Desktop View</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<!-- Outlined -->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+<link href="assets/css/style.css" rel="stylesheet">
+<span class="material-icons-outlined">business</span>
+ 
+<!-- Rounded -->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Rounded" rel="stylesheet">
+<span class="material-icons-rounded">business</span>
+    <style>
+        :root {
+    --blue: #1a73e8;
+    --blue-dark: #1557b0;
+    --blue-bg: #e8f0fe;
+    --text-primary: #38312e;
+    --text-secondary: #5f6368;
+    --text-light: #80868b;
+    --border: #dadce0;
+    --bg-color: #f1f3f4;
+    --white: #fff;
+    --sidebar-bg: #fff;
+   
+  --sidebar-width: 250px;
+  --header-height: 64px;
+    --green: #137333;
+    --green-bg: #e6f4ea;
+    --red: #d93025;
+    --orange: #fa7b17;
+    --shadow-sm: 0 1px 2px rgba(60,64,67,.1),0 1px 3px 1px rgba(60,64,67,.08);
+    --shadow-md: 0 1px 3px rgba(60,64,67,.2),0 4px 8px 3px rgba(60,64,67,.1);
+    --radius: 5px;
+  }
+
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            /* Desktop look ke liye body ki min-width fix kar di */
+            min-width: 1200px; 
+            overflow-x: auto;
+        }
+  .overview-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    border: 1px solid #80808047 ;
+    padding: 20px 24px 24px;
+    margin-bottom: 20px;
+  }
+  .overview-top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .col-4 .insights-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* stretch to parent height */
+}
+.insights-card .bottom-section {
+    margin-top: auto;
+}
+  .card-title {
+    font-family: 'Google Sans', sans-serif;
+    font-size: 16px;  
+    color: #26211f;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .card-title .material-icons { font-size: 18px; color: var(--text-secondary); cursor: help; }
+
+  .overview-metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+     border-radius: 8px;
+    overflow: hidden;
+        margin-left: -42px;
+        padding-bottom: 45px;
+   }
+  .metric-cell {
+    padding: 22px 20px 17px 32px;
+     cursor: pointer;
+    transition: background .12s;
+  }
+  .metric-cell:last-child { border-right: none; }
+  .metric-cell:hover { background: var(--bg); }
+  .metric-cell.selected { background: var(--blue); }
+  .metric-cell.selected .metric-label,
+  .metric-cell.selected .metric-value,
+  .metric-cell.selected .metric-change { color: #fff !important; }
+
+  .metric-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; font-weight: 500;   letter-spacing: .3px; }
+  .metric-value {  margin-top:12px ;font-family: 'Google Sans',sans-serif; font-size: 30px; font-weight: 400; color: var(--text-primary); line-height: 1.1; }
+  .metric-change { font-size: 12px; margin-top: 4px; color: var(--green); }
+  .metric-change.neutral { color: var(--text-secondary); }
+
+  .overview-chart { margin-top: 20px; height: 200px; position: relative; }
+  .breakdown-row._ngcontent-HOMEPAGE-39 {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+}
+ .material-icon-i{
+    font-family: Google Material Icons;
+ }
+  .sidebar-network {
+    padding: 12px 16px 8px;
+    display: flex; align-items: center; gap: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .network-icon {
+    width: 28px; height: 28px;
+    border-radius: 4px;
+    background: var(--blue);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+  }
+  .network-id {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-family: 'Google Sans', sans-serif;
+  }
+
+  .nav-section { padding: 4px 0; }
+  .nav-section + .nav-section { border-top: 1px solid var(--border); }
+
+  .nav-item {
+    display: flex; align-items: center; 
+    padding: 10px 6px;;
+    color: #5f6368;
+    text-decoration: none;
+    font-size: 14.5px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    cursor: pointer;
+    border-radius: 0 24px 24px 0;
+    margin-right: 8px;
+     transition: background .12s, color .12s;
+    user-select: none;
+  }
+  .arrow {
+  transition: transform 0.3s ease;
+}
+ 
+.nav-item.active .arrow {
+  transform: rotate(90deg);
+}
+  .nav-item .label {
+  flex: 1; /* text left rahe */
+}
+.nav-item.active .arrow {
+  transform: rotate(90deg); /* ▶ → ▼ */
+}
+.arrow {
+  font-size: 20px;
+  transition: transform 0.3s ease;
+}
+
+ 
+  .nav-item:hover { background: var(--bg);  ; }
+   
+  .nav-item .material-icons { font-size: 20px; }
+.material-icons {
+  font-family: 'Material Icons';
+  font-size: 20px;
+  color: #5f6368;
+  line-height: 1;
+  display: inline-block;
+  vertical-align: middle;
+}
+.nav-sub-item {
+  max-height: 0;
+  overflow: hidden;
+  padding: 0 16px 0 48px;
+  opacity: 0;
+  transition: max-height 0.3s ease, opacity 0.25s ease, padding 0.2s ease;
+}
+
+/* jab open ho */
+.nav-sub-item.open {
+  max-height: 100px;
+  opacity: 1;
+  padding: 8px 16px 8px 48px;
+}
+
+.nav-sub-item a {
+  text-decoration: none;
+  color: inherit;
+}
+.sidebar_icon{
+  width: 22px;
+  margin-right: 12px;
+}
+  .nav-sub-item:hover { background: var(--bg); color: var(--text-primary); }
+  .nav-sub-item.active { color: var(--blue); background: var(--blue-bg); }
+
+        /* ===== FIXED HEADER ===== */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--header-height);
+            background: #fff;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            min-width: 1200px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 22px;
+            color: #5f6368;
+        }
+
+        /* ===== FIXED SIDEBAR (Hamesha Khula Rahega) ===== */
+        .sidebar {
+          height: 100%;
+            position: fixed;
+            top: var(--header-height);
+            left: 0;
+            bottom: 0;
+            width: var(--sidebar-width);
+            background: #fff;
+            border-right: 1px solid var(--border-color);
+            overflow-y: auto;
+            z-index: 999;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 24px;
+            color: #3c4043;
+            text-decoration: none;
+            font-size: 14px;
+            white-space: nowrap; /* Text wrap nahi hoga */
+        }
+
+        .nav-item:hover {
+            background-color: #f1f3f4;
+        }
+
+        .nav-item i {
+            margin-right: 16px;
+            color: #5f6368;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-container {
+          margin-top: 20px;
+            margin-left: var(--sidebar-width); 
+            
+            padding: 0px 135px;
+            box-sizing: border-box;
+            /* Content area ki width desktop jaisi rahegi */
+        }
+
+        /* Cards Layout: Desktop par barabar, phone par 1 by 1 */
+        .card-row {
+            display: flex;
+            flex-wrap: wrap; 
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+           
+            
+            flex: 1;
+            min-width: 450px; /* Card ki width barqarar rahegi */
+         }
+
+        h2 { color: #3c4043; font-weight: 400; margin-bottom: 24px; }
+@media screen and (max-width: 1100px) {
+   /* h1, h2, h3, h4, h5, h6, span, p, a, button, label, div {
+        font-size: calc(1em + 1px) !important;
+    } */
+    .col-4 {
+        flex: 0 0 33.3333% !important; /* keeps original 4/12 width */
+        max-width: 33.3333% !important;
+    }
+  .page-header-actions{
+    margin-left: 0px  !important;
+  }
+  .page-header{
+    border-left: 1px solid white;
+  } 
+  .filter-bar{
+    border-left: 1px solid white;
+  }
+    .main-container {
+        padding: 10px !important;
+    }
+}
+        /* Responsive: Sirf cards ko ek ke niche ek karne ke liye */
+        @media (max-width: 1100px) {
+           .main-container {
+              padding: 0px 50px !important;
+         }
+          .col-8{
+            min-width: 100% !important
+          }
+            
+        }
+ .header {
+    
+        align-items: center !important;
+    background-color: #fff !important;
+    border-bottom: 1px solid #dadce0 !important;
+    box-sizing: border-box !important;
+    color: #5f6368 !important;
+    display: flex !important;
+    flex: 0 64px !important;
+    height: 64px !important;
+    justify-content: space-between !important ;
+    padding: 0 12px !important;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: var(--header-h);
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 12px;
+    z-index: 100;
+  }
+
+  .header-menu-btn {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: none; background: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-secondary);
+    transition: background .15s;
+  }
+  .header-menu-btn:hover { background: var(--bg); }
+
+  .header-logo {
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'Google Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  /* Google coloured G icon */
+  .g-logo {
+    width: 28px; height: 28px;
+    display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;
+    border-radius: 4px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .g-logo span { display: block; }
+  .g-logo .tl { background: #4285f4; }
+  .g-logo .tr { background: #ea4335; }
+  .g-logo .bl { background: #34a853; }
+  .g-logo .br { background: #fbbc05; }
+
+  .header-search {
+    flex: 1;
+    max-width: 680px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .header-search input {
+    width: 100%;
+    height: 36px;
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    background: var(--bg);
+    padding: 0 16px 0 40px;
+    font-size: 14px;
+    font-family: 'Roboto', sans-serif;
+    color: var(--text-primary);
+    outline: none;
+    transition: box-shadow .15s, background .15s;
+  }
+  .header-search input:focus {
+    background: var(--white);
+    box-shadow: var(--shadow-sm);
+    border-color: var(--blue);
+  }
+  .header-search .search-icon {
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    color: var(--text-secondary); font-size: 18px;
+  }
+
+  .header-right {
+    display: flex; align-items: center; gap: 4px;
+    margin-left: auto;
+  }
+  .icon-btn {
+    width: 40px; height: 40px;
+    border-radius: 50%; border: none; background: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-secondary);
+    position: relative;
+    transition: background .15s;
+  }
+  .icon-btn:hover { background: var(--bg); }
+  .badge {
+    position: absolute; top: 6px; right: 6px;
+    background: var(--red); color: var(--white);
+    font-size: 10px; font-weight: 600;
+    min-width: 16px; height: 16px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 3px;
+  }
+
+  .avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg,#4285f4,#34a853);
+    border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 13px; font-weight: 600;
+    font-family: 'Google Sans',sans-serif;
+  }
+.container {
+    width: 100%;
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap; /* Isse mobile par cards niche aa jayenge */
+    gap: 20px;       /* Cards ke darmiyan gap */
+    align-items: stretch;
+  }
+
+  /* Desktop View: 8 aur 4 ka ratio */
+.col-8 { flex: 0 0 calc(66.66% - 14px); min-width: 350px; }
+  .col-4 { flex: 0 0 calc(33.33% - 14px); min-width: 300px; }
+  .col-6 { flex: 0 0 calc(50% - 10px); min-width: 320px; }
+
+  /* Mobile/Tablet: Saare columns full width ho jayenge */
+  @media (max-width: 1024px) {
+    .col-8{
+      min-width: 100% !important
+    }
+    .col-8, .col-4, .col-6 {
+      flex: 1 1 100%;
+    }
+  }
+    .insights-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    border: 1px solid #80808047;
+    padding: 24px 18px;;
+    margin-bottom: 21px;
+    height: -webkit-fill-available;
+        display: flex;
+    flex-direction: column;
+  }
+  .dp-sticky-header {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 5;
+}
+  .insights-title { font-family: 'Google Sans',sans-serif; font-size: 16px; font-weight: 500; color: var(--text-primary); margin-bottom: 8px; }
+  .insights-body { font-size: 13.5px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 12px; }
+  .insights-links {display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 10px;
+    text-decoration: underline;
+    margin-bottom: auto;}
+  .insights-link { color: var(--blue); font-size: 13.5px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+  .insights-link:hover { text-decoration: underline; }
+  .insights-link .material-icons { font-size: 14px; }
+ .donut-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    border: 1px solid #80808047;
+    padding: 20px 24px;
+  }
+  .donut-card-top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .donut-card-icons { display: flex; gap: 4px; }
+  .card-icon-btn {
+    width: 32px; height: 32px;
+    border-radius: 50%; border: none; background: none;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-secondary); font-size: 18px;
+    cursor: pointer; transition: background .12s;
+  }
+  .card-icon-btn:hover { background: var(--bg); }
+
+  .donut-wrap {
+      align-items: center; gap: 24px;
+  }
+  .donut-chart-container {
+    margin-top: 13px;
+    width: 350px; height: 350px; flex-shrink: 0; position: relative;
+    justify-self: center;
+  }
+  .donut-center {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    text-align: center;
+    pointer-events: none;
+  }
+  .donut-center-label { font-size: 11px; color: var(--text-secondary); }
+  .donut-center-value { font-family: 'Google Sans',sans-serif; font-size: 18px; font-weight: 500; color: var(--text-primary); }
+
+  .donut-legend {     justify-self: anchor-center; margin-top: 15px;}
+  .donut-legend {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 columns */
+  column-gap: 5px;  /* horizontal spacing between columns */
+  row-gap: 6px;      /* vertical spacing between rows */
+  justify-items: start; /* align items to the left inside each column */
+}
+  /* ===== PERFORMANCE SUMMARY ===== */
+  .perf-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    border: 1px solid #80808047;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+  }
+  .perf-top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .breakdown-select {
+        border: 1px solid #0000008a;
+    padding: 0 8px 0 16px;
+    height: 40px;
+    box-sizing: border-box;
+    white-space: nowrap;
+    border-radius: var(--acx-sys-shape--corner-value-medium, 4px);
+    display: flex; align-items: center; gap: 6px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 5px 12px;
+    font-size: 13px;
+    color: var(--text-primary);
+    background: var(--white);
+    cursor: pointer;
+    font-family: 'Roboto', sans-serif;
+  }
+  .breakdown-select strong {
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .perf-filter-bar {
+        display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0 12px;
+    /* border-bottom: 1px solid var(--border); */
+    margin-bottom: 0px;
+    margin-top: 14px;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 0 12px;
+     margin-bottom: 0;
+
+  }
+  .perf-filter-bar .material-icons { font-size: 16px; color: var(--text-secondary); }
+  .perf-filter-bar span { font-size: 15px;
+    color: #5f6368d1; }
+
+  .perf-metrics {
+    display: grid; grid-template-columns: 280px 1fr 1fr;
+    border: 1px solid var(--border);
+    border-radius: 0;
+    border-top: none;
+    overflow: hidden; margin-bottom: 0;
+  }
+  .perf-metric {
+  padding: 25px 23px;
+    border-right: 1px solid var(--border);
+    cursor: pointer;
+    transition: background .12s;
+  }
+  .perf-metric:last-child { border-right: none; }
+  .perf-metric:hover { background: var(--bg); }
+  .perf-metric.selected { background: var(--blue); }
+  .perf-metric.selected .metric-label,
+  .perf-metric.selected .metric-value,
+  .perf-metric.selected .metric-change { color: #fff !important; }
+  .perf-metric .metric-label { font-size: 13px; color: var(--text-secondary);   font-weight: 400; text-transform: none; letter-spacing: 0; }
+  .perf-metric .metric-value { margin-top: 6px;font-family: 'Google Sans', sans-serif; font-size: 23px; font-weight: 400; color: var(--text-primary); line-height: 1.15; }
+  .perf-metric .metric-change { font-size: 12px; margin-top: 2px; color: var(--green); }
+
+  .perf-chart-wrap {
+     border-top: none;
+    border-radius: 0;
+    padding: 16px 20px 12px;
+    background: var(--white);
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+  }
+  .perf-chart-canvas { flex: 1; height: 200px; position: relative; }
+  .perf-legend {
+    display: flex; flex-direction: column; gap: 10px;
+    padding-top: 8px;
+    min-width: 220px;
+    flex-shrink: 0;
+  }
+  .perf-legend-item {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; color: var(--text-primary);
+  }
+  .perf-legend-line {
+    width: 12px;
+    height: 4px;
+    flex-shrink: 10;
+    border-radius: 11px;
+  }
+
+  .perf-show-details {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px;
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text-primary);
+    background: var(--white);
+    transition: background .12s;
+    font-family: 'Roboto', sans-serif;
+  }
+  .perf-show-details:hover { background: var(--bg); }
+  .perf-metrics-top-border {
+    border: 1px solid var(--border);
+    border-radius: 0;
+    border-bottom: none;
+    overflow: visible;
+  }
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;           /* space between dot and text */
+}
+  .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 13px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+ .page-header {
+  padding-bottom: 4px !important;
+        margin-top: -28px ! IMPORTANT;
+        
+    padding-top: 5px !important;
+    margin-left: var(--sidebar-width);
+    position: sticky;
+  top: 64px;
+  z-index: 100;
+
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex; align-items: center; gap: 16px;
+    height: 56px;
+     
+  }
+  .page-title {
+    font-family: 'Google Sans', sans-serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--text-primary);
+  }
+
+  .workspace-select {
+    display: flex; align-items: center; gap: 6px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 6px 10px;
+    font-size: 14px;
+    color: var(--text-primary);
+    background: var(--white);
+    cursor: pointer;
+    position: relative;
+    font-family: 'Roboto', sans-serif;
+  }
+  .workspace-select select {
+    border: none; outline: none; background: none;
+    font-size: 14px; font-family: 'Roboto', sans-serif;
+    color: var(--text-primary);
+    cursor: pointer;
+  }
+
+  .page-header-actions { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: 'Google Sans', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: box-shadow .15s, background .15s;
+  }
+  .btn-primary { background: var(--blue); color: #fff; }
+  .btn-primary:hover { background: var(--blue-dark); box-shadow: var(--shadow-sm); }
+  .btn-outlined {
+    background: var(--white);
+    color: var(--blue);
+    border: 1px solid var(--border);
+  }
+  .btn-outlined:hover { background: var(--blue-bg); }
+  .btn-text { background: none; color: var(--blue); }
+  .btn-text:hover { background: var(--blue-bg); }
+.filter-bar.scrolled {
+    border-bottom: 1px solid rgb(0 0 0 / 47%);
+    box-shadow: 0px 4px 2px 0px rgba(0, 0, 0, 0.15);}
+  /* ===== FILTER BAR ===== */
+  .filter-bar {
+      position: sticky;
+  top: 130px; /* right below the page-header */
+  z-index: 90;
+     margin-left: var(--sidebar-width);
+    padding: 5px 23px;    display: flex; align-items: center; gap: 10px;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .date-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    /* border: 1px solid var(--border); */
+    border-radius: 4px;
+    padding: 6px 0px;
+    font-size: 15px;
+    /* color: grey; */
+    background: var(--white);
+    cursor: pointer;
+    transition: background .12s;
+  }
+  .date-chip:hover { background: var(--bg); }
+  .date-chip .material-icons { font-size: 16px; color: var(--text-secondary); }
+
+  .filter-add {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 13px; color: var(--text-secondary);
+    cursor: pointer;
+    padding: 5px 8px;
+    border-radius: 4px;
+    transition: background .12s;
+  }
+  .filter-add:hover { background: var(--bg); }
+    .demand-card {
+    background: var(--white);
+    border-radius: var(--radius);
+     border: 1px solid #80808047;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+  }
+
+  .demand-metrics {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    border: 1px solid var(--border);
+    /* border-radius: 8px 8px 0 0; */
+    overflow: hidden;
+    margin-top: 16px;
+    border-left: none;
+    border-right: none;
+  }
+  .demand-metric {
+    padding: 14px 16px 10px;
+    border-right: 1px solid var(--border);
+    border-bottom: 3px solid transparent;
+  }
+  .demand-metric:last-child { border-right: none; }
+  .demand-metric.c1 { border-bottom-color: #4285f4; }
+  .demand-metric.c2 { border-bottom-color: #ea4335; }
+  .demand-metric.c3 { border-bottom-color: #f9a825; }
+  .demand-metric.c4 { border-bottom-color: #9c27b0; }
+  .demand-metric.c5 { border-bottom-color: #34a853; }
+
+  .demand-label {
+    font-size: 12px; color: var(--text-secondary);
+    margin-bottom: 6px; display: flex; align-items: center; gap: 2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .demand-label .material-icons { font-size: 14px; color: var(--text-secondary); flex-shrink: 0; }
+  .demand-value {
+    font-family: 'Google Sans',sans-serif; font-size: 24px; font-weight: 400;
+    color: var(--text-primary); margin-top: 2px;
+  }
+
+  .demand-chart-area {
+    border: 1px solid var(--border); border-top: none;
+    border-radius: 0 0 8px 8px; padding: 16px 16px 12px; height: 250px;
+  }
+.table-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    border: 1px solid #80808047;
+    padding: 20px 24px 20px;
+    margin-bottom: 20px;
+  }
+  .table-top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .search-input {
+    display: flex; align-items: center; gap: 8px;
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 7px 16px;
+    font-size: 13px;
+    background: var(--white);
+    color: var(--text-secondary);
+    width: 320px;
+    box-shadow: var(--shadow-sm);
+  }
+  .search-input input { border: none; background: none; outline: none; font-size: 14px; font-family: 'Roboto',sans-serif; color: var(--text-primary); flex: 1; }
+  .search-input input::placeholder { color: var(--text-secondary); }
+  .search-input .material-icons { font-size: 20px; color: var(--text-secondary); }
+
+  /* Pricing rules table */
+  .pricing-table { width: 100%; border-collapse: collapse; border: 1px solid var(--border); border-radius: 0; }
+  .pricing-table th {
+    text-align: left;
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border);
+    background: var(--white);
+    font-family: 'Roboto', sans-serif;
+  }
+  .pricing-table th:not(:first-child) { text-align: right; }
+  .pricing-table td {
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    color: var(--text-primary);
+    font-family: 'Roboto', sans-serif;
+  }
+  .pricing-table td:not(:first-child) { text-align: right; }
+  .pricing-table tr:last-child td { border-bottom: none; }
+
+  /* expand row with chevron */
+  .expand-toggle { cursor: pointer; display: flex; align-items: center; gap: 6px; color: var(--text-primary); font-size:14px; }
+  .expand-toggle .material-icons { font-size: 20px; color: var(--text-secondary); }
+
+  /* sub-header row — grey bg, smaller labels */
+  .pricing-subheader td {
+    background: var(--bg);
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 16px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .pricing-subheader td:not(:first-child) { text-align: right; }
+
+  /* blue-tinted "Everything" row */
+  .pricing-everything td {
+    background: #e8f0fe;
+    font-size: 14px;
+    padding: 13px 16px;
+  }
+  /* ===== ADVERTISER TABLE ===== */
+  .viewability-pill {
+    display: inline-block;
+    background: var(--green-bg);
+    color: var(--green);
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  /* Generic table styles for advertiser / yield partner tables */
+  .table-card table { width: 100%; border-collapse: collapse; }
+  .table-card table th {
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border);
+    font-family: 'Roboto', sans-serif;
+  }
+  .table-card table td {
+    padding: 12px 12px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13.5px;
+    color: var(--text-primary);
+    font-family: 'Roboto', sans-serif;
+  }
+    .dp-preset {
+            padding: 8px 15px;
+    font-size: 13px;
+    font-weight: 400;
+    color: #1c1d22;
+    font-family: 'Google Sans';
+    cursor: pointer;
+    transition: background .1s;
+    white-space: nowrap;
+  }
+  .dp-preset:first-child {
+  margin-bottom: 6px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #dadce0;
+}
+  .dp-preset:hover { background: #f1f3f4; }
+  .dp-preset.dp-preset-active {     color: black;
+    background: #eeeeee;
+    /* font-weight: 500; */
+    border-left: 3px solid #00000070;
+      padding-left: 12px; }
+
+  .dp-day-hdr {
+    display: grid; grid-template-columns: repeat(7,32px);
+    text-align: center; margin-bottom: 4px;
+  }
+  .dp-day-hdr span { font-size: 12px; color: #70757a; font-weight: 400; padding: 2px 0; }
+
+  .dp-grid { display: grid; grid-template-columns: repeat(7,32px); }
+
+  .dp-day {
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; color: #202124;
+    cursor: pointer; border-radius: 50%;
+    transition: background .1s;
+    position: relative;
+    user-select: none;
+  }
+  .dp-day:hover:not(.dp-empty):not(.dp-other) { background: #f1f3f4; }
+  .dp-day.dp-other { color: #70757a; }
+  .dp-day.dp-empty { cursor: default; }
+   .dp-day.dp-sel-start,
+  .dp-day.dp-sel-end { background: #1a73e8 !important; color: #fff; border-radius: 50%;  }
+  .dp-day.dp-sel-start.dp-in-range { border-radius: 50% 0 0 50%; }
+  .dp-day.dp-sel-end.dp-in-range { border-radius: 0 50% 50% 0; }
+  .dp-day.dp-in-range:not(.dp-sel-start):not(.dp-sel-end) {
+    background: #e8f0fe; border-radius: 0;  
+  }
+  .dp-month-header {
+    font-size: 13px; font-weight: 500;  ;
+    padding: 8px 0 6px; letter-spacing: 0.2px;
+  }
+  .table-card table tr:last-child td { border-bottom: none; }
+  .table-card table tr:hover td { background: var(--bg); }
+  .td-link { color: var(--blue); cursor: pointer;  }
+  .td-link:hover { text-decoration: underline; }
+
+  @keyframes dpOpenAnim {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  
+}
+#datePickerDropdown {
+  transform-origin: top left;   /* 🔥 IMPORTANT */
+  animation: dpOpenAnim 0.18s ease-out;
+}
+.adm-sidebar {
+    width: 250px; flex-shrink: 0; background: #fff; border-right: 1px solid #dadce0;
+    position: fixed; top: 64px; bottom: 0; left: 0; overflow-y: auto; overflow-x: hidden;
+    z-index: 90; scrollbar-width: thin;
+  }
+.adm-sidebar .sdb-network {
+  
+    padding: 25px 16px 19px;display: flex; align-items: center;
+    gap: 10px;
+     border-bottom: 1px solid #dadce0;
+     border-right: 1px solid #dadce0;
+
+  }
+  .dot {
+      display: inline-block;
+    width: 10px;
+    height: 10px;
+    background-color: #161718a6;
+    border-radius: 50%;
+    margin-left: -32px;
+    margin-right: 25px;
+}
+  .adm-sidebar .sdb-network-id { font-size: 12px; color: #5f6368; font-family: 'Google Sans', sans-serif; }
+  .adm-sidebar .sdb-section { padding: 25px 0; }
+  .adm-sidebar .sdb-section + .sdb-section { border-top: 1px solid #dadce0; }
+  .adm-sidebar .sdb-item {
+      display: flex;
+    align-items: center;
+    padding: 9px 11px;
+    font-family: 'Google Sans' !important;
+    color: #35373a;
+    /* margin-top: 29px; */
+    text-decoration: none;
+    font-size: 14.5px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    cursor: pointer;
+    border-radius: 0 24px 24px 0;
+    margin-right: 8px;
+    transition: background .12s, color .12s;
+  }
+  .adm-sidebar .sdb-item:hover { background: rgba(128, 128, 128, 0.103); }
+  .sdb-sub:hover { background: rgba(128, 128, 128, 0.103) !important; }
+   .adm-sidebar .sdb-arrow { font-size: 20px; transition: transform 0.3s ease; font-family: 'Material Icons'; }
+  .adm-sidebar .sdb-item.open .sdb-arrow { transform: rotate(90deg); }
+  .adm-sidebar .sdb-icon { width: 24px; margin-right: 12px; }
+  .adm-sidebar .sdb-label { flex: 1; }
+  .adm-sidebar .sdb-sub {
+    max-height: 0; overflow: hidden; padding: 0 16px 0 48px; opacity: 0;
+   transition: max-height 0.3s linear(-0.55 47.06%, 1.16 45.59%), opacity 0.25s ease, padding 0.2s ease;
+    font-size: 14px; color: #161718  !important; cursor: pointer;
+  }
+  .adm-sidebar .sdb-sub.open { 
+     
+    max-height: 100px; opacity: 1;   padding: 10px 16px 10px 69px;
+    font-family: 'Google Sans';
+   }
+   
+  .adm-sidebar .sdb-sub a { text-decoration: none; color: inherit; }
+  .adm-sidebar .sdb-sub:hover { background: #f8f9fa; color: #202124; }
+  .adm-sidebar .sdb-sub.active-sub {
+    
+    color: #1a73e8; background: #e8f0fe; font-weight: 500;
+    border-radius: 0 24px 24px 0; margin-right: 8px;
+  }
+  
+  .adm-sidebar .payments-active { 
+    
+   }
+    </style>
+</head>
+<body>
+
+   <header class="header">
+           <img src="assets/iamges/headericonleft.png">
+  <!-- <button class="header-menu-btn" aria-label="Menu">
+    <span class="material-icons">menu</span>
+  </button>
+  
+  <a class="header-logo" href="#">
+    
+    <div class=" ">
+      <img height="40" role="presentation" src="https://www.gstatic.com/admanager/logo_admanager_2x.png" class="_ngcontent-CONTAINER-1">
+    </div>
+    Ad Manager
+  </a> -->
+
+  <div class="header-search">
+     <img src="assets/iamges/search_siderbar.png">
+    <!-- <span class="material-icons search-icon">search</span>
+    <input type="text" placeholder="Search for tools, features, and more"> -->
+    
+  </div>
+
+  <div class="header-right">
+    <img src="assets/iamges/hdear_icons.png">
+    <!-- <button class="icon-btn" title="Help"><span class="material-icons">help_outline</span></button>
+    <button class="icon-btn" title="Notifications">
+      <span class="material-icons">notifications</span>
+      <span class="badge">1</span>
+    </button>
+    <button class="icon-btn" title="More options"><span class="material-icons">more_vert</span></button> -->
+    <button class="avatar" title="Account">A</button>
+  </div>
+</header>
+ <div class="page-header">
+       <div style="align-items: center; display: flex; padding-bottom: 20px; padding-top: 20px;">
+          <h1 style="font-family: &quot;Google Sans&quot;, Roboto, Arial, sans-serif; line-height: 28px; font-size: 22px; letter-spacing: 0px; font-weight: 400; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: rgb(32, 33, 36); margin-right: 8px; padding-top: 6px;">Home</h1>
+          <div style="display: flex; flex-direction: column; border: 1px solid rgb(218, 220, 224); border-radius: 4px;    margin: 0px 0px 0px 7px;
+    padding: 4px 0px 0px 16px;">
+            <div style="color: rgb(95, 99, 104);font-size: 14px; background: rgb(255, 255, 255); margin: -10px 0px 0px -10px; padding: 0px 10px; width: 124px;">Workspace</div>
+            <div style="display: flex; align-items: center; margin-top: -4px;">
+              <p style="font-family: &quot;Google Sans&quot;, Roboto, Arial, sans-serif; font-size: 22px; line-height: 28px; letter-spacing: 0px; font-weight: 400; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 600px; color: rgb(32, 33, 36); margin: 0px 32px 0px 0px; min-width: 200px;">Overview</p><material-tooltip-text aria-hidden="true" style="position: absolute;"> <!----><material-popup enforcespaceconstraints="" ink="" tracklayoutchanges="" style="justify-content: flex-start; align-items: flex-start;"><!---->
+                </material-popup></material-tooltip-text><material-dropdown-select buttonarialabel="Select workspace" debugid="navigation-dropdown" popupclass="dropdown-popup" style="display: inline-flex; align-items: center; gap: 4px;"><dropdown-button initpopupariaattributes="false" popupsource="" popuptype="listbox" style="display: inline-flex; flex: 1 1 0%; flex-direction: column; max-width: 100%; min-height: 24px;">
+                  <div buttondecorator="" keyboardonlyfocusindicator="" id="a79A55650-EB4B-48AC-8D19-C78435A773A4--0" aria-label="Select workspace" aria-haspopup="listbox" aria-controls="a48DEBA97-7FED-4CE7-881E-4AFF8ED4C833--0" aria-invalid="false" aria-expanded="false" tabindex="0" role="button" aria-disabled="false" fdprocessedid="jdxzjo" style="padding: 20px 0px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; overflow: hidden;"><!----><!----><!----> <!---->
+                    <material-icon style="display: inline-flex; height: 12px; opacity: 0.54; margin-top: -12px; margin-bottom: -12px;">
+                         <span class="material-icons" aria-hidden="true" style="font-size: 24px; height: 1em; line-height: 1; width: 1em; position: relative; top: -6px;" >expand_more</span>
+                       
+                    </material-icon></div><!----><!----><!---->
+                </dropdown-button><material-popup enforcespaceconstraints="" maincontenttabindex="-1" role="none" id="a48DEBA97-7FED-4CE7-881E-4AFF8ED4C833--0" style="justify-content: flex-start; align-items: flex-start;"><!---->
+                </material-popup></material-dropdown-select>
+                
+            </div>
+            
+          </div>
+         <button class="icon-btn" title="Help"><span class="material-icons" style="font-size:23px">help_outline</span></button>
+            </material-tooltip-card></help-tooltip-card>
+        </div>
+     
+    
+   
+      <div class="page-header-actions">
+        <img src="assets/sidetest.png">
+        <!-- <button class="btn btn-outlined"><span class="material-icons" style="font-size:16px">tune</span><span>Customize</span></button>
+        <button class="btn btn-primary"><span class="material-icons" style="font-size:16px">add</span><span>Add data card</span></button>
+        <button class="btn btn-text"><span>Clear workspace</span></button> -->
+      </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <div id="dateChipBtn" onclick="toggleDatePicker(event)" style="
+    display: flex;
+    align-items: center;
+    border-right: 1px solid var(--border);
+    border-radius: 0px !important;
+    line-height: 1;
+        padding: 5px 22px 4px 0px;
+        font-size: 14px;
+    height: 40px; /* adjust height as needed */
+    box-sizing: border-box;
+">
+    <span id="datePresetLabel" style="color: grey; display: inline-flex; align-items: center;">Last 30 days</span>
+    <span id="dateRangeLabel" style="margin-left:4px; display: inline-flex; align-items: center;">Mar 6 – Apr 4, 2026</span>
+    <span class="material-icons" style="display: inline-flex; align-items: center; margin-left:4px;">arrow_drop_down</span>
+    <span class="material-icons" style="font-size:16px; margin-left:2px; display: inline-flex; align-items: center;">help_outline</span>
+</div>
+
+      <div class="filter-add">
+        <img src="assets/iamges/add_filter.png">
+         Add filter
+      </div>
+    </div>
+  <div id="datePickerDropdown" style="margin-top: -40px !important;border-top: none !important;height: 350px !important;display:none;position:fixed;z-index:9999;background:#fff;border:1px solid #dadce0;border-radius:8px;box-shadow:0 4px 16px rgba(60,64,67,0.2);font-family:'Roboto',sans-serif;width:380px;overflow:hidden;">
+      <div style="display:grid;grid-template-columns:120px 1fr;">
+
+        <!-- Left: Presets -->
+        <div style="border-right:1px solid #dadce0;padding:8px 0;background:#fff;">
+          <div class="dp-preset" data-preset="custom" onclick="dpSelectPreset(this)">Custom</div>
+          <div class="dp-preset" data-preset="today" onclick="dpSelectPreset(this)">Today</div>
+          <div class="dp-preset" data-preset="yesterday" onclick="dpSelectPreset(this)">Yesterday</div>
+          <div class="dp-preset" data-preset="last7" onclick="dpSelectPreset(this)">Last 7 days</div>
+          <div class="dp-preset dp-preset-active" data-preset="last30" onclick="dpSelectPreset(this)">Last 30 days</div>
+          <div class="dp-preset" data-preset="last90" onclick="dpSelectPreset(this)">Last 90 days</div>
+          <div class="dp-preset" data-preset="lastmonth" onclick="dpSelectPreset(this)">Last month</div>
+          <div class="dp-preset" data-preset="monthtodate" onclick="dpSelectPreset(this)">Month to date</div>
+          <div class="dp-preset" data-preset="quartertodate" onclick="dpSelectPreset(this)">Quarter to date</div>
+        </div>
+
+        <!-- Right: Calendar -->
+        <div style="padding:16px 20px;background:#fff;">
+          <!-- Date inputs row -->
+          <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:8px;margin-bottom:14px;">
+            <div>
+              <div style="font-size:11px;color:#5f6368;font-weight:500;margin-bottom:4px;">Start date</div>
+              <input id="dpStartInput" type="text" readonly style="width:100%;border:none;border-bottom:2px solid #1a73e8;padding:4px 2px;font-size:13px;font-family:'Roboto',sans-serif;outline:none;background:transparent;color:#202124;box-sizing:border-box;">
+            </div>
+            <div style="padding-bottom:5px;color:#5f6368;font-size:13px;">—</div>
+            <div>
+              <div style="font-size:11px;color:#5f6368;font-weight:500;margin-bottom:4px;">End date</div>
+              <input id="dpEndInput" type="text" readonly style="width:100%;border:none;border-bottom:1px solid #dadce0;padding:4px 2px;font-size:13px;font-family:'Roboto',sans-serif;outline:none;background:transparent;color:#202124;box-sizing:border-box;">
+            </div>
+          </div>
+
+          <!-- Month header + nav -->
+          <div style="display:flex;align-items:center;margin-bottom:10px;">
+            <span id="dpMonthLabel" style="font-size:13px;font-weight:500;color:#202124;display:flex;align-items:center;gap:4px;cursor:pointer;">
+              MAR 2026
+              <span class="material-icons" style="font-size:16px;color:#5f6368;">arrow_drop_down</span>
+            </span>
+            <div style="margin-left:auto;display:flex;gap:4px;">
+              <button onclick="dpNavMonth(-1)" style="background:none;border:none;cursor:pointer;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#5f6368;" onmouseover="this.style.background='#f1f3f4'" onmouseout="this.style.background='none'">
+                <span class="material-icons" style="font-size:18px;">chevron_left</span>
+              </button>
+              <button onclick="dpNavMonth(1)" style="background:none;border:none;cursor:pointer;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#5f6368;" onmouseover="this.style.background='#f1f3f4'" onmouseout="this.style.background='none'">
+                <span class="material-icons" style="font-size:18px;">chevron_right</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Scrollable calendar area -->
+          <div id="dpScrollArea" style="max-height: 260px !important;
+    overflow-y: auto;
+    position: relative;
+    margin-left: -13px;
+    width: 112% !important;" onscroll="dpHandleScroll()">
+    <div class="dp-sticky-header">
+    <div class="dp-day-hdr">
+      <span>S</span><span>M</span><span>T</span>
+      <span>W</span><span>T</span><span>F</span><span>S</span>
+    </div>
+   <hr style="margin-left:-20px !important; margin-right:-20px; !important">
+  </div>
+            <div id="dpCalContainer"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+        <nav class="adm-sidebar">
+  <div class="sdb-network">
+    <i class="material-icons" style="    margin-left: 12px;
+    color: #5f6368;
+    font-size: 24px;
+    margin-right: 5px;">business</i>
+    <span class="sdb-network-id" >23341618849</span>
+  </div>
+  <div class="sdb-section">
+    <a class="sdb-item" href="adx_dashboard.html">
+      <img src="assets/iamges/home.png" class="sdb-icon" style="margin-left:22px;width:18px;">&nbsp;
+      <span class="sdb-label">Home</span>
+    </a>
+ 
+   
+    <!-- <div class="sdb-item" onclick="toggleAdmSub(this)">
+      <span class="material-icons sdb-arrow">arrow_right</span>
+      <img src="assets/iamges/sales.png" class="sdb-icon">
+      <span class="sdb-label">Sales</span>
+    </div> -->
+    <div class="sdb-item" onclick="toggleAdmSub(this)">
+      <span class="material-icons sdb-arrow">arrow_right</span>
+      <img src="assets/iamges/delivery.png" class="sdb-icon">
+      <span class="sdb-label">Delivery</span>
+    </div>
+    <div class="sdb-item" onclick="toggleAdmSub(this)">
+      <span class="material-icons sdb-arrow">arrow_right</span>
+      <img src="assets/iamges/inventory.png" class="sdb-icon">
+      <span class="sdb-label">Inventory</span>
+    </div>
+ 
+ 
+    <div class="sdb-item" onclick="toggleAdmSub(this)">
+      <span class="material-icons sdb-arrow">arrow_right</span>
+      <img src="assets/iamges/protection.png" class="sdb-icon">
+      <span class="sdb-label">Protections</span>
+    </div>
+    <div class="sdb-item" onclick="toggleAdmSub(this)">
+      <span class="material-icons sdb-arrow">arrow_right</span>
+      <img src="assets/iamges/reporting.png" class="sdb-icon">
+      <span class="sdb-label">Reporting</span>
+    </div>
+    <div class="sdb-item" onclick="toggleAdmSub(this)">
+      <span class="material-icons sdb-arrow">arrow_right</span>
+      <span class="material-icons sdb-icon">insights</span>
+      <span class="sdb-label">Optimization</span>
+    </div>
+ 
+  
+    <div class="sdb-item" onclick="toggleAdmSub(this)">
+      <span class="material-icons sdb-arrow">arrow_right</span>
+      <img class="sdb-icon" src="https://www.gstatic.com/admanager/sidebar_icons/privacy_and_messaging.svg">
+      <span class="sdb-label">Privacy &amp; messaging</span>
+    </div>
+    <div class="sdb-item " onclick="toggleAdmSub(this)">
+      <span class="material-icons sdb-arrow" style="">arrow_right</span>
+      <img src="assets/iamges/payments.png" class="sdb-icon">
+      <span class="sdb-label">Payments</span>
+    </div>
+    <div class="sdb-sub  ">
+      <span class="dot"></span><a href="payment.html">Payments info</a>
+    </div>
+    <div class="sdb-sub "><span class="dot"></span>Verification check</div>
+
+  
+    <div class="sdb-item" onclick="toggleAdmSub(this)">
+      <span class="material-icons sdb-arrow">arrow_right</span>
+      <img src="assets/iamges/settings.png" class="sdb-icon">
+      <span class="sdb-label">Admin</span>
+    </div>
+  </div>
+</nav>
+ 
+
+    <main class="main-container">
+        <div class="container">
+           <div class="card-row">
+            <div class="card">
+              <div class="donut-card">
+      <div class="donut-card-top">
+        <span class="card-title">Clicks by Country</span>
+        <div class="donut-card-icons">
+          <img src="assets/iamges/sideicons.png">
+          <!-- <button class="card-icon-btn"><span class="material-icons">tune</span></button>
+          <button class="card-icon-btn"><span class="material-icons">bar_chart</span></button>
+          <button class="card-icon-btn"><span class="material-icons">edit</span></button> -->
+        </div>
+      </div>
+      <div class="donut-wrap">
+        <div class="donut-chart-container">
+          <canvas id="clicksChart"></canvas>
+          <div class="donut-center">
+            <div class="donut-center-label">Total clicks</div>
+            <div class="donut-center-value">131</div>
+          </div>
+        </div>
+        <div class="donut-legend" style="justify-content: center;">
+          <div class="legend-item"><span class="legend-dot" style="background:#4285f4"></span>India 115</div>
+          <div class="legend-item"><span class="legend-dot" style="background:#ea4335"></span>United Arab Emirates 4</div>
+          <div class="legend-item"><span class="legend-dot" style="background:#fbbc05"></span>Kuwait 3</div>
+          <div class="legend-item"><span class="legend-dot" style="background:#9c27b0"></span>Pakistan 3</div>
+          <div class="legend-item"><span class="legend-dot" style="background:#34a853"></span>Afghanistan 1</div>
+          <div class="legend-item"><span class="legend-dot" style="background:#ff9800"></span>(Other) 5</div>
+        </div>
+      </div>
+    </div>
+            </div>
+             <div class="card">
+             <div class="donut-card">
+      <div class="donut-card-top">
+        <span class="card-title">eCPM by Country</span>
+        <div class="donut-card-icons">
+            <img src="assets/iamges/sideicons.png">
+          <!-- <button class="card-icon-btn"><span class="material-icons">tune</span></button>
+          <button class="card-icon-btn"><span class="material-icons">bar_chart</span></button>
+          <button class="card-icon-btn"><span class="material-icons">edit</span></button> -->
+        </div>
+      </div>
+      <div class="donut-wrap">
+        <div class="donut-chart-container">
+          <canvas id="ecpmChart"></canvas>
+          <div class="donut-center">
+            <div class="donut-center-label">Total ecpm</div>
+            <div class="donut-center-value">€0.26</div>
+          </div>
+        </div>
+        <div class="donut-legend">
+          <div class="legend-item"><span class="legend-dot" style="background:#4285f4"></span>Kuwait €1.87</div>
+          <div class="legend-item"><span class="legend-dot" style="background:#ea4335"></span>United Kingdom €1.22</div>
+          <div class="legend-item"><span class="legend-dot" style="background:#fbbc05"></span>Saudi Arabia €1.21</div>
+          <div class="legend-item"><span class="legend-dot" style="background:#9c27b0"></span>Canada €1.15</div>
+          <div class="legend-item"><span class="legend-dot" style="background:#34a853"></span>United Arab Emirates €1.07</div>
+          <div class="legend-item"><span class="legend-dot" style="background:#ff9800"></span>(Other) €0.22</div>
+        </div>
+      </div>
+    </div>
+            </div>
+            </div>
+        
+          <div class="card">
+          <div class="donut-card"  >
+      
+      <!-- Top Bar -->
+      <div class="donut-card-top" style="display:flex; justify-content:space-between; align-items:center;">
+        <span class="card-title">Impressions by Country</span>
+
+        <!-- Icons Right -->
+        <div class="donut-card-icons" style="display:flex; align-items:center;">
+            <img src="assets/iamges/sideicons.png">
+          <!-- <button class="card-icon-btn" style="margin-left:5px;"><span class="material-icons">tune</span></button>
+          <button class="card-icon-btn" style="margin-left:5px;"><span class="material-icons">bar_chart</span></button>
+          <button class="card-icon-btn" style="margin-left:5px;"><span class="material-icons">edit</span></button> -->
+        </div>
+      </div>
+
+      <!-- Main Layout -->
+      <div class="donut-wrap" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+
+        <!-- Donut Center -->
+        <div class="donut-chart-container" style="position:relative;  margin:0 auto;">
+          <canvas id="impressionsChart"></canvas>
+
+          <div class="donut-center" style="
+            position:absolute;
+            top:50%;
+            left:50%;
+            transform:translate(-50%, -50%);
+            text-align:center;
+          ">
+            <div class="donut-center-label">Total impressions</div>
+            <div class="donut-center-value">913</div>
+          </div>
+        </div>
+
+        <!-- Right Side Legend -->
+        <div class="donut-legend" style="display:flex; flex-direction:column; align-items:flex-start; ">
+
+          <div class="legend-item" style="display:flex; align-items:center; margin-bottom:8px;">
+            <span class="legend-dot" style="background:#4285f4; width:10px; height:10px; margin-right:8px;"></span>
+            India 844
+          </div>
+
+          <div class="legend-item" style="display:flex; align-items:center; margin-bottom:8px;">
+            <span class="legend-dot" style="background:#ea4335; width:10px; height:10px; margin-right:8px;"></span>
+            Pakistan 13
+          </div>
+
+          <div class="legend-item" style="display:flex; align-items:center; margin-bottom:8px;">
+            <span class="legend-dot" style="background:#fbbc05; width:10px; height:10px; margin-right:8px;"></span>
+            United States 10
+          </div>
+
+          <div class="legend-item" style="display:flex; align-items:center;">
+            <span class="legend-dot" style="background:#34a853; width:10px; height:10px; margin-right:8px;"></span>
+            UK 7
+          </div>
+
+        </div>
+<br>
+<br>
+      </div>
+
+    </div>
+        </div>
+        <br>
+          <div class="row">
+            <div class="col-8">
+  <div style=" grid-template-columns:1fr 300px;gap:20px;margin-bottom:20px;align-items:start;">
+        <!-- Overview Card -->
+         
+        <div class="overview-card" style="margin-bottom:0">
+              <img class="card-title" src="assets/iamges/overview.png"  style="margin-left: -10px;">
+ 
+            
+          <div class="overview-top">
+           
+            <span class="card-title">
+               
+              <span class="material-icons" title="Overview metrics across all ad units"> </span>
+            </span>
+            <div style="margin-top: -20px;"> 
+              <img src="assets/iamges/program_channel.png">
+              
+            </div>
+          </div>
+
+          <div class="overview-metrics">
+            <!-- Impressions -->
+            <div class="metric-cell" onclick="selectMetric(this)">
+              <div class="metric-label">Impressions</div>
+              <div class="metric-value">1.21K</div>
+              <div class="metric-change">+310 (34%)</div>
+              <svg viewBox="0 0 110 36" width="100%" height="36" preserveAspectRatio="none" style="display:block;margin-top:10px;">
+                <path d="M2,30 C8,26 14,24 22,21 C30,18 36,23 46,19 C56,15 62,20 74,14 C84,10 94,9 108,7"
+                  fill="none" stroke="#1a73e8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <!-- Revenue -->
+            <div class="metric-cell" onclick="selectMetric(this)">
+              <div class="metric-label">Revenue</div>
+              <div class="metric-value" >€0.30</div>
+              <div class="metric-change">+€0.089 (42%)</div>
+              <svg viewBox="0 0 110 36" width="100%" height="36" preserveAspectRatio="none" style="display:block;margin-top:10px;">
+                <path d="M2,28 C10,25 16,26 26,22 C36,18 40,20 52,17 C64,14 70,12 82,10 C90,8 100,7 108,5"
+                  fill="none" stroke="#1a73e8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <!-- eCPM -->
+            <div class="metric-cell" onclick="selectMetric(this)">
+              <div class="metric-label">eCPM</div>
+              <div class="metric-value" >€0.25</div>
+              <div class="metric-change">+€0.013 (5.8%)</div>
+              <svg viewBox="0 0 110 36" width="100%" height="36" preserveAspectRatio="none" style="display:block;margin-top:10px;">
+                <path d="M2,22 C8,24 14,20 24,21 C34,22 38,18 50,17 C62,16 66,20 78,16 C88,13 98,14 108,11"
+                  fill="none" stroke="#1a73e8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <!-- Viewability -->
+            <div class="metric-cell" onclick="selectMetric(this)">
+              <div class="metric-label">Viewability</div>
+              <div class="metric-value">40.9%</div>
+              <div class="metric-change" style="color:var(--red)">-3.9% (8.8%)</div>
+              <svg viewBox="0 0 110 36" width="100%" height="36" preserveAspectRatio="none" style="display:block;margin-top:10px;">
+                <path d="M2,20 C8,18 14,20 24,16 C34,12 38,14 50,16 C60,18 66,14 78,18 C88,22 98,24 108,28"
+                  fill="none" stroke="#1a73e8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+         <hr style="margin-left:-24px;margin-right:-24px;">
+          <div style="   margin-top: 16px;
+    margin-left: -18px;
+    margin-bottom: -6px;">
+            <a class="btn btn-text" style="font-size:13px;padding:4px 8px;">View in reporting</a>
+          </div>
+        </div>
+
+        <!-- Insights Card -->
+        
+      </div>
+            </div>
+            <div class="col-4">
+     <div class="col-4 insights-section">
+        <div class="insights-card" style="height: 320px; !important">
+  <div class="insights-title">Looking for insights</div>
+
+  <div class="insights-body">
+    We're watching for significant changes and trends in your network over the last 30 days. Check again tomorrow for updates.
+  </div>
+
+  <div class="insights-links">
+    <a class="insights-link">About this dashboard <span class="material-icons">open_in_new</span></a>
+    <a class="insights-link">What's new in Ad Manager <span class="material-icons">open_in_new</span></a>
+  </div>
+
+  <!-- ye ab bottom pe push ho jayega -->
+  <hr style="    margin-left: -18px;
+    margin-right: -19px; color: var(--text-primary);">
+
+  <div style="margin-top:16px;margin-left:-18px;margin-bottom:-6px;">
+    <a class="btn btn-text" style="font-size:13px;padding:4px 8px; color: transparent !important;">View in reporting</a>
+  </div>
+</div>
+        </div>
+            </div>
+          </div>
+           
+      
+        <br>
+      
+        <div class="card">
+            <div class="perf-card mt-2 performance-section" style="padding:20px 0 0;overflow:hidden;">
+        <!-- Card Header -->
+        <div class="perf-top" style="padding:0 24px 0;">
+          
+          <span class="card-title">
+            
+            Performance summary
+            <span class="material-icons" title="Performance data" style="font-size:18px;color:var(--text-secondary)">help_outline</span>
+          </span>
+          <div>
+            <div class="breakdown-row _ngcontent-HOMEPAGE-39">
+              <div class="breakdown-label _ngcontent-HOMEPAGE-39 --text-light">Break down by &nbsp; &nbsp;</div>
+              <div class="dimension-selector _ngcontent-HOMEPAGE-39">
+                <div class="breakdown-select ">
+              <!-- <span style="color:var(--text-secondary);font-weight:400;">Break down by</span>&nbsp; -->
+              <strong>App</strong>
+              <span class="material-icons" style="font-size:16px">arrow_drop_down</span>
+            </div></div></div>
+             
+       
+          </div>
+        </div>
+
+        <!-- Filter bar -->
+        <div class="perf-filter-bar" style="    padding: 10px 22px 10px;">
+          <img src="assets/iamges/filter.png">
+           <span>Add filter</span>
+        </div>
+
+        <!-- Metric cells — top border radius only -->
+        <div class="perf-metrics" style="border-radius:0;border-top:1px solid var(--border);">
+          <div class="perf-metric selected">
+            <div class="metric-label">Impressions</div>
+            <div class="metric-value">1.21K</div>
+            <div class="metric-change">+310 (34%)</div>
+          </div>
+          <div class="perf-metric">
+            <div class="metric-label">Revenue</div>
+            <div class="metric-value">€0.30</div>
+            <div class="metric-change">+€0.089 (42%)</div>
+          </div>
+          <div class="perf-metric">
+            <div class="metric-label">eCPM</div>
+            <div class="metric-value">€0.25</div>
+            <div class="metric-change">+€0.013 (5.8%)</div>
+          </div>
+        </div>
+
+        <!-- Chart area with inline legend -->
+        <div class="perf-chart-wrap">
+          <div class="perf-chart-canvas">
+            <canvas id="perfChart"></canvas>
+          </div>
+          <div class="perf-legend">
+            <div class="perf-legend-item">
+              <div class="perf-legend-line" style="background:#4285f4;"></div>
+              Instagram (com.instagram.android)
+            </div>
+            <div class="perf-legend-item">
+              <div class="perf-legend-line" style="background:#ea4335;"></div>
+              (Not applicable)
+            </div>
+            <div class="perf-legend-item">
+              <div class="perf-legend-line" style="background:#fbbc05;"></div>
+              Facebook (com.facebook.katana)
+            </div>
+            <div class="perf-legend-item">
+              <div class="perf-legend-line" style="background:#9c27b0;"></div>
+              Unknown (com.aninsta.android)
+            </div>
+            <div class="perf-legend-item">
+              <div class="perf-legend-line" style="background:#34a853;"></div>
+              Opera Mini: Fast Web Browser (com.opera.mini...
+            </div>
+          </div>
+        </div>
+
+        <!-- Show details footer -->
+        <div class="perf-show-details">
+          <span>Show details</span>
+          <span class="material-icons" style="font-size:20px;color:var(--text-secondary)">expand_more</span>
+        </div>
+      </div>
+        </div>
+
+        <div class="card">
+          <div class="demand-card" style="padding-left:0; padding-right:0;">
+
+  <!-- Top Header (thoda padding rakha for UI balance) -->
+  <div style="display:flex;align-items:center;justify-content:space-between; padding:0 20px;">
+     <img src="assets/iamges/dm_dm.png">
+    <!-- <span class="card-title">
+      Demand comparison
+      <span class="material-icons" title="Demand comparison info">help_outline</span>
+    </span> -->
+    <div>
+      <img src="assets/iamges/dm_imp.png">
+      
+    </div>
+  </div>
+
+  <!-- Metrics FULL EDGE -->
+  <div class="demand-metrics" style="margin-left:0; margin-right:0;">
+    <div class="demand-metric c1">
+      <div class="demand-label">Ad Exchange <span class="material-icons">arrow_drop_down</span></div>
+      <div class="demand-value">1.2K</div>
+    </div>
+    <div class="demand-metric c2">
+      <div class="demand-label">Ad Exchange – Open... <span class="material-icons">arrow_drop_down</span></div>
+      <div class="demand-value">791</div>
+    </div>
+    <div class="demand-metric c3">
+      <div class="demand-label">Unfilled <span class="material-icons">arrow_drop_down</span></div>
+      <div class="demand-value">102</div>
+    </div>
+    <div class="demand-metric c4">
+      <div class="demand-label">Ad Exchange <span class="material-icons">arrow_drop_down</span></div>
+      <div class="demand-value">1.2K</div>
+    </div>
+    <div class="demand-metric c5">
+      <div class="demand-label">Ad Exchange – Open... <span class="material-icons">arrow_drop_down</span></div>
+      <div class="demand-value">791</div>
+    </div>
+  </div>
+
+  <!-- Chart FULL EDGE -->
+  <div class="demand-chart-area" style=" ">
+    <canvas id="demandChart"></canvas>
+  </div>
+
+  <!-- Bottom -->
+   <div class="show-details" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;
+    padding: 15px 15px 0px 15px;">
+  <span style="     font-family: 'Google Sans';
+    font-size: 14px;">Show details</span>
+  <span class="material-icons" style="font-size: 25px; color: var(--text-secondary);">expand_more</span>
+</div>
+ 
+
+</div>
+        </div>
+
+        <div class="card">
+          <div class="table-card" style="padding: 0px !important;">
+        <div class="table-top" style="       padding: 20px 16px 0px;">
+          <span class="card-title">
+            Top classified advertisers
+            <span class="material-icons" title="Advertiser info">help_outline</span>
+          </span>
+            <img src="assets/iamges/top_cla.png">
+
+          
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Classified advertiser</th>
+              <th style="text-align:right">Impressions</th>
+              <th style="text-align:right">Revenue</th>
+              <th style="text-align:right">eCPM</th>
+              <th style="text-align:right">Viewability</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="td-link" style="color: #174ea6 !important; text-decoration: underline;">Digital Virgo</td>
+              <td style="text-align:right;" >68</td>
+              <td style="text-align:right">€0.11</td>
+              <td style="text-align:right">€1.60</td>
+              <td style="text-align:right">45.6%</td>
+            </tr>
+            <tr>
+              <td class="td-link" style="color: #174ea6 !important; text-decoration: underline;">Go Daddy</td>
+              <td style="text-align:right">79</td>
+              <td style="text-align:right">€0.086</td>
+              <td style="text-align:right">€1.08</td>
+              <td style="text-align:right">38%</td>
+            </tr>
+            <tr>
+              <td class="td-link" style="color: #174ea6 !important; text-decoration: underline;">Government of India</td>
+              <td style="text-align:right">213</td>
+              <td style="text-align:right">€0.041</td>
+              <td style="text-align:right">€0.19</td>
+              <td style="text-align:right">56.8%</td>
+            </tr>
+            <tr>
+              <td class="td-link" style="color: #174ea6 !important; text-decoration: underline;">Airbnb</td>
+              <td style="text-align:right">124</td>
+              <td style="text-align:right">€0.041</td>
+              <td style="text-align:right">€0.33</td>
+              <td style="text-align:right">70.2%</td>
+            </tr>
+            <tr>
+              <td class="td-link" style="color: #174ea6 !important; text-decoration: underline;">Amazon Corp</td>
+              <td style="text-align:right">188</td>
+              <td style="text-align:right">€0.036</td>
+              <td style="text-align:right">€0.19</td>
+              <td style="text-align:right">62.2%</td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="margin-top:12px; padding: 12px;    border-top: 1px solid var(--border);">
+          <a class="btn btn-text" style="font-size:13px;padding:4px 8px;">View in reporting</a>
+        </div>
+      </div>
+
+      <!-- ===== TOP YIELD PARTNERS ===== -->
+     
+        </div>
+<br>
+<div class="card">
+    <div class="table-card" style="padding: 0px !important;">
+        <div class="table-top" style="       padding: 20px 16px 0px;">
+          <span class="card-title">
+            Top detected yield partners
+            <span class="material-icons" title="Yield partners info">help_outline</span>
+          </span>
+            <img src="assets/iamges/yeiled_partners.png">
+          <!-- <div class="search-input">
+            <span class="material-icons">search</span>
+            <input type="text" placeholder="Search detected yield partners">
+          </div> -->
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Detected yield partner</th>
+              <th style="text-align:right">Impressions</th>
+              <th style="text-align:right">Revenue</th>
+              <th style="text-align:right">eCPM</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="yield-row">
+              <td>
+                <div class="expand-toggle">
+                  <span class="material-icons" style="font-size:25px">expand_more</span>
+                  DoubleClick Ad Exchange
+                </div>
+              </td>
+              <td style="text-align:right">6.83K</td>
+              <td style="text-align:right">€1.78</td>
+              <td><span class="ecpm" style="display: inline-block;
+  margin-right: -10px;">€0.26</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="margin-top: 8px;
+    border-top: 1px solid var(--border);
+    padding: 11px 5px;">
+          <a class="btn btn-text" style="font-size:13px;padding:4px 8px;">View in reporting</a>
+        </div>
+      </div>
+</div>
+          </div>
+      
+ 
+     
+            
+            
+           
+      
+
+       
+        
+    </main>
+<script>
+  const filterBar = document.querySelector('.filter-bar');
+
+window.addEventListener('scroll', () => {
+  // Check if page is scrolled past the filter bar
+  if (window.scrollY > filterBar.getBoundingClientRect().top) {
+    filterBar.classList.add('scrolled');
+  } else {
+    filterBar.classList.remove('scrolled');
+  }
+});
+// ===== HELPER =====
+const chartDefaults = {
+  plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
+  animation: { duration: 600, easing: 'easeOutQuart' }
+};
+
+// ===== OVERVIEW LINE CHART =====
+
+// function() {
+//   const ctx = document.getElementById('overviewChart').getContext('2d');
+//   const labels = [];
+//   const data = [];
+//   const base = new Date('2026-02-23');
+//   for (let i = 0; i < 30; i++) {
+//     const d = new Date(base); d.setDate(d.getDate() + i);
+//     labels.push(d.toLocaleDateString('en',{month:'short',day:'numeric'}));
+//     data.push(Math.max(0, Math.floor(300 * Math.random() + (i < 5 ? 700 : i < 10 ? 900 : 100))));
+//   }
+//   new Chart(ctx, {
+//     type: 'line',
+//     data: {
+//       labels,
+//       datasets: [{
+//         data,
+//         borderColor: '#fff',
+//         backgroundColor: 'rgba(255,255,255,0.15)',
+//         tension: 0.4, fill: true, pointRadius: 0,
+//         borderWidth: 2
+//       }]
+//     },
+//     options: {
+//       ...chartDefaults,
+//       scales: { x: { display: false }, y: { display: false } },
+//       maintainAspectRatio: false,
+//       plugins: { legend: { display: false } }
+//     }
+//   });
+// })();
+
+// Donut helper
+function makeDonut(id, data, colors) {
+  const ctx = document.getElementById(id).getContext('2d');
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      datasets: [{ data, backgroundColor: colors, borderWidth: 0, hoverOffset: 4 }]
+    },
+    options: {
+      cutout: '90%',
+      plugins: { legend: { display: false }, tooltip: { enabled: true } },
+      animation: { duration: 700 },
+      maintainAspectRatio: false
+    }
+  });
+}
+
+makeDonut('clicksChart',
+  [115, 4, 3, 3, 1, 5],
+  ['#4285f4','#ea4335','#fbbc05','#9c27b0','#34a853','#ff9800']);
+
+makeDonut('ecpmChart',
+  [1.87, 1.22, 1.21, 1.15, 1.07, 0.22],
+  ['#4285f4','#ea4335','#fbbc05','#9c27b0','#34a853','#ff9800']);
+
+makeDonut('impressionsChart',
+  [844, 13, 13, 10, 7, 26],
+  ['#4285f4','#ea4335','#fbbc05','#9c27b0','#34a853','#ff9800']);
+
+// ===== PERFORMANCE SUMMARY =====
+(function() {
+  const ctx = document.getElementById('perfChart').getContext('2d');
+  // Labels: Mar 21–27 matching reference image
+  const labels = ['Mar 21', '22', '23', '24', '25', '26', '27'];
+
+  // Data approximated from reference chart image
+  // Instagram: blue line - high ~120-240 range
+  // Not applicable: red line - lower ~10-65 range
+  // Facebook: orange - near zero, tiny blip on 22
+  // Unknown: purple - near zero
+  // Opera Mini: green - near zero
+  const apps = [
+    { label: 'Instagram (com.instagram.android)', color: '#4285f4', data: [120, 120, 128, 82, 122, 242, 228] },
+    { label: '(Not applicable)',                  color: '#ea4335', data: [18,  62,  38, 14,  14,  18,  18] },
+    { label: 'Facebook (com.facebook.katana)',     color: '#fbbc05', data: [2,   4,   2,  1,   1,   2,   2] },
+    { label: 'Unknown (com.aninsta.android)',      color: '#9c27b0', data: [1,   1,   1,  1,   1,   1,   1] },
+    { label: 'Opera Mini: Fast Web Browser',       color: '#34a853', data: [0,   2,   1,  0,   0,   0,   1] }
+  ];
+
+  const datasets = apps.map(app => ({
+    label: app.label,
+    data: app.data,
+    borderColor: app.color,
+    backgroundColor: 'transparent',
+    tension: 0.35,
+    pointRadius: 0,
+    pointHoverRadius: 4,
+    borderWidth: 2
+  }));
+
+  new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      interaction: { mode: 'index', intersect: false },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { font: { size: 11, family: 'Roboto' }, color: '#80868b' },
+          border: { display: false }
+        },
+        y: {
+          grid: { color: '#f1f3f4', drawBorder: false },
+          ticks: { font: { size: 11, family: 'Roboto' }, color: '#80868b', stepSize: 50 },
+          beginAtZero: true,
+          max: 300,
+          border: { display: false }
+        }
+      },
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          mode: 'index',
+          intersect: false,
+          backgroundColor: '#fff',
+          titleColor: '#202124',
+          bodyColor: '#5f6368',
+          borderColor: '#dadce0',
+          borderWidth: 1,
+          padding: 12,
+          callbacks: {
+            title: items => items[0].label,
+            label: item => `${item.dataset.label}: ${item.raw}`
+          }
+        }
+      },
+      animation: { duration: 600, easing: 'easeOutQuart' }
+    }
+  });
+})();
+
+// ===== BID CHART =====
+// (function() {
+//   const ctx = document.getElementById('bidChart').getContext('2d');
+
+//   // Bid range labels matching reference image x-axis exactly
+//   const bidRanges = [
+//     '€0.00 -\n€0.086',
+//     '€0.086 -\n€0.11',
+//     '€0.11 -\n€0.14',
+//     '€0.14 -\n€0.17',
+//     '€0.17 -\n€0.22',
+//     '€0.22 -\n€0.28',
+//     '€0.28 -\n€0.35',
+//     '€0.35 -\n€0.43',
+//     '€0.43 -\n€0.54',
+//     '€0.54 -\n€0.69',
+//     '€0.69 -\n€0.86',
+//     '€0.86 -\n€1.08',
+//     '€1.08 -\n€1.38',
+//     '€1.38 -\n€1.73',
+//     '€1.73 -\n€2.16',
+//     '€2.16 -\n€2.76',
+//     '€2.76 -\n€3.45'
+//   ];
+
+//   // Bid count bars — matches the shape from reference (tall first bar ~460, then descending)
+//   const bidCounts = [460, 155, 115, 90, 72, 68, 55, 65, 45, 38, 30, 22, 18, 12, 8, 65, 0];
+
+//   // Green revenue line — matches the reference shape (rises mid-chart, peaks around €1.38–€1.73, then a spike at €2.16)
+//   const revLine = [
+//     0.032, 0.022, null, null,
+//     null, 0.018, 0.021, 0.024,
+//     0.028, 0.022, 0.018, 0.021,
+//     0.018, 0.021, 0.018, 0.028, 0.007
+//   ];
+
+//   // Revenue matched to reference image more precisely
+//   const revData = [0.032, 0.022, null, null, null, 0.018, 0.022, 0.024, 0.029, 0.022, 0.018, 0.020, 0.018, 0.021, 0.018, 0.028, 0.007];
+
+//   new Chart(ctx, {
+//   type: 'bar',
+//   data: {
+//     labels: bidRanges,
+//     datasets: [
+//       {
+//         type: 'bar',
+//         label: 'Bid count',
+//         data: bidCounts,
+//         backgroundColor: '#1c3aa9', // bar color
+//         yAxisID: 'y',
+//         order: 2,
+//         borderRadius: 0,
+//         borderSkipped: false,
+//         barPercentage: 0.85,
+//         categoryPercentage: 0.9
+//       },
+//       {
+//         type: 'line',
+//         label: 'Estimated revenue',
+//         data: revData,
+//         borderColor: '#ff5722', // line color
+//         backgroundColor: 'transparent',
+//         yAxisID: 'y2',
+//         tension: 0,
+//         pointRadius: 0,           // hide points
+//         pointBackgroundColor: '#ff5722',
+//         pointBorderColor: '#ff5722',
+//         borderWidth: 2,
+//         order: 1,
+//         spanGaps: false
+//       }
+//     ]
+//   },
+//   options: {
+//     maintainAspectRatio: false,
+//     interaction: { mode: 'index', intersect: false },
+//     scales: {
+//       x: {
+//         grid: { display: false },
+//         ticks: {
+//           font: { size: 12, family: 'Roboto' },
+//           color: '#5f6368',
+//           maxRotation: 45,
+//           minRotation: 45,
+//           callback: function(val, i) {
+//             return bidRanges[i].split('\n');
+//           }
+//         },
+//         title: {
+//           display: true,
+//           text: 'Bid range',
+//           font: { size: 22, family: 'Roboto' },
+//           color: '#5f6368',
+//           padding: { top: 10 }
+//         },
+//         border: { display: false }
+//       },
+//       y: {
+//         position: 'left',
+//         grid: { color: '#f1f3f4', drawBorder: false },
+//         ticks: {
+//           font: { size: 14, family: 'Roboto' },
+//           color: '#5f6368',
+//           stepSize: 100
+//         },
+//         beginAtZero: true,
+//         max: 500,
+//         title: {
+//           display: true,
+//           text: 'Bid count',
+//           font: { size: 18, family: 'Roboto' },
+//           color: '#424242'
+//         },
+//         border: { display: false }
+//       },
+//       y2: {
+//         position: 'right',
+//         grid: { display: false },
+//         ticks: {
+//           font: { size: 14, family: 'Roboto' },
+//           color: '#5f6368',
+//           callback: v => v !== null ? '€' + v.toFixed(3) : ''
+//         },
+//         beginAtZero: true,
+//         max: 0.035,
+//         title: {
+//           display: true,
+//           text: 'Estimated revenue', // normal text
+//           font: { size: 17, family: 'Roboto' },
+//           color: '#5f6368',
+//            rotation: 90,    // rotate vertical
+//   align: 'center', // keep it centered
+//   offset: true // rotate vertically along y-axis
+//         },
+//         border: { display: false }
+//       }
+//     },
+//     plugins: {
+//       legend: { display: false },
+//       tooltip: {
+//         mode: 'index',
+//         intersect: false,
+//         backgroundColor: '#fff',
+//         titleColor: '#202124',
+//         titleFont: { size: 13, weight: '600', family: 'Roboto' },
+//         bodyColor: '#5f6368',
+//         bodyFont: { size: 13, family: 'Roboto' },
+//         borderColor: '#dadce0',
+//         borderWidth: 1,
+//         padding: 12,
+//         callbacks: {
+//           title: items => 'Bid range: ' + bidRanges[items[0].dataIndex].replace('\n', ' '),
+//           label: item => {
+//             if (item.datasetIndex === 0) return `Winning bids — Open Auction: ${item.raw}`;
+//             if (item.datasetIndex === 1 && item.raw !== null) return `Estimated revenue: €${item.raw.toFixed(3)}`;
+//             return null;
+//           }
+//         }
+//       }
+//     },
+//     animation: { duration: 600 }
+//   }
+// });
+
+// })();
+
+// ===== DEMAND CHART =====
+(function() {
+  const ctx = document.getElementById('demandChart').getContext('2d');
+
+  // Labels: Mar 22–28 matching reference image x-axis
+  const labels = ['Mar 22', '23', '24', '25', '26', '27', '28'];
+
+  // 3 lines matching reference image exactly:
+  // Purple line (c4 = #9c27b0): high arc, peaks at Mar 26 ~260
+  // Green line  (c5 = #34a853): medium, peaks at Mar 26 ~190
+  // Orange line (c3 = #f9a825): near-flat, low values throughout
+  const datasets = [
+    {
+      label: 'Ad Exchange (purple)',
+      data: [190, 160, 105, 135, 260, 250, 135],
+      borderColor: '#9c27b0',
+      backgroundColor: 'transparent',
+      tension: 0.35,
+      pointRadius: 0,
+      pointHoverRadius: 4,
+      borderWidth: 2
+    },
+    {
+      label: 'Ad Exchange – Open Auction (green)',
+      data: [115, 105, 65, 75, 190, 150, 80],
+      borderColor: '#34a853',
+      backgroundColor: 'transparent',
+      tension: 0.35,
+      pointRadius: 0,
+      pointHoverRadius: 4,
+      borderWidth: 2
+    },
+    {
+      label: 'Unfilled (orange)',
+      data: [12, 22, 5, 10, 15, 10, 5],
+      borderColor: '#f9a825',
+      backgroundColor: 'transparent',
+      tension: 0.35,
+      pointRadius: 0,
+      pointHoverRadius: 4,
+      borderWidth: 2
+    }
+  ];
+
+  new Chart(ctx, {
+  type: 'line',
+  data: { labels, datasets },
+  options: {
+    interaction: { mode: 'index', intersect: false },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: { font: { size: 11, family: 'Roboto' }, color: '#80868b' },
+        border: { display: false }
+      },
+      y: {
+        grid: { color: '#f1f3f4', drawBorder: false },
+        ticks: { font: { size: 11, family: 'Roboto' }, color: '#80868b', stepSize: 50 },
+        beginAtZero: true,
+        max: 300,
+        border: { display: false }
+      }
+    },
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        mode: 'index',
+        intersect: true,
+        backgroundColor: '#fff',
+        titleColor: '#202124',
+        bodyColor: '#5f6368',
+        borderColor: '#dadce0',
+        borderWidth: 0,
+        padding: 12,
+        callbacks: {
+          title: items => items[0].label,
+          label: item => `${item.dataset.label}: ${item.raw}`
+        }
+      }
+    },
+    animation: { duration: 600, easing: 'easeOutQuart' },
+    elements: {
+       order: 1,
+      line: { tension: 0 },  // ✅ This ensures sharp / straight lines
+      point: { radius: 0 }   // Optional: removes the dots for clean sparkline look
+    }
+  }
+});
+
+
+})
+
+();
+
+// ===== INTERACTIONS =====
+function toggleSubnav(el) {
+  const isActive = el.classList.contains('active');
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  document.querySelectorAll('.nav-sub-item').forEach(i => i.classList.remove('open'));
+  if (isActive) return;
+  el.classList.add('active');
+  let next = el.nextElementSibling;
+  while (next && next.classList.contains('nav-sub-item')) {
+    next.classList.add('open');
+    next = next.nextElementSibling;
+  }
+}
+
+// ===== DATE PICKER =====
+(function() {
+  const MONTHS_LONG = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const MONTHS_SHORT = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+
+  let dpStart = null, dpEnd = null, dpHovered = null;
+  let dpSelectingEnd = false;
+  let dpViewYear, dpViewMonth;
+  let dpCurrentPreset = 'last30';
+
+  function today() { const d = new Date(); d.setHours(0,0,0,0); return d; }
+  function addDays(d, n) { const r = new Date(d); r.setDate(r.getDate()+n); return r; }
+  function sameDay(a,b) { return a && b && a.getTime()===b.getTime(); }
+  function fmtInput(d) { if(!d) return ''; return (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear(); }
+  function fmtDisplay(d) { if(!d) return ''; const ms=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; return ms[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear(); }
+
+  function applyPreset(preset) {
+    const t = today();
+    switch(preset) {
+      case 'today':         dpStart=new Date(t); dpEnd=new Date(t); break;
+      case 'yesterday':     dpStart=addDays(t,-1); dpEnd=addDays(t,-1); break;
+      case 'last7':         dpStart=addDays(t,-6); dpEnd=new Date(t); break;
+      case 'last30':        dpStart=addDays(t,-29); dpEnd=new Date(t); break;
+      case 'last90':        dpStart=addDays(t,-89); dpEnd=new Date(t); break;
+      case 'lastmonth':
+        dpStart=new Date(t.getFullYear(),t.getMonth()-1,1);
+        dpEnd=new Date(t.getFullYear(),t.getMonth(),0); break;
+      case 'monthtodate':   dpStart=new Date(t.getFullYear(),t.getMonth(),1); dpEnd=new Date(t); break;
+      case 'quartertodate':
+        const q=Math.floor(t.getMonth()/3);
+        dpStart=new Date(t.getFullYear(),q*3,1); dpEnd=new Date(t); break;
+    }
+  }
+
+  function presetLabel(preset) {
+    const map={today:'Today',yesterday:'Yesterday',last7:'Last 7 days',last30:'Last 30 days',
+      last90:'Last 90 days',lastmonth:'Last month',monthtodate:'Month to date',quartertodate:'Quarter to date',custom:'Custom'};
+    return map[preset]||'Custom';
+  }
+
+  function updateChip() {
+    const pl=document.getElementById('datePresetLabel');
+    const rl=document.getElementById('dateRangeLabel');
+    if(pl) pl.textContent=presetLabel(dpCurrentPreset);
+    if(rl && dpStart && dpEnd) {
+      const ms=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      rl.textContent=ms[dpStart.getMonth()]+' '+dpStart.getDate()+' – '+ms[dpEnd.getMonth()]+' '+dpEnd.getDate()+', '+dpEnd.getFullYear();
+    }
+  }
+
+  function renderCalendar() {
+    const container = document.getElementById('dpCalContainer');
+    const mlabel = document.getElementById('dpMonthLabel');
+    if(!container) return;
+
+    // Render 2 months (current + next) for infinite-scroll feel
+    let html = '';
+    for(let mo=0; mo<2; mo++) {
+  const yr = dpViewMonth+mo > 11 ? dpViewYear+1 : dpViewYear;
+  const m = (dpViewMonth+mo) % 12;
+
+  // ❌ FIRST MONTH → skip header
+  if (mo !== 0) {
+    html += `<div> <div class="dp-month-header">${MONTHS_LONG[m]} ${yr}</div>`;
+  }
+
+  // ✅ Only first month gets days header
+  if (mo === 0) {
+    html += `<div class="dp-month-header">${MONTHS_LONG[m]} ${yr}</div></div>`;
+  }
+
+  html += renderMonth(yr, m);
+}
+    container.innerHTML = html;
+
+    if(mlabel) mlabel.innerHTML = MONTHS_SHORT[dpViewMonth]+' '+dpViewYear+' <span class="material-icons" style="font-size:16px;color:#5f6368;vertical-align:middle;">arrow_drop_down</span>';
+
+    // Update inputs
+    const si=document.getElementById('dpStartInput'), ei=document.getElementById('dpEndInput');
+    if(si) si.value=fmtInput(dpStart);
+    if(ei) ei.value=fmtInput(dpEnd);
+
+    // Attach day click/hover
+    container.querySelectorAll('.dp-day:not(.dp-empty)').forEach(cell => {
+      const ds = cell.dataset.date;
+      cell.addEventListener('click', () => dpDayClick(ds));
+      cell.addEventListener('mouseenter', () => dpDayHover(ds));
+    });
+    container.addEventListener('mouseleave', () => { dpHovered=null; renderCalendar(); });
+  }
+
+ function renderMonth(yr, mo) {
+  const firstDay = new Date(yr, mo, 1).getDay();
+  const daysInMonth = new Date(yr, mo+1, 0).getDate();
+  const t = today();
+
+  let html = '';
+  html += '<div class="dp-grid">';
+
+  for(let i=0;i<firstDay;i++) {
+    html += '<div class="dp-day dp-empty"></div>';
+  }
+
+  for(let d=1; d<=daysInMonth; d++) {
+    const date = new Date(yr, mo, d);
+    const ds = yr+'-'+(mo+1 < 10?'0':'')+(mo+1)+'-'+(d<10?'0':'')+d;
+
+    let cls = 'dp-day';
+
+    if(sameDay(date, t)) cls += ' dp-today';
+
+    const effEnd = dpHovered && dpSelectingEnd && dpStart && !dpEnd ? dpHovered : dpEnd;
+    const rangeS = dpStart, rangeE = effEnd;
+    const lo = rangeS && rangeE && rangeS <= rangeE ? rangeS : rangeE;
+    const hi = rangeS && rangeE && rangeS <= rangeE ? rangeE : rangeS;
+
+    if(rangeS && rangeE) {
+      if(sameDay(date, lo)) cls += ' dp-sel-start';
+      if(sameDay(date, hi)) cls += ' dp-sel-end';
+      if(date > lo && date < hi) cls += ' dp-in-range';
+    } else if(rangeS && sameDay(date, rangeS)) {
+      cls += ' dp-sel-start dp-sel-end';
+    }
+
+    html += `<div class="${cls}" data-date="${ds}">${d}</div>`;
+  }
+
+  html += '</div>';
+  return html;
+}
+  function dpDayClick(ds) {
+    const date=new Date(ds+'T00:00:00');
+    if(!dpSelectingEnd || dpEnd) {
+      // Start new range
+      dpStart=date; dpEnd=null; dpHovered=null; dpSelectingEnd=true;
+      dpCurrentPreset='custom';
+      document.querySelectorAll('.dp-preset').forEach(p=>p.classList.remove('dp-preset-active'));
+      const cust=document.querySelector('.dp-preset[data-preset="custom"]');
+      if(cust) cust.classList.add('dp-preset-active');
+    } else {
+      // Set end
+      if(date<dpStart){dpEnd=dpStart;dpStart=date;}
+      else dpEnd=date;
+      dpSelectingEnd=false;
+    }
+    renderCalendar();
+  }
+
+  function dpDayHover(ds) {
+    if(dpSelectingEnd&&dpStart&&!dpEnd) {
+      dpHovered=new Date(ds+'T00:00:00');
+      renderCalendar();
+    }
+  }
+
+  window.dpNavMonth = function(dir) {
+    dpViewMonth+=dir;
+    if(dpViewMonth>11){dpViewMonth=0;dpViewYear++;}
+    if(dpViewMonth<0){dpViewMonth=11;dpViewYear--;}
+    renderCalendar();
+  };
+
+  window.dpHandleScroll = function() {};
+
+  window.dpSelectPreset = function(el) {
+    document.querySelectorAll('.dp-preset').forEach(p=>p.classList.remove('dp-preset-active'));
+    el.classList.add('dp-preset-active');
+    const preset=el.dataset.preset;
+    dpCurrentPreset=preset;
+    if(preset!=='custom') {
+      applyPreset(preset);
+      dpSelectingEnd=false;
+      dpViewYear=dpStart.getFullYear();
+      dpViewMonth=dpStart.getMonth();
+      renderCalendar();
+      updateChip();
+    }
+  };
+
+  window.toggleDatePicker = function(event) {
+    
+    const dp=document.getElementById('datePickerDropdown');
+    if(!dp) return;
+    if(dp.style.display==='none'||dp.style.display==='') {
+      const chip=document.getElementById('dateChipBtn');
+      const rect=chip.getBoundingClientRect();
+      dp.style.top=(rect.bottom+4)+'px';
+      dp.style.left=rect.left+'px';
+      dp.style.display='block';
+      renderCalendar();
+    } else {
+      dp.style.display='none';
+    }
+    if(event) event.stopPropagation();
+  };
+
+  document.addEventListener('click', function(e) {
+    const dp=document.getElementById('datePickerDropdown');
+    const chip=document.getElementById('dateChipBtn');
+    if(dp&&dp.style.display==='block'&&!dp.contains(e.target)&&chip&&!chip.contains(e.target)) {
+      dp.style.display='none';
+    }
+  });
+
+  // Init
+  const t2=today();
+  dpViewYear=t2.getFullYear();
+  dpViewMonth=t2.getMonth();
+  applyPreset('last30');
+  updateChip();
+})();
+// Metric cell selection
+document.querySelectorAll('.metric-cell').forEach(cell => {
+  cell.addEventListener('click', function() {
+    const parent = this.closest('.overview-metrics');
+    parent.querySelectorAll('.metric-cell').forEach(c => c.classList.remove('selected'));
+    this.classList.add('selected');
+  });
+});
+
+document.querySelectorAll('.perf-metric').forEach(cell => {
+  cell.addEventListener('click', function() {
+    const parent = this.closest('.perf-metrics');
+    parent.querySelectorAll('.perf-metric').forEach(c => c.classList.remove('selected'));
+    this.classList.add('selected');
+  });
+});
+</script>
+<script>
+function toggleAdmSub(el) {
+  const isOpen = el.classList.contains('open');
+  document.querySelectorAll('.adm-sidebar .sdb-item').forEach(i => i.classList.remove('open'));
+  document.querySelectorAll('.adm-sidebar .sdb-sub').forEach(i => i.classList.remove('open'));
+  if (isOpen) return;
+  el.classList.add('open');
+  let next = el.nextElementSibling;
+  while (next && next.classList.contains('sdb-sub')) {
+    next.classList.add('open');
+    next = next.nextElementSibling;
+  }
+}
+</script>
+</body>
+</html>

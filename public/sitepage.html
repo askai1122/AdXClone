@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="1200">
+  <title>Sites – Google Ad Manager</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+  <link href="assets/css/style.css" rel="stylesheet">
+  <style>
+    :root {
+      --blue: #1a73e8;
+      --blue-dark: #1557b0;
+      --blue-bg: #e8f0fe;
+      --text-primary: #202124;
+      --text-secondary: #5f6368;
+      --text-light: #80868b;
+      --border: #dadce0;
+      --bg-color: #f1f3f4;
+      --white: #fff;
+      --sidebar-width: 250px;
+      --header-height: 64px;
+      --green: #137333;
+      --green-bg: #e6f4ea;
+      --red: #d93025;
+      --shadow-sm: 0 1px 2px rgba(60,64,67,.1),0 1px 3px 1px rgba(60,64,67,.08);
+      --radius: 5px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #ffffff;
+      min-width: 1200px;
+      overflow-x: auto;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      align-items: center;
+      background-color: #fff;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex: 0 64px;
+      height: 64px;
+      justify-content: space-between;
+      padding: 0 12px;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+    }
+    .header-right { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+    .avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: linear-gradient(135deg,#4285f4,#34a853);
+      border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 13px; font-weight: 600;
+      font-family: 'Google Sans', sans-serif;
+    }
+
+    /* ── SIDEBAR ── */
+    .adm-sidebar {
+      width: var(--sidebar-width);
+      flex-shrink: 0;
+      background: #fff;
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: var(--header-height);
+      bottom: 0; left: 0;
+      overflow-y: auto; overflow-x: hidden;
+      z-index: 90;
+      scrollbar-width: thin;
+    }
+    .adm-sidebar .sdb-network {
+      padding: 25px 16px 19px;
+      display: flex; align-items: center; gap: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .adm-sidebar .sdb-network-id { font-size: 12px; color: var(--text-secondary); font-family: 'Google Sans', sans-serif; }
+    .adm-sidebar .sdb-section { padding: 25px 0; }
+    .adm-sidebar .sdb-section + .sdb-section { border-top: 1px solid var(--border); }
+    .adm-sidebar .sdb-item {
+      display: flex; align-items: center;
+      padding: 9px 11px;
+      color: #35373a;
+      text-decoration: none;
+      font-size: 14.5px;
+      font-family: 'Google Sans', sans-serif;
+      font-weight: 400;
+      cursor: pointer;
+      border-radius: 0 24px 24px 0;
+      margin-right: 8px;
+      transition: background .12s, color .12s;
+    }
+    .adm-sidebar .sdb-item:hover { background: rgba(128,128,128,.103); }
+    .adm-sidebar .sdb-arrow { font-size: 20px; transition: transform .3s ease; font-family: 'Material Icons'; }
+    .adm-sidebar .sdb-item.open .sdb-arrow { transform: rotate(90deg); }
+    .adm-sidebar .sdb-icon { width: 24px; margin-right: 12px; }
+    .adm-sidebar .sdb-label { flex: 1; }
+    .dot {
+      display: inline-block;
+      width: 10px; height: 10px;
+      background-color: #161718a6;
+      border-radius: 50%;
+      margin-left: -32px; margin-right: 25px;
+    }
+    .adm-sidebar .sdb-sub {
+      max-height: 0; overflow: hidden;
+      padding: 0 16px 0 48px; opacity: 0;
+      transition: max-height .3s ease, opacity .25s ease, padding .2s ease;
+      font-size: 14px; color: #161718; cursor: pointer;
+    }
+    .adm-sidebar .sdb-sub.open {
+      max-height: 60px; opacity: 1;
+      padding: 10px 16px 10px 69px;
+      font-family: 'Google Sans';
+    }
+    .adm-sidebar .sdb-sub a { text-decoration: none; color: inherit; }
+    .adm-sidebar .sdb-sub:hover { background: #f8f9fa; color: #202124; }
+    .adm-sidebar .sdb-sub.active-sub {
+      color: var(--blue); background: var(--blue-bg); font-weight: 500;
+      border-radius: 0 24px 24px 0; margin-right: 8px;
+    }
+
+    /* ── PAGE HEADER BAR ── */
+    .page-header {
+      position: sticky;
+      top: var(--header-height);
+      z-index: 100;
+      margin-left: var(--sidebar-width);
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      display: flex; align-items: center;
+      height: 64px;
+      gap: 16px;
+    }
+    .page-header h1 {
+      font-family: 'Google Sans', sans-serif;
+      font-size: 22px; font-weight: 400;
+      color: var(--text-primary);
+    }
+
+    /* ── MAIN CONTENT ── */
+    .main-container {
+      margin-left: var(--sidebar-width);
+       min-height: calc(100vh - 128px);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── SITES CONTENT CARD ── */
+    .sites-card {
+       border-radius: 8px;
+       overflow: hidden;
+    }
+
+    /* Hero area */
+    .sites-hero {
+      display: flex;
+      align-items: center;
+       padding: 32px 40px 28px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sites-hero-left {}
+    .sites-hero-left h2 {
+      font-family: 'Google Sans', sans-serif;
+      font-size: 22px; font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+    .sites-hero-left p {
+      font-size: 14px; color: var(--text-secondary); line-height: 1.5;
+    }
+    .sites-hero-left p a {
+      color: var(--blue); text-decoration: none;
+    }
+    .sites-hero-left p a:hover { text-decoration: underline; }
+    .sites-hero-img {
+      flex-shrink: 0;
+      margin-left: 40px;
+    }
+
+    /* New site button */
+    .btn-new-site {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 20px;
+      background: var(--blue);
+      color: #fff;
+      border: none; border-radius: 4px;
+      font-family: 'Google Sans', sans-serif;
+      font-size: 14px; font-weight: 500;
+      cursor: pointer;
+      margin-top: 60px;
+      transition: background .15s, box-shadow .15s;
+    }
+    .btn-new-site:hover { background: var(--blue-dark); box-shadow: var(--shadow-sm); }
+    .btn-new-site .material-icons { font-size: 18px; }
+
+    /* Search bar */
+    .sites-toolbar {
+      display: flex; align-items: center;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sites-search {
+      display: flex; align-items: center; gap: 8px;
+       font-size: 14px;
+      color: var(--text-secondary);
+       background: var(--white);
+    }
+    .sites-search .material-icons { font-size: 20px; color: var(--text-secondary); }
+    .sites-search input {
+      border: none; outline: none;
+      font-size: 14px; font-family: 'Roboto', sans-serif;
+      color: var(--text-primary); flex: 1;
+      background: transparent;
+    }
+    .sites-search input::placeholder { color: var(--text-secondary); }
+
+    /* Table */
+    .sites-table { width: 100%; border-collapse: collapse; }
+    .sites-table th {
+          text-align: left;
+    padding: 16px 24px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border);
+    background: var(--white);
+    font-family: 'Roboto', sans-serif;
+    white-space: nowrap;
+    }
+    .sites-table th .material-icons {
+      font-size: 16px; vertical-align: middle;
+      color: var(--text-secondary); margin-left: 2px;
+    }
+    .sites-table th.sortable { cursor: pointer; }
+    .sites-table th.sortable:hover { background: var(--bg-color); }
+    .sites-table td {
+      padding: 14px 24px;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      color: var(--text-primary);
+      font-family: 'Roboto', sans-serif;
+    }
+    .sites-table tr:last-child td { border-bottom: none; }
+    .sites-table tbody tr:hover td { background: #f8f9fa; }
+
+    .site-url-link { color: var(--blue); cursor: pointer; text-decoration: none; }
+    .site-url-link:hover { text-decoration: underline; }
+
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px; font-weight: 500;
+    }
+    .status-ready {
+      background: var(--green-bg);
+      color: var(--green);
+    }
+    .status-pending {
+      background: #fef7e0;
+      color: #b06000;
+    }
+
+    .action-btn {
+      background: none; border: none; cursor: pointer;
+      color: var(--text-secondary);
+      padding: 6px;
+      border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: background .12s;
+    }
+    .action-btn:hover { background: var(--bg-color); color: var(--text-primary); }
+    .action-btn .material-icons { font-size: 20px; }
+
+    /* Pagination */
+    .sites-pagination {
+      display: flex; align-items: center; justify-content: flex-end;
+      padding: 12px 24px;
+      gap: 16px;
+      border-top: 1px solid var(--border);
+      font-size: 13px; color: var(--text-secondary);
+    }
+    .pagination-rows {
+      display: flex; align-items: center; gap: 6px;
+    }
+    .pagination-rows select {
+      border: none; outline: none; background: transparent;
+      font-size: 13px; font-family: 'Roboto', sans-serif;
+      color: var(--text-primary); cursor: pointer;
+    }
+    .pagination-nav {
+      display: flex; align-items: center; gap: 2px;
+    }
+    .pagination-nav button {
+      background: none; border: none; cursor: pointer;
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-secondary);
+      transition: background .12s;
+    }
+    .pagination-nav button:hover:not(:disabled) { background: var(--bg-color); }
+    .pagination-nav button:disabled { opacity: .35; cursor: default; }
+    .pagination-nav .material-icons { font-size: 18px; }
+
+    /* Privacy col pill */
+    .privacy-pill {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 4px 10px;
+      border-radius: 12px; font-size: 12px; font-weight: 500;
+      background: var(--green-bg); color: var(--green);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════ HEADER ══════════ -->
+<header class="header">
+  <img src="assets/iamges/headericonleft.png">
+  <div class="header-search" style="flex:1;max-width:680px;margin:0 auto;position:relative;">
+    <img src="assets/iamges/search_siderbar.png">
+  </div>
+  <div class="header-right">
+    <img src="assets/iamges/hdear_icons.png">
+    <button class="avatar" title="Account">A</button>
+  </div>
+</header>
+
+<!-- ══════════ SIDEBAR ══════════ -->
+<nav class="adm-sidebar">
+  <div class="sdb-network">
+    <i class="material-icons" style="margin-left:12px;color:#5f6368;font-size:24px;margin-right:5px;">business</i>
+    <span class="sdb-network-id" id="network_id">23341618849</span>
+  </div>
+  <div class="sdb-section">
+    <a class="sdb-item" href="adx_dashboard.html">
+      <img src="assets/iamges/home.png" class="sdb-icon" style="margin-left:22px;width:18px;">&nbsp;
+      <span class="sdb-label">Home</span>
+    </a>
+
+    <div class="sdb-item" onclick="toggleAdmSub(this)">
+      <span class="material-icons sdb-arrow">arrow_right</span>
+      <img src="assets/iamges/delivery.png" class="sdb-icon">
+      <span class="sdb-label">Delivery</span>
+    </div>
+
+    <!-- Inventory — open by default, Sites active -->
+    <div class="sdb-item open" onclick="toggleAdmSub(this)">
+      <span class="material-icons sdb-arrow">arrow_right</span>
+      <img src="assets/iamges/inven_sel.png" class="sdb-icon">
+      <span class="sdb-label" style="color:#1a73e8;">Inventory</span>
+    </div>
+    <div class="sdb-sub open"><span class="dot"></span><a href="sitepage.html">Ad units</a></div>
+    <div class="sdb-sub open"><span class="dot"></span><a href="sitepage.html">Apps</a></div>
+    <div class="sdb-sub open active-sub"><span class="dot" style="background-color:#1a73e8;"></span><a href="sitepage.html" style="color:#1a73e8;font-weight:500;">Sites</a></div>
+    <div class="sdb-sub open"><span class="dot"></span><a href="sitepage.html">Key-values</a></div>
+    <div class="sdb-sub open"><span class="dot"></span><a href="sitepage.html">Targeting presets</a></div>
+    <div class="sdb-sub open"><span class="dot"></span><a href="sitepage.html">Traffic explorer</a></div>
+    <div class="sdb-sub open"><span class="dot"></span><a href="sitepage.html">Traffic forecast</a></div>
+    <div class="sdb-sub open"><span class="dot"></span><a href="sitepage.html">Network settings</a></div>
+    <div class="sdb-sub open"><span class="dot"></span><a href="sitepage.html">Pricing rules</a></div>
+    <div class="sdb-sub open"><span class="dot"></span><a href="sitepage.html">Inventory rules</a></div>
+
+    <div class="sdb-item" onclick="toggleAdmSub(this)">
+      <span class="material-icons sdb-arrow">arrow_right</span>
+      <img src="assets/iamges/protection.png" class="sdb-icon">
+      <span class="sdb-label">Protections</span>
+    </div>
+    <div class="sdb-item" onclick="toggleAdmSub(this)">
+      <span class="material-icons sdb-arrow">arrow_right</span>
+      <img src="assets/iamges/reporting.png" class="sdb-icon">
+      <span class="sdb-label">Reporting</span>
+    </div>
+    <div class="sdb-item" onclick="toggleAdmSub(this)">
+      <span class="material-icons sdb-arrow">arrow_right</span>
+      <span class="material-icons sdb-icon">insights</span>
+      <span class="sdb-label">Optimization</span>
+    </div>
+    <div class="sdb-item" onclick="toggleAdmSub(this)">
+      <span class="material-icons sdb-arrow">arrow_right</span>
+      <img class="sdb-icon" src="https://www.gstatic.com/admanager/sidebar_icons/privacy_and_messaging.svg">
+      <span class="sdb-label">Privacy &amp; messaging</span>
+    </div>
+    <div class="sdb-item" onclick="toggleAdmSub(this)">
+      <span class="material-icons sdb-arrow">arrow_right</span>
+      <img src="assets/iamges/payments.png" class="sdb-icon">
+      <span class="sdb-label">Payments</span>
+    </div>
+    <div class="sdb-sub"><span class="dot"></span><a href="payment.html">Payments info</a></div>
+    <div class="sdb-sub"><span class="dot"></span>Verification check</div>
+    <div class="sdb-item" onclick="toggleAdmSub(this)">
+      <span class="material-icons sdb-arrow">arrow_right</span>
+      <img src="assets/iamges/settings.png" class="sdb-icon">
+      <span class="sdb-label">Admin</span>
+    </div>
+  
+    <div class="sdb-sub"><span class="dot"></span><a href="#">Global settings</a></div>
+    <div class="sdb-sub"><span class="dot"></span><a href="#">Ads.txt management</a></div>
+    <div class="sdb-sub"><span class="dot"></span><a href="#">Advanced features</a></div>
+    <div class="sdb-sub"><span class="dot"></span><a href="#">Access &amp; authorization</a></div>
+    <div class="sdb-sub"><span class="dot"></span><a href="#">Linked accounts</a></div>
+    <div class="sdb-sub"><span class="dot"></span><a href="#">Delivery</a></div>
+    <div class="sdb-sub"><span class="dot"></span><a href="#">Inventory</a></div>
+    <div class="sdb-sub"><span class="dot"></span><a href="#">Video and audio</a></div>
+    <div class="sdb-sub"><span class="dot"></span><a href="#">Companies</a></div>
+    <div class="sdb-sub"><span class="dot"></span><a href="#">EU user consent</a></div>
+    <div class="sdb-sub"><span class="dot"></span><a href="#">Change history</a></div>
+    <div class="sdb-sub"><span class="dot"></span><a href="mcm.html" >Multiple Customer Management (MCM)</a></div>
+  </div>
+</nav>
+
+<!-- ══════════ PAGE HEADER ══════════ -->
+
+
+<!-- ══════════ MAIN ══════════ -->
+<main class="main-container">
+  <div class="sites-card">
+
+    <!-- Hero -->
+    <div class="sites-hero">
+      <div class="sites-hero-left">
+        <h2>Sites</h2>
+        <p>Add sites you want to monetize. <a href="#">Learn more about monetizing your site</a></p>
+        <button class="btn-new-site">
+          <span class="material-icons">add</span>
+          New site
+        </button>
+      </div>
+      <div class="sites-hero-img" style="width:260px;flex-shrink:0;">
+        <svg width="386" style="    margin-left: 100px;" height="162" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient x1="50%" y1="6.614%" x2="50%" y2="97.543%" id="a"><stop stop-color="#FFF" stop-opacity="0" offset="0%"/><stop stop-color="#FFF" offset="100%"/></linearGradient><linearGradient x1="3.51%" y1="72.831%" x2="97.997%" y2="26.429%" id="b"><stop stop-color="#80868B" offset="0%"/><stop stop-color="#9BA1A7" offset="100%"/></linearGradient><linearGradient x1="49.716%" y1="93.125%" x2="50.555%" y2="-34.03%" id="c"><stop stop-color="#FFF" offset="0%"/><stop stop-color="#979DA5" offset="100%"/></linearGradient><linearGradient x1="50.449%" y1="-11.696%" x2="49.808%" y2="77.732%" id="d"><stop stop-color="#FFF" stop-opacity="0" offset="37.83%"/><stop stop-color="#F9F9FA" stop-opacity=".059" offset="37.94%"/><stop stop-color="#E2E4E6" stop-opacity=".279" offset="38.41%"/><stop stop-color="#CED0D4" stop-opacity=".475" offset="38.95%"/><stop stop-color="#BCC0C5" stop-opacity=".64" offset="39.54%"/><stop stop-color="#AFB3B9" stop-opacity=".773" offset="40.21%"/><stop stop-color="#A4A9B0" stop-opacity=".876" offset="40.99%"/><stop stop-color="#9CA2AA" stop-opacity=".948" offset="41.95%"/><stop stop-color="#989EA6" stop-opacity=".989" offset="43.31%"/><stop stop-color="#979DA5" offset="47.06%"/><stop stop-color="#BFC3C8" stop-opacity=".615" offset="56.76%"/><stop stop-color="#E2E3E6" stop-opacity=".282" offset="66.15%"/><stop stop-color="#F7F7F8" stop-opacity=".077" offset="73.12%"/><stop stop-color="#FFF" stop-opacity="0" offset="76.91%"/></linearGradient><linearGradient x1="0%" y1="49.997%" x2="99.999%" y2="49.997%" id="e"><stop stop-color="#202124" stop-opacity="0" offset="0%"/><stop stop-color="#202124" offset="60.52%"/></linearGradient><linearGradient x1="50%" y1="8.592%" x2="50%" y2="100.969%" id="f"><stop stop-color="#80868B" offset="0%"/><stop stop-color="#9AA0A6" offset="100%"/></linearGradient><linearGradient x1="0%" y1="49.994%" x2="99.999%" y2="49.994%" id="g"><stop stop-color="#202124" stop-opacity="0" offset="0%"/><stop stop-color="#202124" offset="60.52%"/></linearGradient><linearGradient x1="0%" y1="50%" x2="100%" y2="50%" id="h"><stop stop-color="#F9AB00" offset="0%"/><stop stop-color="#FBBC04" offset="100%"/></linearGradient><linearGradient x1="0%" y1="50%" x2="100%" y2="50%" id="i"><stop stop-color="#F9AB00" offset="0%"/><stop stop-color="#FBBC04" offset="100%"/></linearGradient><linearGradient x1="0%" y1="49.998%" x2="100%" y2="49.998%" id="j"><stop stop-color="#F9AB00" offset="0%"/><stop stop-color="#FBBC04" offset="100%"/></linearGradient></defs><g fill="none" fill-rule="evenodd"><path d="M159.348 84.775c-3.555-30.48-26.337-57.223-26.337-57.223l20.473-13.934s22.781 26.744 26.336 57.223l-20.472 13.934zM231.028.21c23.36 32.482 66.264 48.526 66.264 48.526l-14.503 28.85s-42.904-16.044-66.264-48.526L231.028.21zM9.022 55.654C42.834 38.164 63.88 0 63.88 0l25.147 17.648S67.98 55.813 34.169 73.303L9.022 55.654zM298.928 7.496h85.63v17.276h-85.63zM298.928 33.41h85.63v28.86h-85.63zM300.054 24.772h85.63v8.638h-85.63z" fill="#F8F9FA" fill-rule="nonzero"/><path fill="#F8F9FA" fill-rule="nonzero" d="M296.111 61.996h85.63v22.636h-85.63z"/><path fill="#F8F9FA" fill-rule="nonzero" d="M298.928 84.357h85.63v17.276h-85.63zM298.928 110.271h85.63v28.86h-85.63zM300.054 101.633h85.63v8.638h-85.63z"/><path fill="#F8F9FA" fill-rule="nonzero" d="M296.111 138.857h85.63v22.636h-85.63z"/><path fill="#E8EAED" fill-rule="nonzero" d="M265.109 7.496h85.63v17.276h-85.63zM265.109 33.41h85.63v28.86h-85.63zM266.236 24.772h85.63v8.638h-85.63z"/><path fill="#E8EAED" fill-rule="nonzero" d="M262.292 61.996h85.63v22.636h-85.63z"/><path fill="#E8EAED" fill-rule="nonzero" d="M265.109 84.357h85.63v17.276h-85.63zM265.109 110.271h85.63v28.86h-85.63zM266.236 101.633h85.63v8.638h-85.63z"/><path fill="#E8EAED" fill-rule="nonzero" d="M262.292 138.857h85.63v22.636h-85.63z"/><path stroke="#F8F9FA" stroke-width="2" d="M350.739 47.706h-56.126"/><path stroke="#E8EAED" stroke-width="2" d="M273.454 47.706h-16.691"/><path stroke="#F8F9FA" stroke-width="2" d="M350.739 91.541h-45.632"/><path stroke="#E8EAED" stroke-width="2" d="M273.454 91.541h-16.691"/><path stroke="#F8F9FA" stroke-width="2" d="M350.739 80.284H322.78"/><path stroke="#E8EAED" stroke-width="2" d="M273.454 80.284H257.89M360.617 73.314h-32.114"/><path stroke="#F8F9FA" stroke-width="2" d="M300.054 73.314h-37.762"/><path stroke="#E8EAED" stroke-width="2" d="M381.741 105.227h-53.238"/><path stroke="#F8F9FA" stroke-width="2" d="M281.173 105.227h-18.881"/><path stroke="#E8EAED" stroke-width="2" d="M373.362 31.533h-44.859"/><path stroke="#F8F9FA" stroke-width="2" d="M317.898 31.533h-55.606"/><path fill="url(#a)" fill-rule="nonzero" d="M206.643 105.227h168.133v56.678H206.643z"/><path d="M168.257 40.672h7.697a4.299 4.299 0 0 1 4.299 4.299v13.282h-16.295V44.971a4.3 4.3 0 0 1 4.3-4.299zM248.43 40.736h7.696a4.299 4.299 0 0 1 4.299 4.299v13.282H244.13V45.035a4.299 4.299 0 0 1 4.3-4.3z" fill="#FABB05" fill-rule="nonzero"/><path stroke="#676C72" stroke-width="14.667" stroke-linecap="round" stroke-linejoin="round" d="M193.459 29.341h36.448v36.448h-36.448z"/><rect fill="#BDC1C6" fill-rule="nonzero" x="139.997" y="42.72" width="155.656" height="118.779" rx="17.271"/><rect fill="url(#b)" fill-rule="nonzero" x="128.73" y="42.72" width="155.656" height="118.779" rx="17.271"/><path fill="url(#c)" fill-rule="nonzero" style="mix-blend-mode:multiply" d="m256.631 116.283-41.262-.269 1.726-40.817 39.901.26z"/><path fill="#EFF0F2" fill-rule="nonzero" d="m261.202 102.831-3.33-22.621.059-9.068-40.808-.265-.059 9.067 4.352 30.845 31.521.205z"/><path fill="#FFF" fill-rule="nonzero" d="m252.932 110.999 8.277-8.17-8.223-.054z"/><path fill="url(#d)" fill-rule="nonzero" opacity=".4" style="mix-blend-mode:color-burn" d="m261.202 102.831-3.33-22.621.059-9.068-40.808-.265-.059 9.067 4.352 30.845 31.521.205z"/><path stroke="#4285F4" stroke-width="2.497" stroke-linecap="round" stroke-linejoin="round" d="M225.325 85.821h25.982M225.325 92.06h15.921"/><path fill="url(#e)" fill-rule="nonzero" opacity=".2" d="M0 157.861h37.544l2.454 3.638H0z"/><path d="M143.928 154.483H22.651V84.348A8.648 8.648 0 0 1 31.3 75.7h103.98a8.648 8.648 0 0 1 8.648 8.648v70.135z" fill="#BDC1C6" fill-rule="nonzero"/><path d="M143.928 154.483H25.884V84.348a8.648 8.648 0 0 1 8.648-8.648H135.28a8.648 8.648 0 0 1 8.648 8.648v70.135z" fill="#E8EAED" fill-rule="nonzero"/><path fill="#FFF" fill-rule="nonzero" d="M140.176 151.978H29.636V79.47h110.54z"/><path d="M28.474 154.482h109.632a5.822 5.822 0 0 1 5.822 5.823v1.194H22.651v-1.194a5.822 5.822 0 0 1 5.823-5.823z" fill="url(#f)" fill-rule="nonzero" transform="rotate(-180 83.29 157.99)"/><path d="M191.797 161.499H82.165a5.822 5.822 0 0 1-5.823-5.823v-1.193H197.62v1.193a5.822 5.822 0 0 1-5.822 5.823z" fill="#BDC1C6" fill-rule="nonzero"/><path d="M147.381 156.769h-20.8a2.286 2.286 0 0 1-2.287-2.286h25.373a2.286 2.286 0 0 1-2.286 2.286z" fill="#9AA0A6" fill-rule="nonzero"/><circle fill="#5BB974" fill-rule="nonzero" cx="46.013" cy="90.519" r="4.846"/><path stroke="#FFF" stroke-width="2.162" d="m43.53 90.269 1.794 1.794 3.364-3.364"/><circle fill="#5BB974" fill-rule="nonzero" cx="46.013" cy="107.751" r="4.846"/><path stroke="#FFF" stroke-width="2.162" d="m43.53 107.501 1.794 1.794 3.364-3.363"/><circle fill="#5BB974" fill-rule="nonzero" cx="46.013" cy="124.984" r="4.846"/><path stroke="#FFF" stroke-width="2.162" d="m43.53 124.733 1.794 1.794 3.364-3.363"/><circle fill="#FBBC04" fill-rule="nonzero" cx="46.013" cy="142.216" r="4.846"/><path fill="#F1F3F4" fill-rule="nonzero" d="M55.655 86.297h72.937v7.734H55.655zM55.655 102.906h72.937v7.734H55.655zM55.655 120.979h72.937v7.734H55.655zM55.655 138.349h72.937v7.734H55.655z"/><path fill="url(#g)" fill-rule="nonzero" opacity=".2" d="M228.197 157.842h36.855l2.409 3.571h-39.264zM273.734 157.842h36.855l2.409 3.571h-39.264z"/><path fill="#EA8600" fill-rule="nonzero" d="M290.399 128.284h-29.405l-.919-.786h31.243z"/><path fill="#F29900" fill-rule="nonzero" d="M260.994 121.658h29.405l.919.786h-31.243z"/><path fill="url(#h)" fill-rule="nonzero" d="M260.075 122.444h31.243v5.065h-31.243z"/><g stroke-width="1.662"><path stroke="#FDDE83" d="M287.846 121.89v6.891"/><path stroke="#FDDA73" d="M284.375 121.89v6.891"/><path stroke="#FCD563" d="M280.904 121.89v6.891"/><path stroke="#FCD153" d="M277.432 121.89v6.891"/><path stroke="#FCCD44" d="M273.961 121.89v6.891"/><path stroke="#FCC934" d="M270.489 121.89v6.891"/><path stroke="#FBC424" d="M267.018 121.89v6.891"/><path stroke="#FBC014" d="M263.547 121.89v6.891"/></g><path fill="#EA8600" fill-rule="nonzero" d="M289.48 134.909h-29.405l-.919-.785h31.243z"/><path fill="#F29900" fill-rule="nonzero" d="M260.075 128.284h29.405l.919.786h-31.243z"/><path fill="url(#h)" fill-rule="nonzero" d="M259.156 129.07h31.243v5.065h-31.243z"/><g stroke-width="1.662"><path stroke="#FDDE83" d="M286.928 128.515v6.892"/><path stroke="#FDDA73" d="M283.456 128.515v6.892"/><path stroke="#FCD563" d="M279.985 128.515v6.892"/><path stroke="#FCD153" d="M276.513 128.515v6.892"/><path stroke="#FCCD44" d="M273.042 128.515v6.892"/><path stroke="#FCC934" d="M269.571 128.515v6.892"/><path stroke="#FBC424" d="M266.099 128.515v6.892"/><path stroke="#FBC014" d="M262.628 128.515v6.892"/></g><path fill="#EA8600" fill-rule="nonzero" d="M291.777 121.701h-29.404l-.919-.785h31.242z"/><path fill="#F29900" fill-rule="nonzero" d="M262.373 115.076h29.404l.919.786h-31.242z"/><path fill="url(#i)" fill-rule="nonzero" d="M261.454 115.862h31.243v5.065h-31.243z"/><g stroke-width="1.662"><path stroke="#FDDE83" d="M289.225 115.307v6.892"/><path stroke="#FDDA73" d="M285.753 115.307v6.892"/><path stroke="#FCD563" d="M282.282 115.307v6.892"/><path stroke="#FCD153" d="M278.811 115.307v6.892"/><path stroke="#FCCD44" d="M275.339 115.307v6.892"/><path stroke="#FCC934" d="M271.868 115.307v6.892"/><path stroke="#FBC424" d="M268.396 115.307v6.892"/><path stroke="#FBC014" d="M264.925 115.307v6.892"/></g><path fill="#EA8600" fill-rule="nonzero" d="M290.399 141.535h-29.405l-.919-.786h31.243z"/><path fill="#F29900" fill-rule="nonzero" d="M260.994 134.909h29.405l.919.786h-31.243z"/><path fill="url(#h)" fill-rule="nonzero" d="M260.075 135.695h31.243v5.065h-31.243z"/><g stroke-width="1.662"><path stroke="#FDDE83" d="M287.846 135.141v6.892"/><path stroke="#FDDA73" d="M284.375 135.141v6.892"/><path stroke="#FCD563" d="M280.904 135.141v6.892"/><path stroke="#FCD153" d="M277.432 135.141v6.892"/><path stroke="#FCCD44" d="M273.961 135.141v6.892"/><path stroke="#FCC934" d="M270.489 135.141v6.892"/><path stroke="#FBC424" d="M267.018 135.141v6.892"/><path stroke="#FBC014" d="M263.547 135.141v6.892"/></g><path fill="#EA8600" fill-rule="nonzero" d="M290.399 148.161h-29.405l-.919-.786h31.243z"/><path fill="#F29900" fill-rule="nonzero" d="M260.994 141.535h29.405l.919.786h-31.243z"/><path fill="url(#h)" fill-rule="nonzero" d="M260.075 142.321h31.243v5.065h-31.243z"/><g stroke-width="1.662"><path stroke="#FDDE83" d="M287.846 141.767v6.892"/><path stroke="#FDDA73" d="M284.375 141.767v6.892"/><path stroke="#FCD563" d="M280.904 141.767v6.892"/><path stroke="#FCD153" d="M277.432 141.767v6.892"/><path stroke="#FCCD44" d="M273.961 141.767v6.892"/><path stroke="#FCC934" d="M270.489 141.767v6.892"/><path stroke="#FBC424" d="M267.018 141.767v6.892"/><path stroke="#FBC014" d="M263.547 141.767v6.892"/></g><path fill="#EA8600" fill-rule="nonzero" d="M290.399 154.787h-29.405l-.919-.786h31.243z"/><path fill="#F29900" fill-rule="nonzero" d="M260.994 148.161h29.405l.919.786h-31.243z"/><path fill="url(#h)" fill-rule="nonzero" d="M260.075 148.947h31.243v5.065h-31.243z"/><g stroke-width="1.662"><path stroke="#FDDE83" d="M287.846 148.393v6.892"/><path stroke="#FDDA73" d="M284.375 148.393v6.892"/><path stroke="#FCD563" d="M280.904 148.393v6.892"/><path stroke="#FCD153" d="M277.432 148.393v6.892"/><path stroke="#FCCD44" d="M273.961 148.393v6.892"/><path stroke="#FCC934" d="M270.489 148.393v6.892"/><path stroke="#FBC424" d="M267.018 148.393v6.892"/><path stroke="#FBC014" d="M263.547 148.393v6.892"/></g><path fill="#EA8600" fill-rule="nonzero" d="M290.399 161.413h-29.405l-.919-.786h31.243z"/><path fill="#F29900" fill-rule="nonzero" d="M260.994 154.787h29.405l.919.786h-31.243z"/><path fill="url(#h)" fill-rule="nonzero" d="M260.075 155.573h31.243v5.065h-31.243z"/><g stroke-width="1.662"><path stroke="#FDDE83" d="M287.846 155.019v6.891"/><path stroke="#FDDA73" d="M284.375 155.019v6.891"/><path stroke="#FCD563" d="M280.904 155.019v6.891"/><path stroke="#FCD153" d="M277.432 155.019v6.891"/><path stroke="#FCCD44" d="M273.961 155.019v6.891"/><path stroke="#FCC934" d="M270.489 155.019v6.891"/><path stroke="#FBC424" d="M267.018 155.019v6.891"/><path stroke="#FBC014" d="M263.547 155.019v6.891"/></g><path fill="#EA8600" fill-rule="nonzero" d="m312.338 161.311-20.793-20.792-.094-1.206 22.092 22.092z"/><path fill="#FDD663" fill-rule="nonzero" d="m296.23 135.834 20.793 20.792.094 1.205-22.092-22.091z"/><path fill="url(#j)" fill-rule="nonzero" transform="rotate(45 304.28 148.576)" d="M288.659 146.044h31.243v5.065h-31.243z"/><g stroke-width="1.662"><path stroke="#FDDE83" d="m315.054 154.985-4.873 4.873"/><path stroke="#FDDA73" d="m312.599 152.53-4.873 4.874"/><path stroke="#FCD563" d="m310.145 150.076-4.874 4.873"/><path stroke="#FCD153" d="m307.69 147.621-4.873 4.873"/><path stroke="#FCCD44" d="m305.235 145.166-4.873 4.874"/><path stroke="#FCC934" d="m302.781 142.712-4.874 4.873"/><path stroke="#FBC424" d="m300.326 140.257-4.873 4.873"/><path stroke="#FBC014" d="m297.872 137.802-4.874 4.874"/></g></g></svg>
+      </div>
+    </div>
+
+    <!-- Toolbar / Search -->
+    <div class="sites-toolbar">
+      <div class="sites-search">
+        <span class="material-icons" style="font-size: 25px;">search</span>
+        <input type="text" placeholder="Search">
+      </div>
+    </div>
+
+    <!-- Table -->
+    <table class="sites-table">
+      <thead>
+        <tr>
+          <th class="sortable">
+            Site URL
+            <span class="material-icons" title="More info" style="font-size:15px;vertical-align:middle;color:#5f6368;">help_outline</span>
+          </th>
+          <th class="sortable">
+            Privacy &amp; messaging
+            <span class="material-icons" title="More info" style="font-size:15px;vertical-align:middle;color:#5f6368;">help_outline</span>
+            <span class="material-icons" style="font-size:15px;vertical-align:middle;color:#5f6368;">arrow_upward</span>
+          </th>
+          <th class="sortable">
+            AdSense approval
+            <span class="material-icons" title="More info" style="font-size:15px;vertical-align:middle;color:#5f6368;">help_outline</span>
+          </th>
+          <th>
+            Action
+            <span class="material-icons" title="More info" style="font-size:15px;vertical-align:middle;color:#5f6368;">help_outline</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody id="sites-tbody">
+        <tr>
+          <td><a class="site-url-link" id="site-url-link" href="#">anushkamobile.in</a></td>
+          <td><span class="privacy-pill">Ready</span></td>
+          <td>Yes</td>
+          <td>
+            <button class="action-btn" title="Delete site">
+              <span class="material-icons">delete</span>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="sites-pagination">
+        <img src="assets/iamges/site_page.png">
+      <!-- <span>Go to page:</span>
+      <input type="number" min="1" value="1" style="width:40px;border:none;border-bottom:1px solid var(--border);text-align:center;font-size:13px;font-family:'Roboto';outline:none;color:var(--text-primary);">
+      <span>of 1</span>
+      <div class="pagination-rows">
+        <span>Show rows:</span>
+        <select>
+          <option>50</option>
+          <option>100</option>
+          <option>200</option>
+        </select>
+      </div>
+      <span>1 – 1 of 1</span>
+      <div class="pagination-nav">
+        <button disabled title="First page"><span class="material-icons">first_page</span></button>
+        <button disabled title="Previous page"><span class="material-icons">chevron_left</span></button>
+        <button disabled title="Next page"><span class="material-icons">chevron_right</span></button>
+        <button disabled title="Last page"><span class="material-icons">last_page</span></button>
+      </div> -->
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div style="text-align:center;padding:12px 0;font-size:13px;color:var(--text-secondary);margin-top:auto;border-top:1px solid #dadce0;">
+    <div style="color: rgb(32, 33, 36); font-size: 12px; margin: 0px; text-align: center; font-weight: 400; font-family: Roboto, sans-serif;">
+  © 2026 Google -
+  <!---->
+  <a target="google_popup" href="https://policies.google.com/privacy" style="color: rgb(23, 78, 166); cursor: pointer; text-decoration: underline;">
+    Privacy Policy
+  </a>
+  <!----><span>-</span>
+
+  <a target="google_popup" href="http://support.google.com/admanager?utm_source=dfp_fe&amp;utm_medium=et&amp;utm_campaign=in-product_link" style="color: rgb(23, 78, 166); cursor: pointer; text-decoration: underline;">
+    Help
+  </a>
+  <!----><span>-</span>
+
+  <a target="google_popup" href="https://support.google.com/admanager/answer/179039" style="color: rgb(23, 78, 166); cursor: pointer; text-decoration: underline;">
+    Release notes
+  </a>
+  <!----><span>-</span>
+
+  <a target="google_popup" href="https://www.blog.google/products/admanager/" style="color: rgb(23, 78, 166); cursor: pointer; text-decoration: underline;">
+    Blog
+  </a>
+  <!----><span>-</span>
+
+  <a target="google_popup" href="http://ads.google.com/status#hl=en-US&amp;v=status" style="color: rgb(23, 78, 166); cursor: pointer; text-decoration: underline;">
+    Ads Status Dashboard
+  </a>
+  <!---->
+
+</div>
+  </div>
+</main>
+
+<script>
+function toggleAdmSub(el) {
+  const isOpen = el.classList.contains('open');
+  if (isOpen) {
+    el.classList.remove('open');
+    let next = el.nextElementSibling;
+    while (next && next.classList.contains('sdb-sub')) {
+      next.classList.remove('open');
+      next = next.nextElementSibling;
+    }
+  } else {
+    el.classList.add('open');
+    let next = el.nextElementSibling;
+    while (next && next.classList.contains('sdb-sub')) {
+      next.classList.add('open');
+      next = next.nextElementSibling;
+    }
+  }
+}
+
+// Fetch settings and populate dynamic fields
+(async function loadSiteSettings() {
+  try {
+    const res = await fetch('/stats?date_filter=today');
+    const d = await res.json();
+    const sf = d.settingsform || {};
+    // Site name (site-url-link)
+    const siteLink = document.getElementById('site-url-link');
+    if (siteLink && sf.site_name && sf.site_name.trim()) {
+      siteLink.textContent = sf.site_name.trim();
+      siteLink.href = 'https://' + sf.site_name.trim();
+    }
+    // Network ID in sidebar
+    const netId = document.getElementById('network_id');
+    if (netId && sf.network_id && sf.network_id.trim()) {
+      netId.textContent = sf.network_id.trim();
+    }
+  } catch(e) { console.warn('Settings load failed', e); }
+})();
+</script>
+</body>
+</html>

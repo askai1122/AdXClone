@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="1200">
+  <title>Multiple Customer Management (MCM) – Google Ad Manager</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+  <link href="assets/css/style.css" rel="stylesheet">
+  <style>
+    :root {
+      --blue: #1a73e8;
+      --blue-dark: #1557b0;
+      --blue-bg: #e8f0fe;
+      --text-primary: #202124;
+      --text-secondary: #5f6368;
+      --text-light: #80868b;
+      --border: #dadce0;
+      --bg-color: #f1f3f4;
+      --white: #fff;
+      --sidebar-width: 250px;
+      --header-height: 64px;
+      --green: #137333;
+      --green-bg: #e6f4ea;
+      --red: #d93025;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #ffffff;
+      min-width: 1200px;
+      overflow-x: auto;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      align-items: center;
+      background-color: #fff;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex: 0 64px;
+      height: 64px;
+      justify-content: space-between;
+      padding: 0 12px;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+    }
+    .header-right { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+    .avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: linear-gradient(135deg,#4285f4,#34a853);
+      border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 13px; font-weight: 600;
+      font-family: 'Google Sans', sans-serif;
+    }
+
+    /* ── SIDEBAR ── */
+    .adm-sidebar {
+      width: var(--sidebar-width);
+      flex-shrink: 0;
+      background: #fff;
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: var(--header-height);
+      bottom: 0; left: 0;
+      overflow-y: auto; overflow-x: hidden;
+      z-index: 90;
+      scrollbar-width: thin;
+    }
+    .adm-sidebar .sdb-network {
+      padding: 25px 16px 19px;
+      display: flex; align-items: center; gap: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .adm-sidebar .sdb-network-id { font-size: 12px; color: var(--text-secondary); font-family: 'Google Sans', sans-serif; }
+    .adm-sidebar .sdb-section { padding: 25px 0; }
+    .adm-sidebar .sdb-section + .sdb-section { border-top: 1px solid var(--border); }
+    .adm-sidebar .sdb-item {
+      display: flex; align-items: center;
+      padding: 9px 11px;
+      color: #35373a;
+      text-decoration: none;
+      font-size: 14.5px;
+      font-family: 'Google Sans', sans-serif;
+      font-weight: 400;
+      cursor: pointer;
+      border-radius: 0 24px 24px 0;
+      margin-right: 8px;
+      transition: background .12s, color .12s;
+    }
+    .adm-sidebar .sdb-item:hover { background: rgba(128,128,128,.103); }
+    .adm-sidebar .sdb-arrow { font-size: 20px; transition: transform .3s ease; font-family: 'Material Icons'; }
+    .adm-sidebar .sdb-item.open .sdb-arrow { transform: rotate(90deg); }
+    .adm-sidebar .sdb-icon { width: 24px; margin-right: 12px; }
+    .adm-sidebar .sdb-label { flex: 1; }
+    .dot {
+      display: inline-block;
+      width: 10px; height: 10px;
+      background-color: #161718a6;
+      border-radius: 50%;
+      margin-left: -32px; margin-right: 25px;
+    }
+    .adm-sidebar .sdb-sub {
+      max-height: 0; overflow: hidden;
+      padding: 0 16px 0 48px; opacity: 0;
+      transition: max-height .3s ease, opacity .25s ease, padding .2s ease;
+      font-size: 14px; color: #161718; cursor: pointer;
+    }
+    .adm-sidebar .sdb-sub.open {
+      max-height: 60px; opacity: 1;
+      padding: 10px 16px 10px 69px;
+      font-family: 'Google Sans';
+    }
+    .adm-sidebar .sdb-sub a { text-decoration: none; color: inherit; }
+    .adm-sidebar .sdb-sub:hover { background: #f8f9fa; color: #202124; }
+    .adm-sidebar .sdb-sub.active-sub {
+      color: var(--blue); background: var(--blue-bg); font-weight: 500;
+      border-radius: 0 24px 24px 0; margin-right: 8px;
+    }
+
+    /* ── MAIN CONTENT ── */
+    .main-container {
+      margin-left: var(--sidebar-width);
+      
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: calc(100vh - var(--header-height));
+    }
+
+    /* ── MCM CONTENT ── */
+    .mcm-content {
+       flex: 1;
+    }
+
+    .mcm-title-row {
+      display: flex;
+      align-items: center;
+    
+     }
+    .mcm-title-row h1 {
+      font-family: 'Google Sans', sans-serif;
+      font-size: 22px;
+      font-weight: 400;
+      color: var(--text-primary);
+    }
+    .mcm-title-row .material-icons {
+      font-size: 20px;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+
+    /* MCM Table */
+    .mcm-table-wrap {
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .mcm-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'Roboto', sans-serif;
+    }
+    .mcm-table thead tr {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+    }
+    .mcm-table th {
+      padding: 14px 24px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-primary);
+      text-align: left;
+      white-space: nowrap;
+    }
+    .mcm-table th .material-icons {
+      font-size: 15px;
+      vertical-align: middle;
+      color: var(--text-secondary);
+      margin-left: 3px;
+    }
+    .mcm-table td {
+      padding: 8px 24px;
+      font-size: 14px;
+      color: var(--text-primary);
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .mcm-table tr:last-child td { border-bottom: none; }
+    .mcm-table tbody tr:hover td { background: #fafafa; }
+
+    .mcm-parent-link {
+      color: var(--blue);
+      text-decoration: none;
+      font-size: 13px;
+          text-decoration-line: underline;
+    }
+    .mcm-parent-link:hover { text-decoration: underline; }
+
+    .mcm-network-code {
+      font-size: 11px;
+      color: var(--text-secondary);
+      
+    }
+
+    .mcm-status-withdrawn {
+      color: var(--red);
+      font-size: 12px;
+    }
+
+    .mcm-delegation-type {
+      font-size: 12px;
+      color: var(--text-primary);
+    }
+
+    /* ── FOOTER ── */
+    .mcm-footer {
+      text-align: center;
+      padding: 24px 0 20px;
+      font-size: 12px;
+      color: var(--text-primary);
+      font-family: 'Roboto', sans-serif;
+      font-weight: 400;
+      margin-top: auto;
+    }
+    .mcm-footer a {
+      color: rgb(23, 78, 166);
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    .mcm-footer a:hover { text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<!-- ══════════ HEADER ══════════ -->
+<header class="header">
+  <img src="assets/iamges/headericonleft.png">
+  <div class="header-search" style="flex:1;max-width:680px;margin:0 auto;position:relative;">
+    <img src="assets/iamges/search_siderbar.png">
+  </div>
+  <div class="header-right">
+    <img src="assets/iamges/hdear_icons.png">
+    <button class="avatar" title="Account">A</button>
+  </div>
+</header>
+
+<!-- ══════════ SIDEBAR ══════════ -->
+<nav class="adm-sidebar">
+  <div class="sdb-network">
+    <i class="material-icons" style="margin-left:12px;color:#5f6368;font-size:24px;margin-right:5px;">business</i>
+    <span class="sdb-network-id" id="network_id"></span>
+  </div>
+  <div class="sdb-section">
+    <a class="sdb-item" href="adx_dashboard.html">
+      <img src="assets/iamges/home.png" class="sdb-icon" style="margin-left:22px;width:18px;">&nbsp;
+      <span class="sdb-label">Home</span>
+    </a>
+
+    <div class="sdb-item" onclick="toggleAdmSub(this)">
+      <span class="material-icons sdb-arrow">arrow_right</span>
+      <img src="assets/iamges/delivery.png" class="sdb-icon">
+      <span class="sdb-label">Delivery</span>
+    </div>
+<div class="sdb-item " onclick="toggleAdmSub(this)">
+      <span class="material-icons sdb-arrow">arrow_right</span>
+      <img src="assets/iamges/inventory.png" class="sdb-icon">
+      <span class="sdb-label" >Inventory</span>
+    </div>
+    <div class="sdb-sub "><span class="dot"></span><a href="sitepage.html">Ad units</a></div>
+    <div class="sdb-sub "><span class="dot"></span><a href="sitepage.html">Apps</a></div>
+    <div class="sdb-sub  "><span class="dot" ></span><a href="sitepage.html" >Sites</a></div>
+    <div class="sdb-sub "><span class="dot"></span><a href="sitepage.html">Key-values</a></div>
+    <div class="sdb-sub "><span class="dot"></span><a href="sitepage.html">Targeting presets</a></div>
+    <div class="sdb-sub "><span class="dot"></span><a href="sitepage.html">Traffic explorer</a></div>
+    <div class="sdb-sub "><span class="dot"></span><a href="sitepage.html">Traffic forecast</a></div>
+    <div class="sdb-sub "><span class="dot"></span><a href="sitepage.html">Network settings</a></div>
+    <div class="sdb-sub "><span class="dot"></span><a href="sitepage.html">Pricing rules</a></div>
+    <div class="sdb-sub "><span class="dot"></span><a href="sitepage.html">Inventory rules</a></div>
+    <div class="sdb-item" onclick="toggleAdmSub(this)">
+      <span class="material-icons sdb-arrow">arrow_right</span>
+      <img src="assets/iamges/protection.png" class="sdb-icon">
+      <span class="sdb-label">Protections</span>
+    </div>
+    <div class="sdb-item" onclick="toggleAdmSub(this)">
+      <span class="material-icons sdb-arrow">arrow_right</span>
+      <img src="assets/iamges/reporting.png" class="sdb-icon">
+      <span class="sdb-label">Reporting</span>
+    </div>
+    <div class="sdb-item" onclick="toggleAdmSub(this)">
+      <span class="material-icons sdb-arrow">arrow_right</span>
+      <span class="material-icons sdb-icon">insights</span>
+      <span class="sdb-label">Optimization</span>
+    </div>
+    <div class="sdb-item" onclick="toggleAdmSub(this)">
+      <span class="material-icons sdb-arrow">arrow_right</span>
+      <img class="sdb-icon" src="https://www.gstatic.com/admanager/sidebar_icons/privacy_and_messaging.svg">
+      <span class="sdb-label">Privacy &amp; messaging</span>
+    </div>
+    <div class="sdb-item" onclick="toggleAdmSub(this)">
+      <span class="material-icons sdb-arrow">arrow_right</span>
+      <img src="assets/iamges/payments.png" class="sdb-icon">
+      <span class="sdb-label">Payments</span>
+    </div>
+    <div class="sdb-sub"><span class="dot"></span><a href="payment.html">Payments info</a></div>
+    <div class="sdb-sub"><span class="dot"></span>Verification check</div>
+
+    <!-- Admin — open, MCM active -->
+    <div class="sdb-item open" onclick="toggleAdmSub(this)">
+      <span class="material-icons sdb-arrow">arrow_right</span>
+      <img src="assets/iamges/admin_sel.png" class="sdb-icon">
+      <span class="sdb-label" style="color:#1a73e8;">Admin</span>
+    </div>
+    
+    <div class="sdb-sub open"><span class="dot"></span><a href="#">Global settings</a></div>
+    <div class="sdb-sub open"><span class="dot"></span><a href="#">Ads.txt management</a></div>
+    <div class="sdb-sub open"><span class="dot"></span><a href="#">Advanced features</a></div>
+    <div class="sdb-sub open"><span class="dot"></span><a href="#">Access &amp; authorization</a></div>
+    <div class="sdb-sub open"><span class="dot"></span><a href="#">Linked accounts</a></div>
+    <div class="sdb-sub open"><span class="dot"></span><a href="#">Delivery</a></div>
+    <div class="sdb-sub open"><span class="dot"></span><a href="#">Inventory</a></div>
+    <div class="sdb-sub open"><span class="dot"></span><a href="#">Video and audio</a></div>
+    <div class="sdb-sub open"><span class="dot"></span><a href="#">Companies</a></div>
+    <div class="sdb-sub open"><span class="dot"></span><a href="#">EU user consent</a></div>
+    <div class="sdb-sub open"><span class="dot"></span><a href="#">Change history</a></div>
+    <div class="sdb-sub open active-sub"><span class="dot" style="background:#1a73e8;"></span><a href="mcm.html" style="color:#1a73e8;font-weight:500;">Multiple Customer Management (MCM)</a></div>
+  </div>
+</nav>
+
+<!-- ══════════ MAIN ══════════ -->
+<main class="main-container">
+  <div class="mcm-content">
+
+    <!-- Title -->
+    <div class="mcm-title-row">
+      <h1 class="ml-2 mt-2" style="margin:20px">Multiple Customer Management (MCM)</h1>
+      <span class="material-icons" title="Learn more about MCM">help_outline</span>
+    </div>
+
+    <!-- Table -->
+    <div class="mcm-table-wrap">
+      <table class="mcm-table">
+        <thead>
+          <tr>
+            <th>Parent publisher <span class="material-icons">help_outline</span></th>
+            <th>Invitation status <span class="material-icons">help_outline</span></th>
+            <th>Delegation type <span class="material-icons">help_outline</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <a class="mcm-parent-link" id="mcm-parent-url" href="#"></a>
+              <div class="mcm-network-code"><span id="mcm-network-code"></span></div>
+            </td>
+            <td style="    padding-top: 12px !important">
+              <span class="mcm-status-withdrawn" >Withdrawn by parent</span>
+            </td>
+            <td style="    padding-top: 12px !important">
+              <span class="mcm-delegation-type"  >Manage account</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="mcm-footer">
+    © 2026 Google -
+    <a target="google_popup" href="https://policies.google.com/privacy">Privacy Policy</a>
+    <span>-</span>
+    <a target="google_popup" href="http://support.google.com/admanager?utm_source=dfp_fe&utm_medium=et&utm_campaign=in-product_link">Help</a>
+    <span>-</span>
+    <a target="google_popup" href="https://support.google.com/admanager/answer/179039">Release notes</a>
+    <span>-</span>
+    <a target="google_popup" href="https://www.blog.google/products/admanager/">Blog</a>
+    <span>-</span>
+    <a target="google_popup" href="http://ads.google.com/status#hl=en-US&v=status">Ads Status Dashboard</a>
+  </div>
+</main>
+
+<script>
+function toggleAdmSub(el) {
+  const isOpen = el.classList.contains('open');
+  if (isOpen) {
+    el.classList.remove('open');
+    let next = el.nextElementSibling;
+    while (next && next.classList.contains('sdb-sub')) {
+      next.classList.remove('open');
+      next = next.nextElementSibling;
+    }
+  } else {
+    el.classList.add('open');
+    let next = el.nextElementSibling;
+    while (next && next.classList.contains('sdb-sub')) {
+      next.classList.add('open');
+      next = next.nextElementSibling;
+    }
+  }
+}
+
+// Fetch settings and populate dynamic MCM fields
+(async function loadMCMSettings() {
+  try {
+    const res = await fetch('/stats?date_filter=today');
+    const d = await res.json();
+    const sf = d.settingsform || {};
+    const dd = d.overview_form || {};
+
+    // MCM parent URL
+    const parentEl = document.getElementById('mcm-parent-url');
+    if (parentEl && sf.mcm_parent_url && sf.mcm_parent_url.trim()) {
+      parentEl.textContent = sf.mcm_parent_url.trim();
+      parentEl.href = 'https://' + sf.mcm_parent_url.trim();
+    }
+
+    // MCM network code
+    const codeEl = document.getElementById('mcm-network-code');
+    if (codeEl && sf.mcm_network_code && sf.mcm_network_code.trim()) {
+      codeEl.textContent = sf.mcm_network_code.trim();
+    }
+    
+    // Network ID in sidebar
+    const netId = document.getElementById('network_id');
+    if (netId && dd.network_id && dd.network_id.trim()) {
+      netId.textContent = dd.network_id.trim();
+    }
+  } catch(e) { console.warn('MCM settings load failed', e); }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ADX Admin Panel</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    /* ===== LAYOUT ===== */
+    body { margin:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background:#f5f5f5; display:flex; min-height:100vh; }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+      width: 220px; flex-shrink:0;
+      background: linear-gradient(160deg, #1a237e 0%, #283593 100%);
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      position: fixed; top:0; left:0; bottom:0;
+      z-index: 100;
+      transition: width 0.2s;
+    }
+    .sidebar-logo {
+      padding: 20px 16px 16px;
+      font-size: 15px; font-weight: 700;
+      color: #fff;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      letter-spacing: 0.3px;
+    }
+    .sidebar-logo span { color: #90caf9; }
+    .sidebar nav { flex:1; padding: 10px 0; }
+    .nav-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 20px;
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      font-size: 14px; font-weight: 500;
+      border-radius: 0 24px 24px 0;
+      margin-right: 10px;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: none; background: none; width: 100%; text-align: left;
+    }
+    .nav-link:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    .nav-link.active { background: rgba(255,255,255,0.18); color: #fff; font-weight: 600; }
+    .nav-icon { font-size: 18px; }
+
+    /* ===== MAIN ===== */
+    .main { margin-left: 220px; flex:1; padding: 28px 32px 48px; min-height: 100vh; }
+
+    /* ===== PAGE SECTIONS ===== */
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .page-title { font-size: 22px; font-weight: 700; color: #1a237e; margin-bottom: 24px; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; }
+
+    /* ===== CARD ===== */
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      padding: 24px 28px;
+      margin-bottom: 22px;
+    }
+    .card-title { font-size: 15px; font-weight: 700; color: #283593; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
+    .card-title::before { content: ''; width: 4px; height: 18px; background: #3f51b5; border-radius: 2px; display: inline-block; }
+
+    /* ===== FORM GRID ===== */
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
+    .form-group label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #666; }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      padding: 9px 12px;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-family: inherit;
+      background: #fafafa;
+      transition: border-color 0.2s;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus { outline: none; border-color: #3f51b5; background: #fff; }
+    .form-group textarea { resize: vertical; min-height: 70px; }
+
+    .section-divider { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; color: #999; grid-column: 1/-1; padding-top: 8px; border-top: 1px solid #eee; margin-top: 4px; }
+
+    .save-btn {
+      grid-column: 1/-1;
+      background: linear-gradient(135deg, #3f51b5 0%, #1a237e 100%);
+      color: #fff; border: none;
+      padding: 11px 28px;
+      border-radius: 8px; font-size: 13px; font-weight: 700;
+      font-family: inherit; cursor: pointer;
+      transition: all 0.2s; margin-top: 8px;
+      letter-spacing: 0.3px;
+    }
+    .save-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(63,81,181,0.35); }
+
+    .msg { grid-column:1/-1; padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; min-height: 16px; text-align: center; }
+    .msg.ok { background: #e8f5e9; color: #2e7d32; }
+    .msg.err { background: #fce4ec; color: #c62828; }
+
+    @media (max-width: 768px) {
+      .sidebar { width: 56px; }
+      .sidebar-logo, .nav-link span { display: none; }
+      .main { margin-left: 56px; padding: 16px; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar">
+  <div class="sidebar-logo">ADX <span>Admin</span></div>
+  <nav>
+    <button class="nav-link active" onclick="showPage('home',this)">
+      <span class="nav-icon">🏠</span><span>Home (Overview)</span>
+    </button>
+    <button class="nav-link" onclick="showPage('payments',this)">
+      <span class="nav-icon">💳</span><span>Payments</span>
+    </button>
+    <button class="nav-link" onclick="showPage('transactions',this)">
+      <span class="nav-icon">🔄</span><span>Transactions</span>
+    </button>
+    <button class="nav-link" onclick="showPage('receipts',this)">
+      <span class="nav-icon">🧾</span><span>Receipts</span>
+    </button>
+  </nav>
+</aside>
+
+<main class="main">
+
+  <!-- ============================= HOME PAGE ============================= -->
+  <div class="page active" id="page-home">
+    <div class="page-title">🏠 Home — Overview</div>
+
+    <!-- Overview -->
+    <div class="card">
+      <div class="card-title">Overview Metrics</div>
+      <form class="form-grid" id="overviewForm" onsubmit="saveForm(event,'overview','/api/overview')">
+        <div class="form-group"><label>Impressions</label><input name="impressions" placeholder="e.g. 1.21K"></div>
+        <div class="form-group"><label>Impressions Change %</label><input name="impressions_percent" placeholder="e.g. +310 (34%)"></div>
+        <div class="form-group"><label>Revenue</label><input name="revenue" placeholder="e.g. €0.30"></div>
+        <div class="form-group"><label>Revenue Change %</label><input name="revenue_percent" placeholder="e.g. +€0.089 (42%)"></div>
+        <div class="form-group"><label>eCPM</label><input name="ecpm" placeholder="e.g. €0.25"></div>
+        <div class="form-group"><label>eCPM Change %</label><input name="ecpm_percent" placeholder="e.g. +€0.013 (5.8%)"></div>
+        <div class="form-group"><label>Viewability</label><input name="viewability" placeholder="e.g. 40.9%"></div>
+        <div class="form-group"><label>Viewability Change %</label><input name="viewability_percent" placeholder="e.g. -3.9% (8.8%)"></div>
+        <button class="save-btn" type="submit">💾 Save Overview</button>
+        <div class="msg" id="msg-overviewForm"></div>
+      </form>
+    </div>
+
+    <!-- Clicks by Country -->
+    <div class="card">
+      <div class="card-title">Clicks by Country</div>
+      <form class="form-grid" id="clicksForm" onsubmit="saveForm(event,'clicks','/api/clicks')">
+        <div class="form-group"><label>Total Clicks</label><input name="clicks_total" placeholder="e.g. 131"></div>
+        <div class="section-divider">Countries (Name + Value)</div>
+        <div class="form-group"><label>Country 1</label><input name="clicks_country_name_1" placeholder="India 115"></div>
+        <div class="form-group"><label>Country 2</label><input name="clicks_country_name_2" placeholder="UAE 4"></div>
+        <div class="form-group"><label>Country 3</label><input name="clicks_country_name_3" placeholder="Kuwait 3"></div>
+        <div class="form-group"><label>Country 4</label><input name="clicks_country_name_4" placeholder="Pakistan 3"></div>
+        <div class="form-group"><label>Country 5</label><input name="clicks_country_name_5" placeholder="Afghanistan 1"></div>
+        <div class="form-group"><label>Country 6</label><input name="clicks_country_name_6" placeholder="(Other) 5"></div>
+        <button class="save-btn" type="submit">💾 Save Clicks</button>
+        <div class="msg" id="msg-clicksForm"></div>
+      </form>
+    </div>
+
+    <!-- eCPM by Country -->
+    <div class="card">
+      <div class="card-title">eCPM by Country</div>
+      <form class="form-grid" id="ecpmForm" onsubmit="saveForm(event,'ecpm','/api/ecpm')">
+        <div class="form-group"><label>Total eCPM</label><input name="ecpm_total" placeholder="e.g. €0.26"></div>
+        <div class="section-divider">Countries (Name + Value)</div>
+        <div class="form-group"><label>Country 1</label><input name="ecpm_country_name_1" placeholder="Kuwait €1.87"></div>
+        <div class="form-group"><label>Country 2</label><input name="ecpm_country_name_2" placeholder="UK €1.22"></div>
+        <div class="form-group"><label>Country 3</label><input name="ecpm_country_name_3" placeholder="Saudi Arabia €1.21"></div>
+        <div class="form-group"><label>Country 4</label><input name="ecpm_country_name_4" placeholder="Canada €1.15"></div>
+        <div class="form-group"><label>Country 5</label><input name="ecpm_country_name_5" placeholder="UAE €1.07"></div>
+        <div class="form-group"><label>Country 6</label><input name="ecpm_country_name_6" placeholder="(Other) €0.22"></div>
+        <button class="save-btn" type="submit">💾 Save eCPM</button>
+        <div class="msg" id="msg-ecpmForm"></div>
+      </form>
+    </div>
+
+    <!-- Impressions by Country -->
+    <div class="card">
+      <div class="card-title">Impressions by Country</div>
+      <form class="form-grid" id="impressionsForm" onsubmit="saveForm(event,'impressions','/api/impressions')">
+        <div class="form-group"><label>Total Impressions</label><input name="impressions_total" placeholder="e.g. 913"></div>
+        <div class="section-divider">Countries (Name + Value)</div>
+        <div class="form-group"><label>Country 1</label><input name="impressions_country_name_1" placeholder="India 844"></div>
+        <div class="form-group"><label>Country 2</label><input name="impressions_country_name_2" placeholder="UAE 13"></div>
+        <div class="form-group"><label>Country 3</label><input name="impressions_country_name_3" placeholder="Kuwait 13"></div>
+        <div class="form-group"><label>Country 4</label><input name="impressions_country_name_4" placeholder="Pakistan 10"></div>
+        <div class="form-group"><label>Country 5</label><input name="impressions_country_name_5" placeholder="Afghanistan 7"></div>
+        <div class="form-group"><label>Country 6</label><input name="impressions_country_name_6" placeholder="(Other) 26"></div>
+        <button class="save-btn" type="submit">💾 Save Impressions</button>
+        <div class="msg" id="msg-impressionsForm"></div>
+      </form>
+    </div>
+
+    <!-- Performance Summary -->
+    <div class="card">
+      <div class="card-title">Performance Summary</div>
+      <form class="form-grid" id="perfSummaryForm" onsubmit="saveForm(event,'perf_summary','/api/perf_summary')">
+        <div class="form-group"><label>Impressions</label><input name="ps_impressions" placeholder="e.g. 1.21K"></div>
+        <div class="form-group"><label>Impressions Change</label><input name="ps_impressions_change" placeholder="e.g. +310 (34%)"></div>
+        <div class="form-group"><label>Revenue</label><input name="ps_revenue" placeholder="e.g. €0.30"></div>
+        <div class="form-group"><label>Revenue Change</label><input name="ps_revenue_change" placeholder="e.g. +€0.089 (42%)"></div>
+        <div class="form-group"><label>eCPM</label><input name="ps_ecpm" placeholder="e.g. €0.25"></div>
+        <div class="form-group"><label>eCPM Change</label><input name="ps_ecpm_change" placeholder="e.g. +€0.013 (5.8%)"></div>
+        <div class="section-divider">App / Legend Names</div>
+        <div class="form-group"><label>App 1</label><input name="ps_app_1" placeholder="Instagram"></div>
+        <div class="form-group"><label>App 2</label><input name="ps_app_2" placeholder="Not applicable"></div>
+        <div class="form-group"><label>App 3</label><input name="ps_app_3" placeholder="Facebook"></div>
+        <div class="form-group"><label>App 4</label><input name="ps_app_4" placeholder="Unknown"></div>
+        <div class="form-group"><label>App 5</label><input name="ps_app_5" placeholder="Opera Mini"></div>
+        <button class="save-btn" type="submit">💾 Save Performance Summary</button>
+        <div class="msg" id="msg-perfSummaryForm"></div>
+      </form>
+    </div>
+
+    <!-- Top Pricing Rules -->
+    <div class="card">
+      <div class="card-title">Top Pricing Rules</div>
+      <form class="form-grid" id="pricingRulesForm" onsubmit="saveForm(event,'pricing_rules','/api/pricing_rules')">
+        <div class="form-group"><label>Rule Name</label><input name="pr_rule_name" placeholder="e.g. (No pricing rule applied)"></div>
+        <div class="form-group"><label>Impressions</label><input name="pr_impressions" placeholder="e.g. 1.21K"></div>
+        <div class="form-group"><label>Revenue</label><input name="pr_revenue" placeholder="e.g. €0.30"></div>
+        <div class="form-group"><label>eCPM</label><input name="pr_ecpm" placeholder="e.g. €0.25"></div>
+        <div class="section-divider">Everything Row</div>
+        <div class="form-group"><label>Everything Impressions</label><input name="pr_everything_impressions" placeholder="e.g. 1.21K"></div>
+        <div class="form-group"><label>Everything Revenue</label><input name="pr_everything_revenue" placeholder="e.g. €0.30"></div>
+        <div class="form-group"><label>Everything eCPM</label><input name="pr_everything_ecpm" placeholder="e.g. €0.25"></div>
+        <div class="section-divider">Chart Legend</div>
+        <div class="form-group"><label>Estimated Revenue</label><input name="pr_est_revenue" placeholder="e.g. €0.32"></div>
+        <div class="form-group"><label>Winning Bids</label><input name="pr_winning_bids" placeholder="e.g. 1.3K"></div>
+        <button class="save-btn" type="submit">💾 Save Pricing Rules</button>
+        <div class="msg" id="msg-pricingRulesForm"></div>
+      </form>
+    </div>
+
+    <!-- Demand Comparison -->
+    <div class="card">
+      <div class="card-title">Demand Comparison</div>
+      <form class="form-grid" id="demandComparisonForm" onsubmit="saveForm(event,'demand_comparison','/api/demand_comparison')">
+        <div class="form-group"><label>Column 1 Label</label><input name="dc_c1_label" placeholder="Ad Exchange"></div>
+        <div class="form-group"><label>Column 1 Value</label><input name="dc_c1_value" placeholder="1.2K"></div>
+        <div class="form-group"><label>Column 2 Label</label><input name="dc_c2_label" placeholder="Open Auction"></div>
+        <div class="form-group"><label>Column 2 Value</label><input name="dc_c2_value" placeholder="791"></div>
+        <div class="form-group"><label>Column 3 Label</label><input name="dc_c3_label" placeholder="Unfilled"></div>
+        <div class="form-group"><label>Column 3 Value</label><input name="dc_c3_value" placeholder="102"></div>
+        <div class="form-group"><label>Column 4 Label</label><input name="dc_c4_label" placeholder="Ad Exchange"></div>
+        <div class="form-group"><label>Column 4 Value</label><input name="dc_c4_value" placeholder="1.2K"></div>
+        <div class="form-group"><label>Column 5 Label</label><input name="dc_c5_label" placeholder="Open Auction"></div>
+        <div class="form-group"><label>Column 5 Value</label><input name="dc_c5_value" placeholder="791"></div>
+        <button class="save-btn" type="submit">💾 Save Demand Comparison</button>
+        <div class="msg" id="msg-demandComparisonForm"></div>
+      </form>
+    </div>
+
+    <!-- Top Advertisers -->
+    <div class="card">
+      <div class="card-title">Top Classified Advertisers</div>
+      <form class="form-grid" id="topAdvertisersForm" onsubmit="saveForm(event,'top_advertisers','/api/top_advertisers')">
+        <div class="section-divider">Advertiser 1</div>
+        <div class="form-group"><label>Name</label><input name="adv1_name" placeholder="Digital Virgo"></div>
+        <div class="form-group"><label>Impressions</label><input name="adv1_impressions" placeholder="68"></div>
+        <div class="form-group"><label>Revenue</label><input name="adv1_revenue" placeholder="€0.11"></div>
+        <div class="form-group"><label>eCPM</label><input name="adv1_ecpm" placeholder="€1.60"></div>
+        <div class="form-group"><label>Viewability</label><input name="adv1_viewability" placeholder="45.6%"></div>
+        <div class="section-divider">Advertiser 2</div>
+        <div class="form-group"><label>Name</label><input name="adv2_name" placeholder="Go Daddy"></div>
+        <div class="form-group"><label>Impressions</label><input name="adv2_impressions" placeholder="79"></div>
+        <div class="form-group"><label>Revenue</label><input name="adv2_revenue" placeholder="€0.086"></div>
+        <div class="form-group"><label>eCPM</label><input name="adv2_ecpm" placeholder="€1.08"></div>
+        <div class="form-group"><label>Viewability</label><input name="adv2_viewability" placeholder="38%"></div>
+        <div class="section-divider">Advertiser 3</div>
+        <div class="form-group"><label>Name</label><input name="adv3_name" placeholder="Government of India"></div>
+        <div class="form-group"><label>Impressions</label><input name="adv3_impressions" placeholder="213"></div>
+        <div class="form-group"><label>Revenue</label><input name="adv3_revenue" placeholder="€0.041"></div>
+        <div class="form-group"><label>eCPM</label><input name="adv3_ecpm" placeholder="€0.19"></div>
+        <div class="form-group"><label>Viewability</label><input name="adv3_viewability" placeholder="56.8%"></div>
+        <div class="section-divider">Advertiser 4</div>
+        <div class="form-group"><label>Name</label><input name="adv4_name" placeholder="Airbnb"></div>
+        <div class="form-group"><label>Impressions</label><input name="adv4_impressions" placeholder="124"></div>
+        <div class="form-group"><label>Revenue</label><input name="adv4_revenue" placeholder="€0.041"></div>
+        <div class="form-group"><label>eCPM</label><input name="adv4_ecpm" placeholder="€0.33"></div>
+        <div class="form-group"><label>Viewability</label><input name="adv4_viewability" placeholder="70.2%"></div>
+        <div class="section-divider">Advertiser 5</div>
+        <div class="form-group"><label>Name</label><input name="adv5_name" placeholder="Amazon Corp"></div>
+        <div class="form-group"><label>Impressions</label><input name="adv5_impressions" placeholder="188"></div>
+        <div class="form-group"><label>Revenue</label><input name="adv5_revenue" placeholder="€0.036"></div>
+        <div class="form-group"><label>eCPM</label><input name="adv5_ecpm" placeholder="€0.19"></div>
+        <div class="form-group"><label>Viewability</label><input name="adv5_viewability" placeholder="62.2%"></div>
+        <button class="save-btn" type="submit">💾 Save Advertisers</button>
+        <div class="msg" id="msg-topAdvertisersForm"></div>
+      </form>
+    </div>
+
+    <!-- Yield Partners -->
+    <div class="card">
+      <div class="card-title">Top Detected Yield Partners</div>
+      <form class="form-grid" id="yieldPartnersForm" onsubmit="saveForm(event,'yield_partners','/api/yield_partners')">
+        <div class="section-divider">Partner 1</div>
+        <div class="form-group"><label>Name</label><input name="yp1_name" placeholder="DoubleClick Ad Exchange"></div>
+        <div class="form-group"><label>Impressions</label><input name="yp1_impressions" placeholder="6.83K"></div>
+        <div class="form-group"><label>Revenue</label><input name="yp1_revenue" placeholder="€1.78"></div>
+        <div class="form-group"><label>eCPM</label><input name="yp1_ecpm" placeholder="€0.26"></div>
+        <div class="section-divider">Partner 2</div>
+        <div class="form-group"><label>Name</label><input name="yp2_name" placeholder="Partner name"></div>
+        <div class="form-group"><label>Impressions</label><input name="yp2_impressions" placeholder=""></div>
+        <div class="form-group"><label>Revenue</label><input name="yp2_revenue" placeholder=""></div>
+        <div class="form-group"><label>eCPM</label><input name="yp2_ecpm" placeholder=""></div>
+        <div class="section-divider">Partner 3</div>
+        <div class="form-group"><label>Name</label><input name="yp3_name" placeholder="Partner name"></div>
+        <div class="form-group"><label>Impressions</label><input name="yp3_impressions" placeholder=""></div>
+        <div class="form-group"><label>Revenue</label><input name="yp3_revenue" placeholder=""></div>
+        <div class="form-group"><label>eCPM</label><input name="yp3_ecpm" placeholder=""></div>
+        <button class="save-btn" type="submit">💾 Save Yield Partners</button>
+        <div class="msg" id="msg-yieldPartnersForm"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================== PAYMENTS PAGE ========================== -->
+  <div class="page" id="page-payments">
+    <div class="page-title">💳 Payments</div>
+
+    <div class="card">
+      <div class="card-title">Payment Info</div>
+      <form class="form-grid" id="paymentPageForm" onsubmit="saveForm(event,'payment_page','/api/payment_page')">
+        <div class="form-group"><label>Earnings</label><input name="earnings" placeholder="$0.00"></div>
+        <div class="form-group"><label>Last Payment Date</label><input name="lastpaymentdate" placeholder="e.g. 21 Jun 2025"></div>
+        <div class="form-group"><label>Bank Account Name</label><input name="bankaccountname" placeholder="e.g. John Wick"></div>
+        <div class="form-group"><label>Last Three Digits</label><input name="lastthreedigits" placeholder="123"></div>
+        <button class="save-btn" type="submit">💾 Save Payment Info</button>
+        <div class="msg" id="msg-paymentPageForm"></div>
+      </form>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Transactions Summary</div>
+      <form class="form-grid" id="transactionformPay" onsubmit="saveForm(event,'transactionform','/api/transactionform')">
+        <div class="form-group"><label>1st Month Amount</label><input name="firstmonth" placeholder="$0.00"></div>
+        <div class="form-group"><label>1st Month Date</label><input name="firstmonthdate" placeholder="21 June"></div>
+        <div class="form-group"><label>2nd Month Amount</label><input name="secondmonth" placeholder="$0.00"></div>
+        <div class="form-group"><label>2nd Month Date</label><input name="secondmonthdate" placeholder="21 July"></div>
+        <div class="form-group"><label>3rd Month Amount</label><input name="thirdmonth" placeholder="$0.00"></div>
+        <div class="form-group"><label>3rd Month Date</label><input name="thirdmonthdate" placeholder="21 August"></div>
+        <button class="save-btn" type="submit">💾 Save Transactions</button>
+        <div class="msg" id="msg-transactionformPay"></div>
+      </form>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Settings</div>
+      <form class="form-grid" id="settingsformPay" onsubmit="saveForm(event,'settingsform','/api/settingsform')">
+        <div class="form-group"><label>Publisher ID</label><input name="publisherid" placeholder="Pub-67567"></div>
+        <div class="form-group"><label>Publisher Name</label><input name="publishername" placeholder="John Wick"></div>
+        <div class="form-group"><label>Publisher Users</label><input name="publisheruser" placeholder="3 Users"></div>
+        <button class="save-btn" type="submit">💾 Save Settings</button>
+        <div class="msg" id="msg-settingsformPay"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================== TRANSACTIONS PAGE ======================== -->
+  <div class="page" id="page-transactions">
+    <div class="page-title">🔄 Transactions</div>
+
+    <!-- 1st Month Transaction -->
+    <div class="card">
+      <div class="card-title">First Month Transaction</div>
+      <form class="form-grid" id="currentmonthtransForm" onsubmit="saveForm(event,'currentmonthtrans','/api/currentmonthtrans')">
+        <div class="form-group"><label>Starting Balance</label><input name="startingbalance" placeholder="$0.00"></div>
+        <div class="form-group"><label>Ending Balance</label><input name="endingbalance" placeholder="$0.00"></div>
+        <div class="section-divider">Receipt Section</div>
+        <div class="form-group"><label>Receipt Date</label><input name="firstmonthreciptdate" placeholder="21 Jun 2027"></div>
+        <div class="form-group"><label>Bank Number</label><input name="banknumber" placeholder="• • •123"></div>
+        <div class="form-group"><label>Amount (USD)</label><input name="amount" placeholder="$000"></div>
+        <div class="section-divider">Earning Title From ADX</div>
+        <div class="form-group"><label>Title Date</label><input name="firstmonthtitledate" placeholder="21 Jun 2027"></div>
+        <div class="form-group"><label>Title</label><input name="firstmonthtitle" placeholder="Earnings - Ad Exchange for content"></div>
+        <div class="form-group"><label>Title Amount</label><input name="firstmonthtitleamount" placeholder="$000"></div>
+        <div class="section-divider">Invalid Cut</div>
+        <div class="form-group"><label>Invalid Date</label><input name="firstmonthinvaliddate" placeholder="21 Jun 2027"></div>
+        <div class="form-group"><label>Invalid Title</label><input name="firstmonthinvalidtitle" placeholder="Invalid activity adjustment"></div>
+        <div class="form-group"><label>Invalid Amount</label><input name="firstmonthinvalidamount" placeholder="$000"></div>
+        <div class="section-divider">Extra Invalid Cut</div>
+        <div class="form-group"><label>Extra Invalid Date</label><input name="firstmonthextrainvaliddate" placeholder="21 Jun 2027"></div>
+        <div class="form-group"><label>Extra Invalid Title</label><input name="firstmonthextrainvalidtitle" placeholder="Extra invalid adjustment"></div>
+        <div class="form-group"><label>Extra Invalid Amount</label><input name="firstmonthextrainvalidamount" placeholder="$000"></div>
+        <button class="save-btn" type="submit">💾 Save 1st Month Transaction</button>
+        <div class="msg" id="msg-currentmonthtransForm"></div>
+      </form>
+    </div>
+
+    <!-- 2nd Month Transaction -->
+    <div class="card">
+      <div class="card-title">Second Month Transaction</div>
+      <form class="form-grid" id="lastmonthtransForm" onsubmit="saveForm(event,'lastmonthtrans','/api/lastmonthtrans')">
+        <div class="form-group"><label>Starting Balance</label><input name="secondmonthstartingbalance" placeholder="$0.00"></div>
+        <div class="form-group"><label>Ending Balance</label><input name="secondmonthendingbalance" placeholder="$0.00"></div>
+        <div class="section-divider">Receipt Section</div>
+        <div class="form-group"><label>Receipt Date</label><input name="secondmonthreciptdate" placeholder="21 Jun 2027"></div>
+        <div class="form-group"><label>Bank Number</label><input name="secondmonthbanknumber" placeholder="• • •123"></div>
+        <div class="form-group"><label>Amount (USD)</label><input name="secondmonthamount" placeholder="$000"></div>
+        <div class="section-divider">Earning Title From ADX</div>
+        <div class="form-group"><label>Title Date</label><input name="secondmonthtitledate" placeholder="21 Jun 2027"></div>
+        <div class="form-group"><label>Title</label><input name="secondmonthtitle" placeholder="Earnings - Ad Exchange for content"></div>
+        <div class="form-group"><label>Title Amount</label><input name="secondmonthtitleamount" placeholder="$000"></div>
+        <div class="section-divider">Invalid Cut</div>
+        <div class="form-group"><label>Invalid Date</label><input name="secondmonthinvaliddate" placeholder="21 Jun 2027"></div>
+        <div class="form-group"><label>Invalid Title</label><input name="secondmonthinvalidtitle" placeholder="Invalid activity adjustment"></div>
+        <div class="form-group"><label>Invalid Amount</label><input name="secondmonthinvalidamount" placeholder="$000"></div>
+        <div class="section-divider">Extra Invalid Cut</div>
+        <div class="form-group"><label>Extra Invalid Date</label><input name="secondmonthextrainvaliddate" placeholder="21 Jun 2027"></div>
+        <div class="form-group"><label>Extra Invalid Title</label><input name="secondmonthextrainvalidtitle" placeholder="Extra invalid adjustment"></div>
+        <div class="form-group"><label>Extra Invalid Amount</label><input name="secondmonthextrainvalidamount" placeholder="$000"></div>
+        <button class="save-btn" type="submit">💾 Save 2nd Month Transaction</button>
+        <div class="msg" id="msg-lastmonthtransForm"></div>
+      </form>
+    </div>
+
+    <!-- 3rd Month Transaction -->
+    <div class="card">
+      <div class="card-title">Third Month Transaction</div>
+      <form class="form-grid" id="thirdmonthtransForm" onsubmit="saveForm(event,'thirdmonthtrans','/api/thirdmonthtrans')">
+        <div class="form-group"><label>Starting Balance</label><input name="thirdmonthstartingbalance" placeholder="$0.00"></div>
+        <div class="form-group"><label>Ending Balance</label><input name="thirdmonthendingbalance" placeholder="$0.00"></div>
+        <div class="section-divider">Receipt Section</div>
+        <div class="form-group"><label>Receipt Date</label><input name="thirdmonthreciptdate" placeholder="21 Jun 2027"></div>
+        <div class="form-group"><label>Bank Number</label><input name="thirdmonthbanknumber" placeholder="• • •123"></div>
+        <div class="form-group"><label>Amount (USD)</label><input name="thirdmonthamount" placeholder="$000"></div>
+        <div class="section-divider">Earning Title From ADX</div>
+        <div class="form-group"><label>Title Date</label><input name="thirdmonthtitledate" placeholder="21 Jun 2027"></div>
+        <div class="form-group"><label>Title</label><input name="thirdmonthtitle" placeholder="Earnings - Ad Exchange for content"></div>
+        <div class="form-group"><label>Title Amount</label><input name="thirdmonthtitleamount" placeholder="$000"></div>
+        <div class="section-divider">Invalid Cut</div>
+        <div class="form-group"><label>Invalid Date</label><input name="thirdmonthinvaliddate" placeholder="21 Jun 2027"></div>
+        <div class="form-group"><label>Invalid Title</label><input name="thirdmonthinvalidtitle" placeholder="Invalid activity adjustment"></div>
+        <div class="form-group"><label>Invalid Amount</label><input name="thirdmonthinvalidamount" placeholder="$000"></div>
+        <div class="section-divider">Extra Invalid Cut</div>
+        <div class="form-group"><label>Extra Invalid Date</label><input name="thirdmonthextrainvaliddate" placeholder="21 Jun 2027"></div>
+        <div class="form-group"><label>Extra Invalid Title</label><input name="thirdmonthextrainvalidtitle" placeholder="Extra invalid adjustment"></div>
+        <div class="form-group"><label>Extra Invalid Amount</label><input name="thirdmonthextrainvalidamount" placeholder="$000"></div>
+        <button class="save-btn" type="submit">💾 Save 3rd Month Transaction</button>
+        <div class="msg" id="msg-thirdmonthtransForm"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================== RECEIPTS PAGE ========================== -->
+  <div class="page" id="page-receipts">
+    <div class="page-title">🧾 Receipts</div>
+
+    <!-- 1st Month Receipt -->
+    <div class="card">
+      <div class="card-title">First Month Receipt</div>
+      <form class="form-grid" id="reciptformForm" onsubmit="saveForm(event,'reciptform','/api/reciptform')">
+        <div class="form-group"><label>Payment Date</label><input name="paymentdate" placeholder="e.g. 21 Jun 2025"></div>
+        <div class="form-group"><label>Billing ID</label><input name="billingid" placeholder="e.g. BIL-12345"></div>
+        <div class="form-group"><label>Tax Identification</label><input name="taxidentification" placeholder="e.g. TAX-123"></div>
+        <div class="form-group"><label>Payment Method</label><input name="paymentmethod" placeholder="e.g. Wire Transfer"></div>
+        <div class="form-group"><label>Payment Number</label><input name="paymentnumber" placeholder="e.g. PAY-001"></div>
+        <div class="form-group"><label>Amount</label><input name="Amount" placeholder="$00"></div>
+        <div class="form-group" style="grid-column:1/-1"><label>Address</label><textarea name="address" placeholder="Full address..."></textarea></div>
+        <button class="save-btn" type="submit">💾 Save 1st Month Receipt</button>
+        <div class="msg" id="msg-reciptformForm"></div>
+      </form>
+    </div>
+
+    <!-- 2nd Month Receipt -->
+    <div class="card">
+      <div class="card-title">Second Month Receipt</div>
+      <form class="form-grid" id="secondmonthreciptformForm" onsubmit="saveForm(event,'secondmonthreciptform','/api/secondmonthreciptform')">
+        <div class="form-group"><label>Payment Date</label><input name="paymentdate" placeholder="e.g. 21 Jul 2025"></div>
+        <div class="form-group"><label>Billing ID</label><input name="billingid" placeholder="e.g. BIL-12346"></div>
+        <div class="form-group"><label>Tax Identification</label><input name="taxidentification" placeholder="e.g. TAX-123"></div>
+        <div class="form-group"><label>Payment Method</label><input name="paymentmethod" placeholder="e.g. Wire Transfer"></div>
+        <div class="form-group"><label>Payment Number</label><input name="paymentnumber" placeholder="e.g. PAY-002"></div>
+        <div class="form-group"><label>Amount</label><input name="Amount" placeholder="$00"></div>
+        <div class="form-group" style="grid-column:1/-1"><label>Address</label><textarea name="address" placeholder="Full address..."></textarea></div>
+        <button class="save-btn" type="submit">💾 Save 2nd Month Receipt</button>
+        <div class="msg" id="msg-secondmonthreciptformForm"></div>
+      </form>
+    </div>
+
+    <!-- 3rd Month Receipt -->
+    <div class="card">
+      <div class="card-title">Third Month Receipt</div>
+      <form class="form-grid" id="thirdmonthreciptformForm" onsubmit="saveForm(event,'thirdmonthreciptform','/api/thirdmonthreciptform')">
+        <div class="form-group"><label>Payment Date</label><input name="paymentdate" placeholder="e.g. 21 Aug 2025"></div>
+        <div class="form-group"><label>Billing ID</label><input name="billingid" placeholder="e.g. BIL-12347"></div>
+        <div class="form-group"><label>Tax Identification</label><input name="taxidentification" placeholder="e.g. TAX-123"></div>
+        <div class="form-group"><label>Payment Method</label><input name="paymentmethod" placeholder="e.g. Wire Transfer"></div>
+        <div class="form-group"><label>Payment Number</label><input name="paymentnumber" placeholder="e.g. PAY-003"></div>
+        <div class="form-group"><label>Amount</label><input name="Amount" placeholder="$00"></div>
+        <div class="form-group" style="grid-column:1/-1"><label>Address</label><textarea name="address" placeholder="Full address..."></textarea></div>
+        <button class="save-btn" type="submit">💾 Save 3rd Month Receipt</button>
+        <div class="msg" id="msg-thirdmonthreciptformForm"></div>
+      </form>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ===== PAGE NAVIGATION =====
+function showPage(name, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ===== GENERIC SAVE FORM =====
+async function saveForm(e, tableKey, endpoint) {
+  e.preventDefault();
+  const form = e.target;
+  const msgEl = document.getElementById('msg-' + form.id);
+  const data = {};
+  form.querySelectorAll('[name]').forEach(el => { data[el.name] = el.value; });
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (msgEl) { msgEl.textContent = '✅ Saved!'; msgEl.className = 'msg ok'; setTimeout(() => { msgEl.textContent = ''; msgEl.className = 'msg'; }, 3000); }
+  } catch(err) {
+    if (msgEl) { msgEl.textContent = '❌ Save failed!'; msgEl.className = 'msg err'; }
+  }
+}
+
+// ===== LOAD ALL DATA ON PAGE LOAD =====
+async function loadAll() {
+  try {
+    const res = await fetch('/stats');
+    const d = await res.json();
+
+    // Map: tableKey -> formId -> fields
+    const formMap = {
+      overview_form:           'overviewForm',
+      clicks:                  'clicksForm',
+      ecpm:                    'ecpmForm',
+      impressions_country:     'impressionsForm',
+      perf_summary:            'perfSummaryForm',
+      pricing_rules:           'pricingRulesForm',
+      demand_comparison:       'demandComparisonForm',
+      top_advertisers:         'topAdvertisersForm',
+      yield_partners:          'yieldPartnersForm',
+      payment_page:            'paymentPageForm',
+      transactionform:         'transactionformPay',
+      settingsform:            'settingsformPay',
+      currentmonthtrans:       'currentmonthtransForm',
+      lastmonthtrans:          'lastmonthtransForm',
+      thirdmonthtrans:         'thirdmonthtransForm',
+      reciptform:              'reciptformForm',
+      secondmonthreciptform:   'secondmonthreciptformForm',
+      thirdmonthreciptform:    'thirdmonthreciptformForm',
+    };
+
+    Object.entries(formMap).forEach(([key, formId]) => {
+      const data = d[key] || {};
+      const form = document.getElementById(formId);
+      if (!form) return;
+      Object.entries(data).forEach(([field, val]) => {
+        const el = form.querySelector(`[name="${field}"]`);
+        if (el && val) el.value = val;
+      });
+    });
+  } catch(err) { console.error('Load error:', err); }
+}
+
+document.addEventListener('DOMContentLoaded', loadAll);
+</script>
+</body>
+</html>
