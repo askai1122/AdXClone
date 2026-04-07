@@ -1923,15 +1923,20 @@ function buildPerfChart(apps, labels) {
 
   const chartLabels = labels && labels.length ? labels : ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
   const datasets = apps.map((app, i) => ({
-    label: app.label,
-    data: app.data,
-    borderColor: app.color || PALETTE[i % PALETTE.length],
-    backgroundColor: 'transparent',
-    tension: 0.35,
-    pointRadius: 0,
-    pointHoverRadius: 4,
-    borderWidth: 2
-  }));
+  label: app.label,
+  data: app.data,
+  borderColor: app.color || PALETTE[i % PALETTE.length],
+  backgroundColor: 'transparent',
+
+  tension: 0,              // 👈 FIX (no curve = sharp nok)
+  cubicInterpolationMode: 'default', // optional
+
+  pointRadius: 0,
+  pointHoverRadius: 4,
+  borderWidth: 1.8,        // 👈 thoda clean thickness
+  borderJoinStyle: 'miter', // 👈 sharp corners
+  borderCapStyle: 'butt'    // 👈 GA jaisa edge
+}));
 
   // Dynamic Y max
   const allVals = apps.flatMap(a => a.data).filter(v => !isNaN(v));
@@ -1988,43 +1993,55 @@ function buildDemandChart(datasets, labels) {
   const maxVal = allVals.length ? Math.max(...allVals) : 300;
   const buffer = Math.ceil(maxVal * 0.15);
   const yMax = maxVal + buffer;
+const fixedDatasets = datasets.map(d => ({
+  ...d,
+  tension: 0,
+  cubicInterpolationMode: 'default', // 👈 IMPORTANT
+  borderWidth: 1.8,
+  borderJoinStyle: 'miter',
+  borderCapStyle: 'butt',
+  pointRadius: 0
+}));
+ demandChartInst = new Chart(ctx.getContext('2d'), {
+  type: 'line',
+  data: { labels: chartLabels, datasets: fixedDatasets },
+  options: {
+    interaction: { mode: 'index', intersect: false },
 
-  demandChartInst = new Chart(ctx.getContext('2d'), {
-    type: 'line',
-    data: { labels: chartLabels, datasets },
-    options: {
-      interaction: { mode: 'index', intersect: false },
-      scales: {
-        x: {
-          grid: { display: false },
-          ticks: { font: { size: 11, family: 'Roboto' }, color: '#80868b' },
-          border: { display: false }
-        },
-        y: {
-          grid: { color: '#f1f3f4', drawBorder: false },
-          ticks: { font: { size: 11, family: 'Roboto' }, color: '#80868b' },
-          beginAtZero: true,
-          max: yMax,
-          border: { display: false }
-        }
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: { font: { size: 11, family: 'Roboto' }, color: '#80868b' },
+        border: { display: false }
       },
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          mode: 'index', intersect: false,
-          backgroundColor: '#fff', titleColor: '#202124',
-          bodyColor: '#5f6368', borderColor: '#dadce0', borderWidth: 1, padding: 12,
-          callbacks: {
-            title: items => items[0].label,
-            label: item => `${item.dataset.label}: ${item.raw}`
-          }
-        }
+      y: {
+        grid: { color: '#f1f3f4', drawBorder: false },
+        ticks: { font: { size: 11, family: 'Roboto' }, color: '#80868b' },
+        beginAtZero: true,
+        max: yMax,
+        border: { display: false }
+      }
+    },
+
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        mode: 'index',
+        intersect: false
+      }
+    },
+
+    elements: {
+      line: {
+        tension: 0,
+        cubicInterpolationMode: 'default',
+        borderJoinStyle: 'miter'
       },
-      animation: { duration: 600, easing: 'easeOutQuart' },
-      elements: { line: { tension: 0.35 }, point: { radius: 0 } }
+      point: { radius: 0 }
     }
-  });
+  }
+});
+
 }
 
 // ===== SET TEXT HELPER =====
@@ -2428,8 +2445,7 @@ const chartDefaults = {
   animation: { duration: 600, easing: 'easeOutQuart' }
 };
 
-// ===== OVERVIEW LINE CHART =====
-
+ 
 // function() {
 //   const ctx = document.getElementById('overviewChart').getContext('2d');
 //   const labels = [];
