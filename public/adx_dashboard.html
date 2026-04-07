@@ -2055,33 +2055,59 @@ function genSparkData(trending) {
   }
   return data;
 }
-
-function drawSparkline(canvasId, data, color) {
+function drawSparkline(canvasId, data, color = '#4a86e8') {
   const canvas = document.getElementById(canvasId);
-  if (!canvas) return;
+  if (!canvas || data.length < 2) return;
+
   const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
+
+  // Retina fix
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.scale(dpr, dpr);
+
+  const W = rect.width;
+  const H = rect.height;
+
   ctx.clearRect(0, 0, W, H);
-  const min = Math.min(...data), max = Math.max(...data);
+
+  const min = Math.min(...data);
+  const max = Math.max(...data);
   const range = max - min || 1;
+
   const pad = 3;
-  const xStep = (W - pad * 2) / (data.length - 1);
-  const points = data.map((v, i) => ({
-    x: pad + i * xStep,
-    y: H - pad - ((v - min) / range) * (H - pad * 2)
-  }));
+  const stepX = (W - pad * 2) / (data.length - 1);
+
+  // 🔥 SAFE fluctuation boost (no glitch)
+  const boost = 1.25; // 👈 subtle, natural feel
+
   ctx.beginPath();
-  ctx.moveTo(points[0].x, points[0].y);
-  for (let i = 1; i < points.length - 1; i++) {
-    const cpx = (points[i].x + points[i+1].x) / 2;
-    const cpy = (points[i].y + points[i+1].y) / 2;
-    ctx.quadraticCurveTo(points[i].x, points[i].y, cpx, cpy);
-  }
-  ctx.lineTo(points[points.length-1].x, points[points.length-1].y);
-  ctx.strokeStyle = color || '#1a73e8';
-  ctx.lineWidth = 1.5;
+
+  data.forEach((v, i) => {
+    // normalize (0 → 1)
+    let norm = (v - min) / range;
+
+    // boost around center (0.5) safely
+    norm = 0.5 + (norm - 0.5) * boost;
+
+    // clamp to avoid overflow/glitch
+    norm = Math.max(0, Math.min(1, norm));
+
+    const x = pad + i * stepX;
+    const y = H - pad - norm * (H - pad * 2);
+
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+
+  // 🎯 Style
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1.8; // 👈 as you asked
   ctx.lineJoin = 'round';
   ctx.lineCap = 'round';
+
   ctx.stroke();
 }
 
