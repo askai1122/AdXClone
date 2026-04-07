@@ -265,7 +265,7 @@
           margin-top: 20px;
             margin-left: var(--sidebar-width); 
             
-            padding: 0px 135px;
+            padding: 0px 145px;
             box-sizing: border-box;
             /* Content area ki width desktop jaisi rahegi */
         }
@@ -494,7 +494,7 @@
     background: var(--white);
     border-radius: var(--radius);
     border: 1px solid #80808047;
-    padding: 20px 24px;
+    padding: 20px 12px;
   }
   .donut-card-top {
     display: flex; align-items: center; justify-content: space-between;
@@ -515,7 +515,7 @@
   }
   .donut-chart-container {
     margin-top: 13px;
-    width: 350px; height: 350px; flex-shrink: 0; position: relative;
+    width: 300px; height: 300px; flex-shrink: 0; position: relative;
     justify-self: center;
   }
   .donut-center {
@@ -1356,8 +1356,9 @@
             <div class="card">
               <div class="donut-card">
       <div class="donut-card-top">
-        <span class="card-title">Clicks by Country</span>
-        <div class="donut-card-icons">
+          <img src="assets/iamges/clicks_c.png">
+
+         <div class="donut-card-icons">
           <img src="assets/iamges/sideicons.png">
           <!-- <button class="card-icon-btn"><span class="material-icons">tune</span></button>
           <button class="card-icon-btn"><span class="material-icons">bar_chart</span></button>
@@ -1368,7 +1369,9 @@
         <div class="donut-chart-container">
           <canvas id="clicksChart"></canvas>
           <div class="donut-center">
-            <div class="donut-center-label">Total clicks</div>
+          <img src="assets/iamges/t_clicks.png">
+            
+            <!-- <div class="donut-center-label">Total clicks</div> -->
             <div class="donut-center-value" id="clicks-total">131</div>
           </div>
         </div>
@@ -1386,8 +1389,9 @@
              <div class="card">
              <div class="donut-card">
       <div class="donut-card-top">
-        <span class="card-title">eCPM by Country</span>
-        <div class="donut-card-icons">
+          <img src="assets/iamges/ecpm.png">
+
+         <div class="donut-card-icons">
             <img src="assets/iamges/sideicons.png">
           <!-- <button class="card-icon-btn"><span class="material-icons">tune</span></button>
           <button class="card-icon-btn"><span class="material-icons">bar_chart</span></button>
@@ -1398,7 +1402,9 @@
         <div class="donut-chart-container">
           <canvas id="ecpmChart"></canvas>
           <div class="donut-center">
-            <div class="donut-center-label">Total ecpm</div>
+          <img src="assets/iamges/t_ecpm.png">
+
+            <!-- <div class="donut-center-label">Total ecpm</div> -->
             <div class="donut-center-value" id="ecpm-total">€0.26</div>
           </div>
         </div>
@@ -1420,7 +1426,7 @@
       
       <!-- Top Bar -->
       <div class="donut-card-top" style="display:flex; justify-content:space-between; align-items:center;">
-        <span class="card-title">Impressions by Country</span>
+             <img src="assets/iamges/imp.png">
 
         <!-- Icons Right -->
         <div class="donut-card-icons" style="display:flex; align-items:center;">
@@ -1435,7 +1441,7 @@
       <div class="donut-wrap" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
 
         <!-- Donut Center -->
-        <div class="donut-chart-container" style="position:relative;  margin:0 auto;">
+        <div class="donut-chart-container" style="position:relative;  margin:0 auto;width: 350px !important; height: 350px !important;">
           <canvas id="impressionsChart"></canvas>
 
           <div class="donut-center" style="
@@ -1445,7 +1451,9 @@
             transform:translate(-50%, -50%);
             text-align:center;
           ">
-            <div class="donut-center-label">Total impressions</div>
+          <img src="assets/iamges/t_imp.png">
+
+            <!-- <div class="donut-center-label">Total impressions</div> -->
             <div class="donut-center-value" id="impressions-total">913</div>
           </div>
         </div>
@@ -1876,7 +1884,7 @@ function makeDonut(id, data, colors, destroyRef) {
       datasets: [{ data, backgroundColor: colors, borderWidth: 0, hoverOffset: 4 }]
     },
     options: {
-      cutout: '90%',
+      cutout: '87%',
       plugins: { legend: { display: false }, tooltip: { enabled: true } },
       animation: { duration: 700 },
       maintainAspectRatio: false
