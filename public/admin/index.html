@@ -377,21 +377,70 @@
     <div class="card">
       <div class="card-title">Top Detected Yield Partners</div>
       <form class="form-grid" id="yieldPartnersForm" onsubmit="saveForm(event,'yield_partners','/api/yield_partners')">
-        <div class="section-divider">Partner 1</div>
+        <!-- Partner 1 (Parent Row) -->
+        <div class="section-divider">Partner 1 — Parent Row (e.g. DoubleClick Ad Exchange)</div>
         <div class="form-group"><label>Name</label><input name="yp1_name" placeholder="DoubleClick Ad Exchange"></div>
-        <div class="form-group"><label>Impressions</label><input name="yp1_impressions" placeholder="6.83K"></div>
-        <div class="form-group"><label>Revenue</label><input name="yp1_revenue" placeholder="€1.78"></div>
-        <div class="form-group"><label>eCPM</label><input name="yp1_ecpm" placeholder="€0.26"></div>
-        <div class="section-divider">Partner 2</div>
+        <div class="form-group"><label>Impressions</label><input name="yp1_impressions" placeholder="4.06K"></div>
+        <div class="form-group"><label>Revenue</label><input name="yp1_revenue" placeholder="€1.00"></div>
+        <div class="form-group"><label>eCPM</label><input name="yp1_ecpm" placeholder="€0.25"></div>
+        <!-- Partner 1 Sub-rows -->
+        <div class="section-divider" style="background:#f0f4ff;">↳ Partner 1 — Sub Row 1 (shown when expanded)</div>
+        <div class="form-group"><label>Sub-row 1 Name</label><input name="yp1_sub1_name" placeholder="Open Auction (general)"></div>
+        <div class="form-group"><label>Sub-row 1 Impressions</label><input name="yp1_sub1_impressions" placeholder="2.59K"></div>
+        <div class="form-group"><label>Sub-row 1 Revenue</label><input name="yp1_sub1_revenue" placeholder="€0.84"></div>
+        <div class="form-group"><label>Sub-row 1 eCPM</label><input name="yp1_sub1_ecpm" placeholder="€0.32"></div>
+        <div class="section-divider" style="background:#f0f4ff;">↳ Partner 1 — Sub Row 2</div>
+        <div class="form-group"><label>Sub-row 2 Name</label><input name="yp1_sub2_name" placeholder="Ad Exchange"></div>
+        <div class="form-group"><label>Sub-row 2 Impressions</label><input name="yp1_sub2_impressions" placeholder="1.47K"></div>
+        <div class="form-group"><label>Sub-row 2 Revenue</label><input name="yp1_sub2_revenue" placeholder="€0.16"></div>
+        <div class="form-group"><label>Sub-row 2 eCPM</label><input name="yp1_sub2_ecpm" placeholder="€0.11"></div>
+        <div class="section-divider" style="background:#f0f4ff;">↳ Partner 1 — Sub Row 3</div>
+        <div class="form-group"><label>Sub-row 3 Name</label><input name="yp1_sub3_name" placeholder="Open Auction (Auction Package)"></div>
+        <div class="form-group"><label>Sub-row 3 Impressions</label><input name="yp1_sub3_impressions" placeholder="6"></div>
+        <div class="form-group"><label>Sub-row 3 Revenue</label><input name="yp1_sub3_revenue" placeholder="€0.001"></div>
+        <div class="form-group"><label>Sub-row 3 eCPM</label><input name="yp1_sub3_ecpm" placeholder="€0.10"></div>
+        <!-- Partner 2 -->
+        <div class="section-divider">Partner 2 — Parent Row</div>
         <div class="form-group"><label>Name</label><input name="yp2_name" placeholder="Partner name"></div>
         <div class="form-group"><label>Impressions</label><input name="yp2_impressions" placeholder=""></div>
         <div class="form-group"><label>Revenue</label><input name="yp2_revenue" placeholder=""></div>
         <div class="form-group"><label>eCPM</label><input name="yp2_ecpm" placeholder=""></div>
-        <div class="section-divider">Partner 3</div>
+        <div class="section-divider" style="background:#f0f4ff;">↳ Partner 2 — Sub Row 1</div>
+        <div class="form-group"><label>Sub-row 1 Name</label><input name="yp2_sub1_name" placeholder=""></div>
+        <div class="form-group"><label>Sub-row 1 Impressions</label><input name="yp2_sub1_impressions" placeholder=""></div>
+        <div class="form-group"><label>Sub-row 1 Revenue</label><input name="yp2_sub1_revenue" placeholder=""></div>
+        <div class="form-group"><label>Sub-row 1 eCPM</label><input name="yp2_sub1_ecpm" placeholder=""></div>
+        <div class="section-divider" style="background:#f0f4ff;">↳ Partner 2 — Sub Row 2</div>
+        <div class="form-group"><label>Sub-row 2 Name</label><input name="yp2_sub2_name" placeholder=""></div>
+        <div class="form-group"><label>Sub-row 2 Impressions</label><input name="yp2_sub2_impressions" placeholder=""></div>
+        <div class="form-group"><label>Sub-row 2 Revenue</label><input name="yp2_sub2_revenue" placeholder=""></div>
+        <div class="form-group"><label>Sub-row 2 eCPM</label><input name="yp2_sub2_ecpm" placeholder=""></div>
+        <div class="section-divider" style="background:#f0f4ff;">↳ Partner 2 — Sub Row 3</div>
+        <div class="form-group"><label>Sub-row 3 Name</label><input name="yp2_sub3_name" placeholder=""></div>
+        <div class="form-group"><label>Sub-row 3 Impressions</label><input name="yp2_sub3_impressions" placeholder=""></div>
+        <div class="form-group"><label>Sub-row 3 Revenue</label><input name="yp2_sub3_revenue" placeholder=""></div>
+        <div class="form-group"><label>Sub-row 3 eCPM</label><input name="yp2_sub3_ecpm" placeholder=""></div>
+        <!-- Partner 3 -->
+        <div class="section-divider">Partner 3 — Parent Row</div>
         <div class="form-group"><label>Name</label><input name="yp3_name" placeholder="Partner name"></div>
         <div class="form-group"><label>Impressions</label><input name="yp3_impressions" placeholder=""></div>
         <div class="form-group"><label>Revenue</label><input name="yp3_revenue" placeholder=""></div>
         <div class="form-group"><label>eCPM</label><input name="yp3_ecpm" placeholder=""></div>
+        <div class="section-divider" style="background:#f0f4ff;">↳ Partner 3 — Sub Row 1</div>
+        <div class="form-group"><label>Sub-row 1 Name</label><input name="yp3_sub1_name" placeholder=""></div>
+        <div class="form-group"><label>Sub-row 1 Impressions</label><input name="yp3_sub1_impressions" placeholder=""></div>
+        <div class="form-group"><label>Sub-row 1 Revenue</label><input name="yp3_sub1_revenue" placeholder=""></div>
+        <div class="form-group"><label>Sub-row 1 eCPM</label><input name="yp3_sub1_ecpm" placeholder=""></div>
+        <div class="section-divider" style="background:#f0f4ff;">↳ Partner 3 — Sub Row 2</div>
+        <div class="form-group"><label>Sub-row 2 Name</label><input name="yp3_sub2_name" placeholder=""></div>
+        <div class="form-group"><label>Sub-row 2 Impressions</label><input name="yp3_sub2_impressions" placeholder=""></div>
+        <div class="form-group"><label>Sub-row 2 Revenue</label><input name="yp3_sub2_revenue" placeholder=""></div>
+        <div class="form-group"><label>Sub-row 2 eCPM</label><input name="yp3_sub2_ecpm" placeholder=""></div>
+        <div class="section-divider" style="background:#f0f4ff;">↳ Partner 3 — Sub Row 3</div>
+        <div class="form-group"><label>Sub-row 3 Name</label><input name="yp3_sub3_name" placeholder=""></div>
+        <div class="form-group"><label>Sub-row 3 Impressions</label><input name="yp3_sub3_impressions" placeholder=""></div>
+        <div class="form-group"><label>Sub-row 3 Revenue</label><input name="yp3_sub3_revenue" placeholder=""></div>
+        <div class="form-group"><label>Sub-row 3 eCPM</label><input name="yp3_sub3_ecpm" placeholder=""></div>
         <button class="save-btn" type="submit">💾 Save Yield Partners</button>
         <div class="msg" id="msg-yieldPartnersForm"></div>
       </form>

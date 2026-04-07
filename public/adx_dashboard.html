@@ -1843,6 +1843,14 @@
         </div>
       </div>
 </div>
+<style>
+.yield-sub-row { display:none; background:#fafafa; }
+.yield-sub-row td:first-child { padding-left: 48px; font-size:13px; color:#3c4043; }
+.yield-sub-row td { font-size:13px; color:#3c4043; border-bottom:1px solid #f1f3f4; }
+.yield-row.expanded .expand-toggle .material-icons { transform: rotate(180deg); }
+.expand-toggle { display:flex; align-items:center; gap:4px; cursor:pointer; user-select:none; }
+.expand-toggle .material-icons { transition: transform 0.2s ease; font-size:20px !important; color:#5f6368; }
+</style>
           </div>
       
  
@@ -2307,21 +2315,29 @@ function applyDashboardData(d) {
   let demandDatasets;
   const dcLabels = [dc.dc_c1_label, dc.dc_c2_label, dc.dc_c3_label, dc.dc_c4_label, dc.dc_c5_label].filter(Boolean);
   if (dcLabels.length) {
-    // Each column contributes 1 dataset; generate plausible line data from the stored value
+    // Each column contributes 1 dataset; generate smooth line data from the stored value
     const demandColors = ['#9c27b0','#34a853','#f9a825','#4285f4','#ea4335'];
+    // Smooth wave patterns - no spikes
+    const smoothPatterns = [
+      [0.55,0.60,0.50,0.65,0.70,0.60,0.55],
+      [0.45,0.50,0.55,0.50,0.45,0.50,0.48],
+      [0.60,0.55,0.65,0.70,0.60,0.65,0.58],
+      [0.50,0.55,0.45,0.50,0.55,0.50,0.52],
+      [0.40,0.45,0.50,0.45,0.40,0.45,0.42],
+    ];
     demandDatasets = dcLabels.map((label, i) => {
       const rawVal = dc[`dc_c${i+1}_value`] || '0';
       const base = parseFloat(rawVal.replace(/[^0-9.]/g,'')) || 0;
       const mult = rawVal.includes('K') ? 1000 : 1;
       const peak = base * mult;
-      // Generate a smooth arc of 7 points peaking at index 4
-      const pts = [0.6,0.7,0.45,0.55,1,0.85,0.5].map(f => Math.round(peak * f));
+      const pattern = smoothPatterns[i % smoothPatterns.length];
+      const pts = pattern.map(f => Math.round(peak * f));
       return {
         label,
         data: pts,
         borderColor: demandColors[i % demandColors.length],
         backgroundColor: 'transparent',
-        tension: 0.35,
+        tension: 0.4,
         pointRadius: 0,
         pointHoverRadius: 4,
         borderWidth: 2
@@ -2330,9 +2346,9 @@ function applyDashboardData(d) {
   } else {
     // Static fallback
     demandDatasets = [
-      { label:'Ad Exchange (purple)',           data:[190,160,105,135,260,250,135], borderColor:'#9c27b0', backgroundColor:'transparent', tension:0.35, pointRadius:0, pointHoverRadius:4, borderWidth:2 },
-      { label:'Ad Exchange – Open Auction',     data:[115,105,65,75,190,150,80],   borderColor:'#34a853', backgroundColor:'transparent', tension:0.35, pointRadius:0, pointHoverRadius:4, borderWidth:2 },
-      { label:'Unfilled (orange)',              data:[12,22,5,10,15,10,5],          borderColor:'#f9a825', backgroundColor:'transparent', tension:0.35, pointRadius:0, pointHoverRadius:4, borderWidth:2 }
+      { label:'Ad Exchange (purple)',           data:[160,170,155,165,175,160,165], borderColor:'#9c27b0', backgroundColor:'transparent', tension:0.4, pointRadius:0, pointHoverRadius:4, borderWidth:2 },
+      { label:'Ad Exchange – Open Auction',     data:[100,110,95,105,115,100,108],  borderColor:'#34a853', backgroundColor:'transparent', tension:0.4, pointRadius:0, pointHoverRadius:4, borderWidth:2 },
+      { label:'Unfilled (orange)',              data:[10,12,8,11,13,10,11],         borderColor:'#f9a825', backgroundColor:'transparent', tension:0.4, pointRadius:0, pointHoverRadius:4, borderWidth:2 }
     ];
   }
   buildDemandChart(demandDatasets, ['Mar 22','23','24','25','26','27','28']);
@@ -2364,17 +2380,29 @@ function applyDashboardData(d) {
     for (let i = 1; i <= 3; i++) {
       const name = yp[`yp${i}_name`];
       if (!name || !name.trim()) continue;
-      rows.push(`<tr class="yield-row">
+      const rowId = `yp-parent-${i}`;
+      rows.push(`<tr class="yield-row" id="${rowId}">
         <td>
-          <div class="expand-toggle">
-            <span class="material-icons" style="font-size:25px">expand_more</span>
+          <div class="expand-toggle" onclick="toggleYieldRow(${i})">
+            <span class="material-icons" id="yp-icon-${i}" style="font-size:20px;color:#5f6368;transition:transform 0.2s">expand_more</span>
             ${name}
           </div>
         </td>
         <td style="text-align:right">${yp[`yp${i}_impressions`] || '—'}</td>
         <td style="text-align:right">${yp[`yp${i}_revenue`] || '—'}</td>
-        <td><span class="ecpm" style="display:inline-block;margin-right:-10px;">${yp[`yp${i}_ecpm`] || '—'}</span></td>
+        <td style="text-align:right"><span class="ecpm" style="display:inline-block;margin-right:-10px;">${yp[`yp${i}_ecpm`] || '—'}</span></td>
       </tr>`);
+      // Sub-rows
+      for (let s = 1; s <= 3; s++) {
+        const sname = yp[`yp${i}_sub${s}_name`];
+        if (!sname || !sname.trim()) continue;
+        rows.push(`<tr class="yield-sub-row" data-parent="${i}" style="display:none;">
+          <td style="padding-left:48px;font-size:13px;color:#3c4043;">${sname}</td>
+          <td style="text-align:right;font-size:13px;color:#3c4043;">${yp[`yp${i}_sub${s}_impressions`] || '—'}</td>
+          <td style="text-align:right;font-size:13px;color:#3c4043;">${yp[`yp${i}_sub${s}_revenue`] || '—'}</td>
+          <td style="text-align:right;font-size:13px;color:#3c4043;"><span class="ecpm" style="display:inline-block;margin-right:-10px;">${yp[`yp${i}_sub${s}_ecpm`] || '—'}</span></td>
+        </tr>`);
+      }
     }
     if (rows.length) ypTbody.innerHTML = rows.join('');
   }
@@ -2430,9 +2458,9 @@ async function loadDashboard(dateFilter) {
   ], ['Mar 21','22','23','24','25','26','27']);
 
   buildDemandChart([
-    { label:'Ad Exchange',                    data:[190,160,105,135,260,250,135], borderColor:'#9c27b0', backgroundColor:'transparent', tension:0.35, pointRadius:0, pointHoverRadius:4, borderWidth:2 },
-    { label:'Ad Exchange – Open Auction',     data:[115,105,65,75,190,150,80],   borderColor:'#34a853', backgroundColor:'transparent', tension:0.35, pointRadius:0, pointHoverRadius:4, borderWidth:2 },
-    { label:'Unfilled',                       data:[12,22,5,10,15,10,5],          borderColor:'#f9a825', backgroundColor:'transparent', tension:0.35, pointRadius:0, pointHoverRadius:4, borderWidth:2 }
+    { label:'Ad Exchange',                    data:[160,170,155,165,175,160,165], borderColor:'#9c27b0', backgroundColor:'transparent', tension:0.4, pointRadius:0, pointHoverRadius:4, borderWidth:2 },
+    { label:'Ad Exchange – Open Auction',     data:[100,110,95,105,115,100,108],  borderColor:'#34a853', backgroundColor:'transparent', tension:0.4, pointRadius:0, pointHoverRadius:4, borderWidth:2 },
+    { label:'Unfilled',                       data:[10,12,8,11,13,10,11],         borderColor:'#f9a825', backgroundColor:'transparent', tension:0.4, pointRadius:0, pointHoverRadius:4, borderWidth:2 }
   ], ['Mar 22','23','24','25','26','27','28']);
 })();
 
@@ -2927,6 +2955,26 @@ function toggleAdmSub(el) {
       next = next.nextElementSibling;
     }
   }
+}
+</script>
+<script>
+// Yield partners toggle
+function toggleYieldRow(i) {
+  const parentRow = document.getElementById('yp-parent-' + i);
+  const icon = document.getElementById('yp-icon-' + i);
+  const subRows = document.querySelectorAll('.yield-sub-row[data-parent="' + i + '"]');
+
+  const isOpen = parentRow.classList.contains('expanded');
+
+  // Toggle class on parent row for arrow rotation
+  if (isOpen) {
+    parentRow.classList.remove('expanded');
+  } else {
+    parentRow.classList.add('expanded');
+  }
+
+  // Show/hide sub-rows
+  subRows.forEach(r => r.style.display = isOpen ? 'none' : 'table-row');
 }
 </script>
 </body>
