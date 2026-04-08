@@ -242,8 +242,31 @@
 
   /* Optional: Add a transition for a smooth effect on the initial state */
   .transaction-header {
-    transition: box-shadow 0.3s ease-in-out;
+    transition: box-shadow 0.3s ease-in-out, background-color 0.2s ease;
     background-color: #ffffff !important;
+  }
+  /* When expanded: transparent bg, only bottom border, no corner radii */
+  .transaction-header.th-open {
+    background-color: transparent !important;
+    border-radius: 0 !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: 1px solid #dee2e6 !important;
+  }
+  /* print_ss image: hidden by default, shown when expanded */
+  .transaction-header .th-print-img {
+    display: none;
+  }
+  .transaction-header.th-open .th-print-img {
+    display: inline;
+  }
+  /* Header ending balance: visible by default, hide when expanded */
+  .transaction-header .th-ending-balance {
+    display: block;
+  }
+  .transaction-header.th-open .th-ending-balance {
+    display: none;
   }
 
   /* ===== PAGE LOADER ===== */
@@ -715,7 +738,7 @@ function toggleAdmSub(el) {
                 <p class="mb-0 transaction-header-collapse">${monthText}</p>
                 <div class="transaction-icons ms-3" style="display: none;"></div>
             </div>
-            <p class="mb-0 transaction-ending-balance">Ending balance: $${endingBalance}</p>
+            // <p class="mb-0 transaction-ending-balance">Ending balance: $${endingBalance}</p>
         </div>
 
         <div class="collapse" id="${monthId}-collapse">
@@ -832,7 +855,7 @@ function toggleAdmSub(el) {
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
  <style>
-.transaction-ending-balance {
+/* .transaction-ending-balance { */
     margin-right: 10px; /* Right se 10px space */
 }
 </style>
@@ -846,7 +869,7 @@ function toggleHeader(element) {
     if (element.classList.contains('is-active')) {
         // APPLY CHANGES
         const dateElement = element.querySelector('.transaction-header-collapse');
-        const balanceElement = element.querySelector('.transaction-ending-balance');
+        // const balanceElement = element.querySelector('.transaction-ending-balance');
 
         element.dataset.originalDateText = dateElement.textContent;
 
@@ -871,7 +894,7 @@ function toggleHeader(element) {
 
         heading.replaceWith(originalDateElement);
 
-        const balanceElement = element.querySelector('.transaction-ending-balance');
+        // const balanceElement = element.querySelector('.transaction-ending-balance');
         balanceElement.style.display = '';
 
         // Hide the icons again
@@ -1099,20 +1122,24 @@ function toggleHeader(element) {
 
         const rowHtml = `
           <div class="row mt-3">
-            <div class="col-12 p-3 border rounded-2 d-flex justify-content-between align-items-center transaction-header"
+            <div class="col-12 p-3 border rounded-2 d-flex justify-content-between align-items-center transaction-header${isExpanded ? ' th-open' : ''}"
                 data-bs-toggle="collapse" data-bs-target="#${monthId}-collapse"
-                aria-expanded="${isExpanded}" style="cursor: pointer;">
+                aria-expanded="${isExpanded}" style="cursor: pointer;"
+                onclick="toggleTransactionHeader(this)">
                 
                 <div class="d-flex align-items-center">
-                    <p class="mb-0">${monthText}</p>
+                    <p class="mb-0">${monthText} <img class="th-print-img" style="margin-left:15px" src="assets/iamges/print_ss.png"></p>
                 </div>
 
-                <p class="mb-0">Ending balance: $${endingBalance}</p>
+                <p class="mb-0 th-ending-balance">Ending balance: $${endingBalance}</p>
             </div>
-
+           
             <div class="${collapseClass}" id="${monthId}-collapse">
-
-                <div class="row mt-2" style="font-size: 13px;">
+                 
+                <div class="row mt-2" style="font-size: 13px; padding:8px">
+                  <div style="text-align:right;margin-top:12px;margin-bottom:12px;border-bottom:1px solid lightgray;padding-bottom:8px;">
+                    <p class="mb-0 th-ending-balance" style="font-size:16px">Ending balance: $${endingBalance}</p>
+                  </div>
                     <div class="col-3">Date</div>
                     <div class="col-3">Description</div>
                     <div class="col-6 text-end">Amount (USD)</div>
@@ -1154,6 +1181,19 @@ function toggleHeader(element) {
   // Optional: toggle logic for icon or UI change
   function toggleHeader(headerElement) {
     // you can add icon toggle or active class logic here
+  }
+
+  // Toggle transaction header open/closed state
+  function toggleTransactionHeader(el) {
+    // Wait one tick for Bootstrap to update aria-expanded
+    setTimeout(function() {
+      const expanded = el.getAttribute('aria-expanded') === 'true';
+      if (expanded) {
+        el.classList.add('th-open');
+      } else {
+        el.classList.remove('th-open');
+      }
+    }, 10);
   }
 </script>
 
