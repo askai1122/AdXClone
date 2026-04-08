@@ -2015,16 +2015,14 @@ function buildDemandChart(datasets, labels) {
   const yMax = maxVal + buffer;
 const fixedDatasets = datasets.map(d => ({
   ...d,
-  
-  cubicInterpolationMode: 'monotone',
-  tension: 0,              // 🔥 straight lines (spikes visible)
-   borderWidth: 1.5,
-   pointHoverRadius: 0,
+  tension: 0,                 // no curve
+  borderWidth: 2,
   fill: false,
-  borderJoinStyle: 'miter',    // 🔥 sharp corners
-  borderCapStyle: 'butt' ,
+  borderJoinStyle: 'miter',  // sharp corners
+  borderCapStyle: 'butt',
   pointRadius: 0,
- }));
+  pointHoverRadius: 3
+}));
  demandChartInst = new Chart(ctx.getContext('2d'), {
   type: 'line',
   data: { labels: chartLabels, datasets: fixedDatasets },
@@ -2066,7 +2064,7 @@ const fixedDatasets = datasets.map(d => ({
     borderJoinStyle: 'miter'
   },
   point: {
-    radius: 3
+    radius: 0   // ❗ important
   }
 }
   }
@@ -2334,29 +2332,43 @@ function applyDashboardData(d) {
     // Each column contributes 1 dataset; generate smooth line data from the stored value
     const demandColors = ['#9c27b0','#34a853','#f9a825','#4285f4','#ea4335'];
     // Smooth wave patterns - no spikes
+    // const smoothPatterns = [
+    //   [0.55,0.60,0.50,0.65,0.70,0.60,0.55],
+    //   [0.45,0.50,0.55,0.50,0.45,0.50,0.48],
+    //   [0.60,0.55,0.65,0.70,0.60,0.65,0.58],
+    //   [0.50,0.55,0.45,0.50,0.55,0.50,0.52],
+    //   [0.40,0.45,0.50,0.45,0.40,0.45,0.42],
+    // ];
     const smoothPatterns = [
-      [0.55,0.60,0.50,0.65,0.70,0.60,0.55],
-      [0.45,0.50,0.55,0.50,0.45,0.50,0.48],
-      [0.60,0.55,0.65,0.70,0.60,0.65,0.58],
-      [0.50,0.55,0.45,0.50,0.55,0.50,0.52],
-      [0.40,0.45,0.50,0.45,0.40,0.45,0.42],
-    ];
+  [0.2, 0.8, 0.3, 0.9, 0.6, 0.85, 0.4],
+  [0.3, 0.7, 0.2, 0.6, 0.8, 0.5, 0.75],
+  [0.4, 0.9, 0.3, 0.7, 0.5, 0.85, 0.6],
+  [0.25, 0.65, 0.35, 0.75, 0.55, 0.7, 0.45],
+  [0.2, 0.6, 0.3, 0.5, 0.4, 0.65, 0.35],
+];
     demandDatasets = dcLabels.map((label, i) => {
       const rawVal = dc[`dc_c${i+1}_value`] || '0';
       const base = parseFloat(rawVal.replace(/[^0-9.]/g,'')) || 0;
       const mult = rawVal.includes('K') ? 1000 : 1;
       const peak = base * mult;
       const pattern = smoothPatterns[i % smoothPatterns.length];
-      const pts = pattern.map(f => Math.round(peak * f));
+      // const pts = pattern.map(f => Math.round(peak * f));
+     const maxPeak = Math.max(...dcLabels.map((_, i) => {
+  const rawVal = dc[`dc_c${i+1}_value`] || '0';
+  const base = parseFloat(rawVal.replace(/[^0-9.]/g,'')) || 0;
+  return rawVal.includes('K') ? base * 1000 : base;
+}));
+
+const pts = pattern.map(f => Math.round((peak / maxPeak) * 100 * f));
       return {
         label,
         data: pts,
         borderColor: demandColors[i % demandColors.length],
         backgroundColor: 'transparent',
-        tension: 0.4,
+        tension: 0,
         pointRadius: 0,
-        pointHoverRadius: 4,
-        borderWidth: 2
+        pointHoverRadius: 0,
+        borderWidth: 1
       };
     });
   } else {
@@ -2406,7 +2418,7 @@ function applyDashboardData(d) {
         </td>
         <td style="text-align:right">${yp[`yp${i}_impressions`] || '—'}</td>
         <td style="text-align:right">${yp[`yp${i}_revenue`] || '—'}</td>
-        <td style="text-align:right"><span class="ecpm" style="display:inline-block;margin-right:-10px;">${yp[`yp${i}_ecpm`] || '—'}</span></td>
+        <td style="text-align:right;padding-right: 30px;"><span class="ecpm" style="display:inline-block;margin-right:-10px;">${yp[`yp${i}_ecpm`] || '—'}</span></td>
       </tr>`);
       // Sub-rows
       for (let s = 1; s <= 3; s++) {
@@ -2416,7 +2428,7 @@ function applyDashboardData(d) {
           <td style="padding-left:48px;font-size:13px;color:#3c4043;">${sname}</td>
           <td style="text-align:right;font-size:13px;color:#3c4043;">${yp[`yp${i}_sub${s}_impressions`] || '—'}</td>
           <td style="text-align:right;font-size:13px;color:#3c4043;">${yp[`yp${i}_sub${s}_revenue`] || '—'}</td>
-          <td style="text-align:right;font-size:13px;color:#3c4043;"><span class="ecpm" style="display:inline-block;margin-right:-10px;">${yp[`yp${i}_sub${s}_ecpm`] || '—'}</span></td>
+          <td style="text-align:right;font-size:13px;color:#3c4043;padding-right: 30px;"><span class="ecpm" style="display:inline-block;margin-right:-10px;">${yp[`yp${i}_sub${s}_ecpm`] || '—'}</span></td>
         </tr>`);
       }
     }
