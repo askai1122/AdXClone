@@ -205,10 +205,42 @@ db.serialize(() => {
   db.run(`CREATE TABLE IF NOT EXISTS yield_partners (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     yp1_name TEXT, yp1_impressions TEXT, yp1_revenue TEXT, yp1_ecpm TEXT,
+    yp1_sub1_name TEXT, yp1_sub1_impressions TEXT, yp1_sub1_revenue TEXT, yp1_sub1_ecpm TEXT,
+    yp1_sub2_name TEXT, yp1_sub2_impressions TEXT, yp1_sub2_revenue TEXT, yp1_sub2_ecpm TEXT,
+    yp1_sub3_name TEXT, yp1_sub3_impressions TEXT, yp1_sub3_revenue TEXT, yp1_sub3_ecpm TEXT,
     yp2_name TEXT, yp2_impressions TEXT, yp2_revenue TEXT, yp2_ecpm TEXT,
+    yp2_sub1_name TEXT, yp2_sub1_impressions TEXT, yp2_sub1_revenue TEXT, yp2_sub1_ecpm TEXT,
+    yp2_sub2_name TEXT, yp2_sub2_impressions TEXT, yp2_sub2_revenue TEXT, yp2_sub2_ecpm TEXT,
+    yp2_sub3_name TEXT, yp2_sub3_impressions TEXT, yp2_sub3_revenue TEXT, yp2_sub3_ecpm TEXT,
     yp3_name TEXT, yp3_impressions TEXT, yp3_revenue TEXT, yp3_ecpm TEXT,
+    yp3_sub1_name TEXT, yp3_sub1_impressions TEXT, yp3_sub1_revenue TEXT, yp3_sub1_ecpm TEXT,
+    yp3_sub2_name TEXT, yp3_sub2_impressions TEXT, yp3_sub2_revenue TEXT, yp3_sub2_ecpm TEXT,
+    yp3_sub3_name TEXT, yp3_sub3_impressions TEXT, yp3_sub3_revenue TEXT, yp3_sub3_ecpm TEXT,
+    date_filter TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`);
+  // Migrate existing table if sub-row columns are missing
+  const subCols = [
+    'yp1_sub1_name','yp1_sub1_impressions','yp1_sub1_revenue','yp1_sub1_ecpm',
+    'yp1_sub2_name','yp1_sub2_impressions','yp1_sub2_revenue','yp1_sub2_ecpm',
+    'yp1_sub3_name','yp1_sub3_impressions','yp1_sub3_revenue','yp1_sub3_ecpm',
+    'yp2_sub1_name','yp2_sub1_impressions','yp2_sub1_revenue','yp2_sub1_ecpm',
+    'yp2_sub2_name','yp2_sub2_impressions','yp2_sub2_revenue','yp2_sub2_ecpm',
+    'yp2_sub3_name','yp2_sub3_impressions','yp2_sub3_revenue','yp2_sub3_ecpm',
+    'yp3_sub1_name','yp3_sub1_impressions','yp3_sub1_revenue','yp3_sub1_ecpm',
+    'yp3_sub2_name','yp3_sub2_impressions','yp3_sub2_revenue','yp3_sub2_ecpm',
+    'yp3_sub3_name','yp3_sub3_impressions','yp3_sub3_revenue','yp3_sub3_ecpm',
+    'date_filter'
+  ];
+  db.all(`PRAGMA table_info(yield_partners)`, (err, cols) => {
+    if (err || !cols) return;
+    const existing = cols.map(c => c.name);
+    subCols.forEach(col => {
+      if (!existing.includes(col)) {
+        db.run(`ALTER TABLE yield_partners ADD COLUMN ${col} TEXT`);
+      }
+    });
+  });
 });
 
 // SAVE Endpoints — protected by auth
@@ -330,9 +362,37 @@ app.post('/api/top_advertisers', requireAuth, (req, res) => {
 app.post('/api/yield_partners', requireAuth, (req, res) => {
   const f = req.body;
   const df = f.date_filter || 'today';
-  db.run(`INSERT INTO yield_partners (yp1_name,yp1_impressions,yp1_revenue,yp1_ecpm,yp2_name,yp2_impressions,yp2_revenue,yp2_ecpm,yp3_name,yp3_impressions,yp3_revenue,yp3_ecpm,date_filter) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-    [f.yp1_name||'',f.yp1_impressions||'',f.yp1_revenue||'',f.yp1_ecpm||'',f.yp2_name||'',f.yp2_impressions||'',f.yp2_revenue||'',f.yp2_ecpm||'',f.yp3_name||'',f.yp3_impressions||'',f.yp3_revenue||'',f.yp3_ecpm||'',df],
-    err => err ? res.status(500).json({error:'Failed'}) : res.json({success:true}));
+  db.run(`INSERT INTO yield_partners (
+    yp1_name,yp1_impressions,yp1_revenue,yp1_ecpm,
+    yp1_sub1_name,yp1_sub1_impressions,yp1_sub1_revenue,yp1_sub1_ecpm,
+    yp1_sub2_name,yp1_sub2_impressions,yp1_sub2_revenue,yp1_sub2_ecpm,
+    yp1_sub3_name,yp1_sub3_impressions,yp1_sub3_revenue,yp1_sub3_ecpm,
+    yp2_name,yp2_impressions,yp2_revenue,yp2_ecpm,
+    yp2_sub1_name,yp2_sub1_impressions,yp2_sub1_revenue,yp2_sub1_ecpm,
+    yp2_sub2_name,yp2_sub2_impressions,yp2_sub2_revenue,yp2_sub2_ecpm,
+    yp2_sub3_name,yp2_sub3_impressions,yp2_sub3_revenue,yp2_sub3_ecpm,
+    yp3_name,yp3_impressions,yp3_revenue,yp3_ecpm,
+    yp3_sub1_name,yp3_sub1_impressions,yp3_sub1_revenue,yp3_sub1_ecpm,
+    yp3_sub2_name,yp3_sub2_impressions,yp3_sub2_revenue,yp3_sub2_ecpm,
+    yp3_sub3_name,yp3_sub3_impressions,yp3_sub3_revenue,yp3_sub3_ecpm,
+    date_filter
+  ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+    [
+      f.yp1_name||'',f.yp1_impressions||'',f.yp1_revenue||'',f.yp1_ecpm||'',
+      f.yp1_sub1_name||'',f.yp1_sub1_impressions||'',f.yp1_sub1_revenue||'',f.yp1_sub1_ecpm||'',
+      f.yp1_sub2_name||'',f.yp1_sub2_impressions||'',f.yp1_sub2_revenue||'',f.yp1_sub2_ecpm||'',
+      f.yp1_sub3_name||'',f.yp1_sub3_impressions||'',f.yp1_sub3_revenue||'',f.yp1_sub3_ecpm||'',
+      f.yp2_name||'',f.yp2_impressions||'',f.yp2_revenue||'',f.yp2_ecpm||'',
+      f.yp2_sub1_name||'',f.yp2_sub1_impressions||'',f.yp2_sub1_revenue||'',f.yp2_sub1_ecpm||'',
+      f.yp2_sub2_name||'',f.yp2_sub2_impressions||'',f.yp2_sub2_revenue||'',f.yp2_sub2_ecpm||'',
+      f.yp2_sub3_name||'',f.yp2_sub3_impressions||'',f.yp2_sub3_revenue||'',f.yp2_sub3_ecpm||'',
+      f.yp3_name||'',f.yp3_impressions||'',f.yp3_revenue||'',f.yp3_ecpm||'',
+      f.yp3_sub1_name||'',f.yp3_sub1_impressions||'',f.yp3_sub1_revenue||'',f.yp3_sub1_ecpm||'',
+      f.yp3_sub2_name||'',f.yp3_sub2_impressions||'',f.yp3_sub2_revenue||'',f.yp3_sub2_ecpm||'',
+      f.yp3_sub3_name||'',f.yp3_sub3_impressions||'',f.yp3_sub3_revenue||'',f.yp3_sub3_ecpm||'',
+      df
+    ],
+    err => err ? res.status(500).json({error:'Failed', detail: err.message}) : res.json({success:true}));
 });
 
 // ✅ FIXED /stats - Separate queries for each table (NO UNION ERROR)

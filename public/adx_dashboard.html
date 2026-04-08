@@ -812,7 +812,8 @@
 
   .demand-chart-area {
     border: 1px solid var(--border); border-top: none;
-    border-radius: 0 0 8px 8px; padding: 16px 16px 12px; height: 250px;
+    border-radius: 0 0 8px 8px; padding: 16px 0 12px; height: 260px;
+    width: 100%; box-sizing: border-box;
   }
 .table-card {
     background: var(--white);
@@ -1713,7 +1714,7 @@
   </div>
 
   <!-- Chart FULL EDGE -->
-  <div class="demand-chart-area" style=" ">
+  <div class="demand-chart-area" style="margin-left: 0; margin-right: 0; border-left: none; border-right: none; border-radius: 0;">
     <canvas id="demandChart"></canvas>
   </div>
 
@@ -1812,7 +1813,13 @@
           </div> -->
         </div>
 
-        <table>
+        <table style="table-layout:fixed; width:100%;">
+          <colgroup>
+            <col style="width:55%">
+            <col style="width:15%">
+            <col style="width:15%">
+            <col style="width:15%">
+          </colgroup>
           <thead>
             <tr>
               <th>Detected yield partner</th>
@@ -1850,6 +1857,11 @@
 .yield-row.expanded .expand-toggle .material-icons { transform: rotate(180deg); }
 .expand-toggle { display:flex; align-items:center; gap:4px; cursor:pointer; user-select:none; }
 .expand-toggle .material-icons { transition: transform 0.2s ease; font-size:20px !important; color:#5f6368; }
+/* Fix column widths so they never shift on sub-row toggle */
+#yield-tbody tr td:nth-child(1), #yield-tbody ~ thead th:nth-child(1) { width: 55%; }
+#yield-tbody tr td:nth-child(2), #yield-tbody ~ thead th:nth-child(2) { width: 15%; }
+#yield-tbody tr td:nth-child(3), #yield-tbody ~ thead th:nth-child(3) { width: 15%; }
+#yield-tbody tr td:nth-child(4), #yield-tbody ~ thead th:nth-child(4) { width: 15%; }
 </style>
           </div>
       
@@ -2003,18 +2015,27 @@ function buildDemandChart(datasets, labels) {
   const yMax = maxVal + buffer;
 const fixedDatasets = datasets.map(d => ({
   ...d,
-  tension: 0,
-  cubicInterpolationMode: 'default', // 👈 IMPORTANT
-  borderWidth: 1.8,
-  borderJoinStyle: 'miter',
-  borderCapStyle: 'butt',
-  pointRadius: 0
-}));
+  
+  cubicInterpolationMode: 'monotone',
+  tension: 0,              // 🔥 straight lines (spikes visible)
+   borderWidth: 1.5,
+   pointHoverRadius: 0,
+  fill: false,
+  borderJoinStyle: 'miter',    // 🔥 sharp corners
+  borderCapStyle: 'butt' ,
+  pointRadius: 0,
+ }));
  demandChartInst = new Chart(ctx.getContext('2d'), {
   type: 'line',
   data: { labels: chartLabels, datasets: fixedDatasets },
   options: {
+    responsive: true,
+    maintainAspectRatio: false,
     interaction: { mode: 'index', intersect: false },
+
+    layout: {
+      padding: { left: 16, right: 16, top: 8, bottom: 4 }
+    },
 
     scales: {
       x: {
@@ -2024,7 +2045,7 @@ const fixedDatasets = datasets.map(d => ({
       },
       y: {
         grid: { color: '#f1f3f4', drawBorder: false },
-        ticks: { font: { size: 11, family: 'Roboto' }, color: '#80868b' },
+        ticks: { font: { size: 11, family: 'Roboto' }, color: '#80868b', maxTicksLimit: 6 },
         beginAtZero: true,
         max: yMax,
         border: { display: false }
@@ -2039,14 +2060,15 @@ const fixedDatasets = datasets.map(d => ({
       }
     },
 
-    elements: {
-      line: {
-        tension: 0,
-        cubicInterpolationMode: 'default',
-        borderJoinStyle: 'miter'
-      },
-      point: { radius: 0 }
-    }
+   elements: {
+  line: {
+    tension: 0,
+    borderJoinStyle: 'miter'
+  },
+  point: {
+    radius: 3
+  }
+}
   }
 });
 
@@ -2069,12 +2091,14 @@ function setText(id, value) {
 // ===== SPARKLINE HELPERS =====
 // trending: true=uptrend, false=downtrend, null=mixed/volatile
 function genSparkData(trending) {
-  const pts = 9;
+  const pts = 18;
   const data = [];
   let val = 20 + Math.random() * 30;
   for (let i = 0; i < pts; i++) {
-    const bias = trending === true ? 2.5 : trending === false ? -2.5 : 0;
-    val += bias + (Math.random() - 0.5) * 12;
+    const bias = trending === true ? 1.2 : trending === false ? -1.2 : 0;
+    // Large zigzag swings for jagged look like reference
+    const swing = (Math.random() - 0.5) * 22;
+    val += bias + swing;
     val = Math.max(4, Math.min(60, val));
     data.push(val);
   }
@@ -2105,19 +2129,12 @@ function drawSparkline(canvasId, data, color = '#4a86e8') {
   const pad = 3;
   const stepX = (W - pad * 2) / (data.length - 1);
 
-  // 🔥 SAFE fluctuation boost (no glitch)
-  const boost = 1.25; // 👈 subtle, natural feel
-
   ctx.beginPath();
 
   data.forEach((v, i) => {
-    // normalize (0 → 1)
     let norm = (v - min) / range;
-
-    // boost around center (0.5) safely
-    norm = 0.5 + (norm - 0.5) * boost;
-
-    // clamp to avoid overflow/glitch
+    // boost amplitude for more visible fluctuation
+    norm = 0.5 + (norm - 0.5) * 1.5;
     norm = Math.max(0, Math.min(1, norm));
 
     const x = pad + i * stepX;
@@ -2127,12 +2144,11 @@ function drawSparkline(canvasId, data, color = '#4a86e8') {
     else ctx.lineTo(x, y);
   });
 
-  // 🎯 Style
+  // Sharp jagged lines - no rounded joins
   ctx.strokeStyle = color;
-  ctx.lineWidth = 1.8; // 👈 as you asked
-  ctx.lineJoin = 'round';
-  ctx.lineCap = 'round';
-
+  ctx.lineWidth = 1.6;
+  ctx.lineJoin = 'miter';
+  ctx.lineCap = 'butt';
   ctx.stroke();
 }
 
