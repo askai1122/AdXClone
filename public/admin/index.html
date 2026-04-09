@@ -462,6 +462,16 @@
     </div>
 
     <div class="card">
+      <div class="card-title">How You Get Paid</div>
+      <form class="form-grid" id="howYouGetPaidForm" onsubmit="saveForm(event,'how_you_get_paid','/api/how_you_get_paid')">
+        <div class="form-group"><label>Bank Account Name</label><input name="bankaccountname" placeholder="e.g. Faizan Ali"></div>
+        <div class="form-group"><label>Last 3 Digits</label><input name="lastthreedigits" placeholder="e.g. 736"></div>
+        <button class="save-btn" type="submit">💾 Save How You Get Paid</button>
+        <div class="msg" id="msg-howYouGetPaidForm"></div>
+      </form>
+    </div>
+
+    <div class="card">
       <div class="card-title">Transactions Summary</div>
       <form class="form-grid" id="transactionformPay" onsubmit="saveForm(event,'transactionform','/api/transactionform')">
         <div class="form-group"><label>1st Month Amount</label><input name="firstmonth" placeholder="$0.00"></div>
@@ -734,6 +744,7 @@ async function loadAll() {
       top_advertisers:         'topAdvertisersForm',
       yield_partners:          'yieldPartnersForm',
       payment_page:            'paymentPageForm',
+      how_you_get_paid:        'howYouGetPaidForm',
       transactionform:         'transactionformPay',
       settingsform:            'settingsformPay',
       currentmonthtrans:       'currentmonthtransForm',

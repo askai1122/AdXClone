@@ -660,6 +660,34 @@ function toggleAdmSub(el) {
 <!-- A.html -->
 
 
+<!-- ===== HOW YOU GET PAID CARD ===== -->
+<div class="card border-0 shadow-sm mb-4" style="border-radius:8px; max-width:460px;">
+  <div class="card-body pb-0">
+    <h5 class="fw-normal mb-4" style="font-size:1.375rem; font-weight:400;">How you get paid</h5>
+    <div class="d-flex align-items-center mb-3">
+      <div class="me-3 d-flex align-items-center justify-content-center">
+        <img src="https://lh6.ggpht.com/mVnFFyvZhK-1oHP2YMYvxVwuEYdHbU_r-1WKk-bQyZfCbFxrtAm5ZJUiGbMuI4viuSEf46U"
+          alt="" style="height:80px; width:120px;" />
+      </div>
+      <div class="d-block" style="margin-bottom:25px;">
+        <span class="text-dark d-block"
+          style="font:normal 12px Roboto, Arial, Helvetica, sans-serif;">
+          Wire transfer to bank account <span id="pd-lastthreedigits" name="lastthreedigits">•••• —</span>
+        </span>
+        <span class="d-block" id="pd-bankaccountname" name="bankaccountname"
+          style="font:normal 12px Roboto, Arial, Helvetica, sans-serif; line-height:3.3; color:rgb(128,128,128);">
+          —
+        </span>
+      </div>
+    </div>
+  </div>
+  <span style="border:0.1px solid rgba(220,217,217,0.295);"></span>
+  <div class="hover-trasiton-card p-3 border-0 text-center">
+    <a href="payment.html" class="btn btn-link p-0 text-decoration-none text-center"
+      style="font-weight:450; font-size:16px;">Manage payment methods</a>
+  </div>
+</div>
+
 <div id="months-container" style="font-family: 'Roboto', Arial, sans-serif;"></div>
 <script>
   document.addEventListener("DOMContentLoaded", function () {
@@ -975,6 +1003,19 @@ function toggleHeader(element) {
       if (allData.active_date_filter) {
         const input = document.querySelector(`[name="date_filter"]`);
         if (input) input.value = allData.active_date_filter;
+      }
+
+      // ================================
+      // ✅ HOW YOU GET PAID CARD
+      // ================================
+      const pp = allData.how_you_get_paid || allData.payment_page || {};
+      const lastDigitsEl = document.getElementById('pd-lastthreedigits');
+      const bankNameEl   = document.getElementById('pd-bankaccountname');
+      if (lastDigitsEl) {
+        lastDigitsEl.textContent = pp.lastthreedigits ? '•••• ' + pp.lastthreedigits : '•••• —';
+      }
+      if (bankNameEl) {
+        bankNameEl.textContent = pp.bankaccountname || '—';
       }
 
       // ================================

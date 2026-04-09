@@ -524,11 +524,12 @@
     text-align: center;
     pointer-events: none;
   }
-  .donut-center-label { font-size: 11px; color: var(--text-secondary); }
-  .donut-center-value { font-family: 'Google Sans',sans-serif; font-size: 18px; font-weight: 500; color: var(--text-primary); }
+  .donut-center-label { font-size: 11px; color: #545454 !important; }
+  .donut-center-value {  font-family: 'Google Sans',sans-serif; font-size: 15px; font-weight: 300; color: #545454e7 !important; margin-top: 4px; }
 
   .donut-legend {     justify-self: anchor-center; margin-top: 15px;}
   .donut-legend {
+    color:#545454;
   display: grid;
   grid-template-columns: repeat(2, 1fr); /* 2 columns */
   column-gap: 5px;  /* horizontal spacing between columns */
@@ -1180,14 +1181,23 @@
     box-sizing: border-box;
 ">
     <span id="datePresetLabel" style="color: grey; display: inline-flex; align-items: center;">Last 30 days</span>
-    <span id="dateRangeLabel" style="margin-left:4px; display: inline-flex; align-items: center;">Mar 6 – Apr 4, 2026</span>
-    <span class="material-icons" style="display: inline-flex; align-items: center; margin-left:4px;">arrow_drop_down</span>
-    <span class="material-icons" style="font-size:16px; margin-left:2px; display: inline-flex; align-items: center;">help_outline</span>
+    <span id="dateRangeLabel" style="margin-left:4px;margin-right: 12px; display: inline-flex; align-items: center;">Mar 6 – Apr 4, 2026</span>
+    <span class="material-icons" style="    font-size: 25px;
+margin-right: 8px;display: inline-flex; align-items: center; margin-left:4px;">arrow_drop_down</span>
+    <span class="material-icons" style="    font-size: 17px;
+    margin-left: 2px;
+        margin-top: -4px;
+
+    display: inline-flex;
+    align-items: center;
+    font-weight: 400;
+    color: #343434;">help_outline</span>
 </div>
 
       <div class="filter-add">
-        <img src="assets/iamges/add_filter.png">
-         Add filter
+        <img src="assets/iamges/add_filter.png" style="margin-right: 12px;">
+        <span style="font-size: 14px;">Add filter</span>
+         
       </div>
     </div>
   <div id="datePickerDropdown" style="margin-top: -40px !important;border-top: none !important;height: 350px !important;display:none;position:fixed;z-index:9999;background:#fff;border:1px solid #dadce0;border-radius:8px;box-shadow:0 4px 16px rgba(60,64,67,0.2);font-family:'Roboto',sans-serif;width:380px;overflow:hidden;">
@@ -1373,7 +1383,7 @@
           <img src="assets/iamges/t_clicks.png">
             
             <!-- <div class="donut-center-label">Total clicks</div> -->
-            <div class="donut-center-value" id="clicks-total">131</div>
+            <div class="donut-center-value" style="columns: #545454;" id="clicks-total">131</div>
           </div>
         </div>
         <div class="donut-legend" style="justify-content: center;" id="clicks-legend">
@@ -1406,7 +1416,7 @@
           <img src="assets/iamges/t_ecpm.png">
 
             <!-- <div class="donut-center-label">Total ecpm</div> -->
-            <div class="donut-center-value" id="ecpm-total">€0.26</div>
+            <div class="donut-center-value" style="columns: #545454;" id="ecpm-total">€0.26</div>
           </div>
         </div>
         <div class="donut-legend" id="ecpm-legend">
@@ -1455,7 +1465,7 @@
           <img src="assets/iamges/t_imp.png">
 
             <!-- <div class="donut-center-label">Total impressions</div> -->
-            <div class="donut-center-value" id="impressions-total">913</div>
+            <div class="donut-center-value" style="color: #545454 !important;" id="impressions-total">913</div>
           </div>
         </div>
 

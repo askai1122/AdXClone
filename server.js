@@ -497,8 +497,8 @@ app.get('/stats', (req, res) => {
     }
     
     // Fetch new tables (filtered by date_filter, except settingsform which is global)
-    const extraTables = ['payment_page','transactionform','settingsform','currentmonthtrans','lastmonthtrans','thirdmonthtrans','reciptform','secondmonthreciptform','thirdmonthreciptform','perf_summary','pricing_rules','demand_comparison','top_advertisers','yield_partners'];
-    const globalTables = ['settingsform']; // these are not date-filtered
+    const extraTables = ['payment_page','how_you_get_paid','transactionform','settingsform','currentmonthtrans','lastmonthtrans','thirdmonthtrans','reciptform','secondmonthreciptform','thirdmonthreciptform','perf_summary','pricing_rules','demand_comparison','top_advertisers','yield_partners'];
+    const globalTables = ['settingsform','how_you_get_paid','payment_page']; // these are not date-filtered
     let fetched = 0;
     if (extraTables.length === 0) { res.json(result); return; }
     extraTables.forEach(t => {
@@ -532,6 +532,7 @@ app.get('/stats', (req, res) => {
 // ===== NEW TABLES =====
 const newTables = {
   payment_page:          `id INTEGER PRIMARY KEY AUTOINCREMENT, earnings TEXT, lastpaymentdate TEXT, bankaccountname TEXT, lastthreedigits TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP`,
+  how_you_get_paid:      `id INTEGER PRIMARY KEY AUTOINCREMENT, lastthreedigits TEXT, bankaccountname TEXT, date_filter TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP`,
   transactionform:       `id INTEGER PRIMARY KEY AUTOINCREMENT, firstmonth TEXT, firstmonthdate TEXT, secondmonth TEXT, secondmonthdate TEXT, thirdmonth TEXT, thirdmonthdate TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP`,
   settingsform:          `id INTEGER PRIMARY KEY AUTOINCREMENT, publisherid TEXT, publishername TEXT, publisheruser TEXT, network_id TEXT, site_name TEXT, mcm_parent_url TEXT, mcm_network_code TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP`,
   currentmonthtrans:     `id INTEGER PRIMARY KEY AUTOINCREMENT, startingbalance TEXT, endingbalance TEXT, firstmonthreciptdate TEXT, banknumber TEXT, amount TEXT, firstmonthtitledate TEXT, firstmonthtitle TEXT, firstmonthtitleamount TEXT, firstmonthinvaliddate TEXT, firstmonthinvalidtitle TEXT, firstmonthinvalidamount TEXT, firstmonthextrainvaliddate TEXT, firstmonthextrainvalidtitle TEXT, firstmonthextrainvalidamount TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP`,
@@ -544,6 +545,14 @@ const newTables = {
 
 Object.entries(newTables).forEach(([name, cols]) => {
   db.run(`CREATE TABLE IF NOT EXISTS ${name} (${cols})`);
+});
+
+// Migrate how_you_get_paid: add date_filter if missing
+db.all(`PRAGMA table_info(how_you_get_paid)`, (err, cols) => {
+  if (err || !cols) return;
+  if (!cols.find(c => c.name === 'date_filter')) {
+    db.run(`ALTER TABLE how_you_get_paid ADD COLUMN date_filter TEXT`);
+  }
 });
 
 // Generic save endpoint for new tables
