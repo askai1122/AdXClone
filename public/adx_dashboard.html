@@ -2775,7 +2775,7 @@ function toggleSubnav(el) {
     if(pl) pl.textContent=presetLabel(dpCurrentPreset);
     if(rl && dpStart && dpEnd) {
       const ms=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-      rl.textContent=ms[dpStart.getMonth()]+' '+dpStart.getDate()+' – '+ms[dpEnd.getMonth()]+' '+dpEnd.getDate()+', '+dpEnd.getFullYear();
+      if(dpStart.getTime()===dpEnd.getTime()) { rl.textContent=ms[dpStart.getMonth()]+' '+dpStart.getDate()+', '+dpStart.getFullYear(); } else { rl.textContent=ms[dpStart.getMonth()]+' '+dpStart.getDate()+' – '+ms[dpEnd.getMonth()]+' '+dpEnd.getDate()+', '+dpEnd.getFullYear(); }
     }
   }
 
