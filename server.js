@@ -107,7 +107,7 @@ db.serialize(() => {
   db.run(`ALTER TABLE overview_form ADD COLUMN network_id TEXT`, () => {});
   db.run(`ALTER TABLE clicks ADD COLUMN clicks_graph_numbers TEXT`, () => {});
   db.run(`ALTER TABLE ecpm ADD COLUMN ecpm_graph_numbers TEXT`, () => {});
-  db.run(`ALTER TABLE impressions ADD COLUMN impressions_graph_numbers TEXT`, () => {});
+  db.run(`ALTER TABLE impressions_country ADD COLUMN impressions_graph_numbers TEXT`, () => {});
   // Migration: ensure settingsform has all needed columns
   db.run(`ALTER TABLE settingsform ADD COLUMN network_id TEXT`, () => {});
   db.run(`ALTER TABLE settingsform ADD COLUMN site_name TEXT`, () => {});

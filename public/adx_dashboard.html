@@ -2168,24 +2168,49 @@ function applyDashboardData(d) {
   
   if (ov.impressions)        setText('ov-impressions',        ov.impressions);
   if (ov.impressions)        setText('network_id',        ov.network_id);
-  if (ov.impressions_percent) setText('ov-impressions-change', ov.impressions_percent);
+  // --- metric-change color: red if starts with '-', green if '+' ---
+  function applyChangeColor(id, val) {
+    if (!val) return;
+    setText(id, val);
+    const el = document.getElementById(id);
+    if (!el) return;
+    const trimmed = val.trim();
+    if (trimmed.startsWith('-')) {
+      el.style.color = 'var(--red)';
+    } else if (trimmed.startsWith('+')) {
+      el.style.color = 'var(--green)';
+    } else {
+      el.style.color = '';
+    }
+  }
+
+  if (ov.impressions_percent) applyChangeColor('ov-impressions-change', ov.impressions_percent);
   if (ov.revenue)            setText('ov-revenue',            ov.revenue);
-  if (ov.revenue_percent)    setText('ov-revenue-change',     ov.revenue_percent);
+  if (ov.revenue_percent)    applyChangeColor('ov-revenue-change',     ov.revenue_percent);
   if (ov.ecpm)               setText('ov-ecpm',               ov.ecpm);
-  if (ov.ecpm_percent)       setText('ov-ecpm-change',        ov.ecpm_percent);
+  if (ov.ecpm_percent)       applyChangeColor('ov-ecpm-change',        ov.ecpm_percent);
   if (ov.viewability)        setText('ov-viewability',        ov.viewability);
-  if (ov.viewability_percent) setText('ov-viewability-change', ov.viewability_percent);
+  if (ov.viewability_percent) applyChangeColor('ov-viewability-change', ov.viewability_percent);
   // --- OVERVIEW CARD LABELS (dynamic) ---
   setText('ov-impressions-label', 'Impressions');
   setText('ov-revenue-label',     'Revenue');
   setText('ov-ecpm-label',        'eCPM');
   setText('ov-viewability-label', 'Viewability');
 
-  // --- OVERVIEW CARD SPARKLINES (randomised per load, unique per card) ---
-  drawSparkline('spark-impressions', genSparkData(true),  '#1a73e8');
-  drawSparkline('spark-revenue',     genSparkData(true),  '#1a73e8');
-  drawSparkline('spark-ecpm',        genSparkData(null),  '#1a73e8');
-  drawSparkline('spark-viewability', genSparkData(false), '#1a73e8');
+  // --- OVERVIEW CARD SPARKLINES ---
+  // Hide sparklines for today/yesterday (single day — no trend to show)
+  const isSingleDay = (dashboardDateFilter === 'today' || dashboardDateFilter === 'yesterday');
+  const sparkIds = ['spark-impressions','spark-revenue','spark-ecpm','spark-viewability'];
+  sparkIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = isSingleDay ? 'none' : 'block';
+  });
+  if (!isSingleDay) {
+    drawSparkline('spark-impressions', genSparkData(true),  '#1a73e8');
+    drawSparkline('spark-revenue',     genSparkData(true),  '#1a73e8');
+    drawSparkline('spark-ecpm',        genSparkData(null),  '#1a73e8');
+    drawSparkline('spark-viewability', genSparkData(false), '#1a73e8');
+  }
 
   // --- NETWORK ID (from settingsform.network_id or publisherid fallback) ---
   const sf = d.settingsform || {};
