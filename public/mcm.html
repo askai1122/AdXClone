@@ -387,10 +387,10 @@
               <div class="mcm-network-code"><span id="mcm-network-code"></span></div>
             </td>
             <td style="    padding-top: 12px !important">
-              <span class="mcm-status-withdrawn" >Withdrawn by parent</span>
+              <span class="mcm-status-withdrawn" id="mcm-invitation-status">Withdrawn by parent</span>
             </td>
             <td style="    padding-top: 12px !important">
-              <span class="mcm-delegation-type"  >Manage account</span>
+              <span class="mcm-delegation-type" id="mcm-delegation-type">Manage account</span>
             </td>
           </tr>
         </tbody>
@@ -460,6 +460,18 @@ function toggleAdmSub(el) {
     const codeEl = document.getElementById('mcm-network-code');
     if (codeEl && sf.mcm_network_code && sf.mcm_network_code.trim()) {
       codeEl.textContent = sf.mcm_network_code.trim();
+    }
+
+    // MCM invitation status
+    const invEl = document.getElementById('mcm-invitation-status');
+    if (invEl && sf.mcm_invitation_status && sf.mcm_invitation_status.trim()) {
+      invEl.textContent = sf.mcm_invitation_status.trim();
+    }
+
+    // MCM delegation type
+    const delEl = document.getElementById('mcm-delegation-type');
+    if (delEl && sf.mcm_delegation_type && sf.mcm_delegation_type.trim()) {
+      delEl.textContent = sf.mcm_delegation_type.trim();
     }
 
     // Network ID in sidebar

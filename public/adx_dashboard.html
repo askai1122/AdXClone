@@ -2775,8 +2775,8 @@ function toggleSubnav(el) {
     switch(preset) {
       case 'today':         dpStart=new Date(t); dpEnd=new Date(t); break;
       case 'yesterday':     dpStart=addDays(t,-1); dpEnd=addDays(t,-1); break;
-      case 'last7':         dpStart=addDays(t,-6); dpEnd=new Date(t); break;
-      case 'last30':        dpStart=addDays(t,-29); dpEnd=new Date(t); break;
+      case 'last7':         dpStart=addDays(t,-7); dpEnd=new Date(t); break;
+      case 'last30':        dpStart=addDays(t,-30); dpEnd=new Date(t); break;
       case 'last90':        dpStart=addDays(t,-89); dpEnd=new Date(t); break;
       case 'lastmonth':
         dpStart=new Date(t.getFullYear(),t.getMonth()-1,1);

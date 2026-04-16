@@ -113,6 +113,8 @@ db.serialize(() => {
   db.run(`ALTER TABLE settingsform ADD COLUMN site_name TEXT`, () => {});
   db.run(`ALTER TABLE settingsform ADD COLUMN mcm_parent_url TEXT`, () => {});
   db.run(`ALTER TABLE settingsform ADD COLUMN mcm_network_code TEXT`, () => {});
+  db.run(`ALTER TABLE settingsform ADD COLUMN mcm_invitation_status TEXT`, () => {});
+  db.run(`ALTER TABLE settingsform ADD COLUMN mcm_delegation_type TEXT`, () => {});
 
   db.run(`
     CREATE TABLE IF NOT EXISTS clicks (
@@ -534,7 +536,7 @@ const newTables = {
   payment_page:          `id INTEGER PRIMARY KEY AUTOINCREMENT, earnings TEXT, lastpaymentdate TEXT, bankaccountname TEXT, lastthreedigits TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP`,
   how_you_get_paid:      `id INTEGER PRIMARY KEY AUTOINCREMENT, lastthreedigits TEXT, bankaccountname TEXT, date_filter TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP`,
   transactionform:       `id INTEGER PRIMARY KEY AUTOINCREMENT, firstmonth TEXT, firstmonthdate TEXT, secondmonth TEXT, secondmonthdate TEXT, thirdmonth TEXT, thirdmonthdate TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP`,
-  settingsform:          `id INTEGER PRIMARY KEY AUTOINCREMENT, publisherid TEXT, publishername TEXT, publisheruser TEXT, network_id TEXT, site_name TEXT, mcm_parent_url TEXT, mcm_network_code TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP`,
+  settingsform:          `id INTEGER PRIMARY KEY AUTOINCREMENT, publisherid TEXT, publishername TEXT, publisheruser TEXT, network_id TEXT, site_name TEXT, mcm_parent_url TEXT, mcm_network_code TEXT, mcm_invitation_status TEXT, mcm_delegation_type TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP`,
   currentmonthtrans:     `id INTEGER PRIMARY KEY AUTOINCREMENT, startingbalance TEXT, endingbalance TEXT, firstmonthreciptdate TEXT, banknumber TEXT, amount TEXT, firstmonthtitledate TEXT, firstmonthtitle TEXT, firstmonthtitleamount TEXT, firstmonthinvaliddate TEXT, firstmonthinvalidtitle TEXT, firstmonthinvalidamount TEXT, firstmonthextrainvaliddate TEXT, firstmonthextrainvalidtitle TEXT, firstmonthextrainvalidamount TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP`,
   lastmonthtrans:        `id INTEGER PRIMARY KEY AUTOINCREMENT, secondmonthstartingbalance TEXT, secondmonthendingbalance TEXT, secondmonthreciptdate TEXT, secondmonthbanknumber TEXT, secondmonthamount TEXT, secondmonthtitledate TEXT, secondmonthtitle TEXT, secondmonthtitleamount TEXT, secondmonthinvaliddate TEXT, secondmonthinvalidtitle TEXT, secondmonthinvalidamount TEXT, secondmonthextrainvaliddate TEXT, secondmonthextrainvalidtitle TEXT, secondmonthextrainvalidamount TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP`,
   thirdmonthtrans:       `id INTEGER PRIMARY KEY AUTOINCREMENT, thirdmonthstartingbalance TEXT, thirdmonthendingbalance TEXT, thirdmonthreciptdate TEXT, thirdmonthbanknumber TEXT, thirdmonthamount TEXT, thirdmonthtitledate TEXT, thirdmonthtitle TEXT, thirdmonthtitleamount TEXT, thirdmonthinvaliddate TEXT, thirdmonthinvalidtitle TEXT, thirdmonthinvalidamount TEXT, thirdmonthextrainvaliddate TEXT, thirdmonthextrainvalidtitle TEXT, thirdmonthextrainvalidamount TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP`,
