@@ -2318,11 +2318,11 @@ function applyDashboardData(d) {
   let perfApps;
   if (appNames.length) {
     // Generate placeholder data per app (evenly spread)
-    perfApps = appNames.map((name, i) => ({
-      label: name,
-      color: PALETTE[i % PALETTE.length],
-      data: [120, 128, 82, 122, 190, 242, 228].map(v => Math.max(1, Math.round(v / (i + 1))))
-    }));
+    perfApps = appNames.map((name, i) => {
+      const base = Math.max(5, Math.round(300 / (i + 1)));
+      const rndData = Array.from({length: 7}, () => Math.max(1, Math.round(base * (0.3 + Math.random() * 0.9))));
+      return { label: name, color: PALETTE[i % PALETTE.length], data: rndData };
+    });
     // Update perf legend
     const legendEl = document.getElementById('perf-legend');
     if (legendEl) {
@@ -2335,12 +2335,13 @@ function applyDashboardData(d) {
     }
   } else {
     // Static fallback
+    const rnd = (min,max) => Math.round(min + Math.random()*(max-min));
     perfApps = [
-      { label: 'Instagram (com.instagram.android)', color: '#4285f4', data: [120,120,128,82,122,242,228] },
-      { label: '(Not applicable)',                  color: '#ea4335', data: [18,62,38,14,14,18,18] },
-      { label: 'Facebook (com.facebook.katana)',     color: '#fbbc05', data: [2,4,2,1,1,2,2] },
-      { label: 'Unknown (com.aninsta.android)',      color: '#9c27b0', data: [1,1,1,1,1,1,1] },
-      { label: 'Opera Mini: Fast Web Browser',       color: '#34a853', data: [0,2,1,0,0,0,1] }
+      { label: 'Instagram (com.instagram.android)', color: '#4285f4', data: Array.from({length:7},()=>rnd(80,260)) },
+      { label: '(Not applicable)',                  color: '#ea4335', data: Array.from({length:7},()=>rnd(10,70)) },
+      { label: 'Facebook (com.facebook.katana)',     color: '#fbbc05', data: Array.from({length:7},()=>rnd(1,8)) },
+      { label: 'Unknown (com.aninsta.android)',      color: '#9c27b0', data: Array.from({length:7},()=>rnd(1,4)) },
+      { label: 'Opera Mini: Fast Web Browser',       color: '#34a853', data: Array.from({length:7},()=>rnd(0,3)) }
     ];
   }
   buildPerfChart(perfApps, ['Mar 21','22','23','24','25','26','27']);
@@ -2374,13 +2375,8 @@ function applyDashboardData(d) {
     //   [0.50,0.55,0.45,0.50,0.55,0.50,0.52],
     //   [0.40,0.45,0.50,0.45,0.40,0.45,0.42],
     // ];
-    const smoothPatterns = [
-  [0.2, 0.8, 0.3, 0.9, 0.6, 0.85, 0.4],
-  [0.3, 0.7, 0.2, 0.6, 0.8, 0.5, 0.75],
-  [0.4, 0.9, 0.3, 0.7, 0.5, 0.85, 0.6],
-  [0.25, 0.65, 0.35, 0.75, 0.55, 0.7, 0.45],
-  [0.2, 0.6, 0.3, 0.5, 0.4, 0.65, 0.35],
-];
+    const rndPattern = () => Array.from({length:7}, () => parseFloat((0.15 + Math.random()*0.85).toFixed(3)));
+    const smoothPatterns = [rndPattern(),rndPattern(),rndPattern(),rndPattern(),rndPattern()];
     demandDatasets = dcLabels.map((label, i) => {
       const rawVal = dc[`dc_c${i+1}_value`] || '0';
       const base = parseFloat(rawVal.replace(/[^0-9.]/g,'')) || 0;
@@ -2408,10 +2404,11 @@ const pts = pattern.map(f => Math.round((peak / maxPeak) * 100 * f));
     });
   } else {
     // Static fallback
+    const rndD = (min,max) => Math.round(min+Math.random()*(max-min));
     demandDatasets = [
-      { label:'Ad Exchange (purple)',           data:[160,170,155,165,175,160,165], borderColor:'#9c27b0', backgroundColor:'transparent', tension:0.4, pointRadius:0, pointHoverRadius:4, borderWidth:2 },
-      { label:'Ad Exchange – Open Auction',     data:[100,110,95,105,115,100,108],  borderColor:'#34a853', backgroundColor:'transparent', tension:0.4, pointRadius:0, pointHoverRadius:4, borderWidth:2 },
-      { label:'Unfilled (orange)',              data:[10,12,8,11,13,10,11],         borderColor:'#f9a825', backgroundColor:'transparent', tension:0.4, pointRadius:0, pointHoverRadius:4, borderWidth:2 }
+      { label:'Ad Exchange',        data:Array.from({length:7},()=>rndD(120,280)), borderColor:'#9c27b0', backgroundColor:'transparent', tension:0.4, pointRadius:0, pointHoverRadius:4, borderWidth:2 },
+      { label:'Ad Exchange – Open', data:Array.from({length:7},()=>rndD(70,200)),  borderColor:'#34a853', backgroundColor:'transparent', tension:0.4, pointRadius:0, pointHoverRadius:4, borderWidth:2 },
+      { label:'Unfilled',           data:Array.from({length:7},()=>rndD(5,30)),    borderColor:'#f9a825', backgroundColor:'transparent', tension:0.4, pointRadius:0, pointHoverRadius:4, borderWidth:2 }
     ];
   }
   buildDemandChart(demandDatasets, ['Mar 22','23','24','25','26','27','28']);
@@ -2512,18 +2509,20 @@ async function loadDashboard(dateFilter) {
   ecpmChartInst      = makeDonut('ecpmChart',        [1.87,1.22,1.21,1.15,1.07,0.22], PALETTE, { inst: null });
   impressionsChartInst = makeDonut('impressionsChart',[844,13,10,7,26],            PALETTE, { inst: null });
 
+  const _rp = (a,b)=>Math.round(a+Math.random()*(b-a));
   buildPerfChart([
-    { label:'Instagram (com.instagram.android)', color:'#4285f4', data:[120,120,128,82,122,242,228] },
-    { label:'(Not applicable)',                  color:'#ea4335', data:[18,62,38,14,14,18,18] },
-    { label:'Facebook (com.facebook.katana)',     color:'#fbbc05', data:[2,4,2,1,1,2,2] },
-    { label:'Unknown (com.aninsta.android)',      color:'#9c27b0', data:[1,1,1,1,1,1,1] },
-    { label:'Opera Mini: Fast Web Browser',       color:'#34a853', data:[0,2,1,0,0,0,1] }
+    { label:'Instagram (com.instagram.android)', color:'#4285f4', data:Array.from({length:7},()=>_rp(80,260)) },
+    { label:'(Not applicable)',                  color:'#ea4335', data:Array.from({length:7},()=>_rp(10,70)) },
+    { label:'Facebook (com.facebook.katana)',     color:'#fbbc05', data:Array.from({length:7},()=>_rp(1,8)) },
+    { label:'Unknown (com.aninsta.android)',      color:'#9c27b0', data:Array.from({length:7},()=>_rp(1,4)) },
+    { label:'Opera Mini: Fast Web Browser',       color:'#34a853', data:Array.from({length:7},()=>_rp(0,3)) }
   ], ['Mar 21','22','23','24','25','26','27']);
 
+  const _ri = (a,b)=>Math.round(a+Math.random()*(b-a));
   buildDemandChart([
-    { label:'Ad Exchange',                    data:[160,170,155,165,175,160,165], borderColor:'#9c27b0', backgroundColor:'transparent', tension:0.4, pointRadius:0, pointHoverRadius:4, borderWidth:2 },
-    { label:'Ad Exchange – Open Auction',     data:[100,110,95,105,115,100,108],  borderColor:'#34a853', backgroundColor:'transparent', tension:0.4, pointRadius:0, pointHoverRadius:4, borderWidth:2 },
-    { label:'Unfilled',                       data:[10,12,8,11,13,10,11],         borderColor:'#f9a825', backgroundColor:'transparent', tension:0.4, pointRadius:0, pointHoverRadius:4, borderWidth:2 }
+    { label:'Ad Exchange',        data:Array.from({length:7},()=>_ri(120,280)), borderColor:'#9c27b0', backgroundColor:'transparent', tension:0.4, pointRadius:0, pointHoverRadius:4, borderWidth:2 },
+    { label:'Ad Exchange – Open', data:Array.from({length:7},()=>_ri(70,200)),  borderColor:'#34a853', backgroundColor:'transparent', tension:0.4, pointRadius:0, pointHoverRadius:4, borderWidth:2 },
+    { label:'Unfilled',           data:Array.from({length:7},()=>_ri(5,30)),    borderColor:'#f9a825', backgroundColor:'transparent', tension:0.4, pointRadius:0, pointHoverRadius:4, borderWidth:2 }
   ], ['Mar 22','23','24','25','26','27','28']);
 })();
 
@@ -2775,8 +2774,8 @@ function toggleSubnav(el) {
     switch(preset) {
       case 'today':         dpStart=new Date(t); dpEnd=new Date(t); break;
       case 'yesterday':     dpStart=addDays(t,-1); dpEnd=addDays(t,-1); break;
-      case 'last7':         dpStart=addDays(t,-7); dpEnd=new Date(t); break;
-      case 'last30':        dpStart=addDays(t,-30); dpEnd=new Date(t); break;
+      case 'last7':         dpStart=addDays(t,-7); dpEnd=addDays(t,-1); break;
+      case 'last30':        dpStart=addDays(t,-30); dpEnd=addDays(t,-1); break;
       case 'last90':        dpStart=addDays(t,-89); dpEnd=new Date(t); break;
       case 'lastmonth':
         dpStart=new Date(t.getFullYear(),t.getMonth()-1,1);
