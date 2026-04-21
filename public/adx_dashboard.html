@@ -1180,8 +1180,8 @@
     height: 40px; /* adjust height as needed */
     box-sizing: border-box;
 ">
-    <span id="datePresetLabel" style="color: grey; display: inline-flex; align-items: center;">Last 30 days</span>
-    <span id="dateRangeLabel" style="margin-left:4px;margin-right: 12px; display: inline-flex; align-items: center;">Mar 6 – Apr 4, 2026</span>
+    <span id="datePresetLabel" style="color: grey; display: inline-flex; align-items: center;">Today</span>
+    <span id="dateRangeLabel" style="margin-left:4px;margin-right: 12px; display: inline-flex; align-items: center;"></span>
     <span class="material-icons" style="    font-size: 25px;
 margin-right: 8px;display: inline-flex; align-items: center; margin-left:4px;">arrow_drop_down</span>
     <span class="material-icons" style="    font-size: 17px;
@@ -1206,10 +1206,10 @@ margin-right: 8px;display: inline-flex; align-items: center; margin-left:4px;">a
         <!-- Left: Presets -->
         <div style="border-right:1px solid #dadce0;padding:8px 0;background:#fff;">
           <div class="dp-preset" data-preset="custom" onclick="dpSelectPreset(this)">Custom</div>
-          <div class="dp-preset" data-preset="today" onclick="dpSelectPreset(this)">Today</div>
+          <div class="dp-preset dp-preset-active" data-preset="today" onclick="dpSelectPreset(this)">Today</div>
           <div class="dp-preset" data-preset="yesterday" onclick="dpSelectPreset(this)">Yesterday</div>
           <div class="dp-preset" data-preset="last7" onclick="dpSelectPreset(this)">Last 7 days</div>
-          <div class="dp-preset dp-preset-active" data-preset="last30" onclick="dpSelectPreset(this)">Last 30 days</div>
+          <div class="dp-preset " data-preset="last30" onclick="dpSelectPreset(this)">Last 30 Days</div>
           <div class="dp-preset" data-preset="last90" onclick="dpSelectPreset(this)">Last 90 days</div>
           <div class="dp-preset" data-preset="lastmonth" onclick="dpSelectPreset(this)">Last month</div>
           <div class="dp-preset" data-preset="monthtodate" onclick="dpSelectPreset(this)">Month to date</div>
@@ -1946,28 +1946,64 @@ function buildDonutLegend(legendEl, countries, colors, total) {
 }
 
 // ===== PERFORMANCE CHART =====
-function buildPerfChart(apps, labels, hideXAxis) {
+function buildPerfChart(apps, labels, hideXAxis, showDots) {
+   
   if (perfChartInst) { perfChartInst.destroy(); }
   const ctx = document.getElementById('perfChart');
   if (!ctx) return;
 
   const chartLabels = labels && labels.length ? labels : ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  const datasets = apps.map((app, i) => ({
+//   const datasets = apps.map((app, i) => ({
+//   label: app.label,
+//   data: app.data,
+//   borderColor: app.color || PALETTE[i % PALETTE.length],
+//   backgroundColor: 'transparent',
+
+//   tension: 0,              // 👈 FIX (no curve = sharp nok)
+//   cubicInterpolationMode: 'default', // optional
+
+//   pointRadius: showDots ? 3 : 0,
+//   pointHoverRadius: showDots ? 3 : 4,
+//   borderWidth: 1.8,        // 👈 thoda clean thickness
+//   borderJoinStyle: 'miter', // 👈 sharp corners
+//   borderCapStyle: 'butt'    // 👈 GA jaisa edge
+// }));
+const datasets = apps.map((app, i) => ({
   label: app.label,
   data: app.data,
   borderColor: app.color || PALETTE[i % PALETTE.length],
-  backgroundColor: 'transparent',
+  backgroundColor: app.color || PALETTE[i % PALETTE.length],
 
-  tension: 0,              // 👈 FIX (no curve = sharp nok)
-  cubicInterpolationMode: 'default', // optional
+  tension: 0,
 
-  pointRadius: 0,
-  pointHoverRadius: 4,
-  borderWidth: 1.8,        // 👈 thoda clean thickness
-  borderJoinStyle: 'miter', // 👈 sharp corners
-  borderCapStyle: 'butt'    // 👈 GA jaisa edge
+  // ✅ LINE CONTROL
+  showLine: showDots,              // true = line, false = no line
+  borderWidth: showDots ? 2 : 0, // line only in sparkline
+
+  // ✅ DOTS CONTROL
+  pointRadius: (ctx) => {
+  if (showDots) return 0; // sparkline mode → no dots
+
+  const total = ctx.dataset.data.length;
+
+  // random indexes generate (sirf ek baar per dataset)
+  if (!ctx.dataset._randomDots) {
+    const count = 2; // 👈 kitne dots chahiye (3 ya 4)
+    const indexes = new Set();
+
+    while (indexes.size < Math.min(count, total)) {
+      indexes.add(Math.floor(Math.random() * total));
+    }
+
+    ctx.dataset._randomDots = [...indexes];
+  }
+
+  return ctx.dataset._randomDots.includes(ctx.dataIndex) ? 3 : 0;
+},                  // 👈 ALWAYS show dots
+  pointHoverRadius: 3,
+  pointBackgroundColor: app.color || PALETTE[i % PALETTE.length],
+  pointBorderWidth: 0
 }));
-
   // Dynamic Y max
   const allVals = apps.flatMap(a => a.data).filter(v => !isNaN(v));
   const maxVal = allVals.length ? Math.max(...allVals) : 300;
@@ -2013,7 +2049,7 @@ function buildPerfChart(apps, labels, hideXAxis) {
 }
 
 // ===== DEMANsD CHART =====
-function buildDemandChart(datasets, labels, hideXAxis) {
+function buildDemandChart(datasets, labels, hideXAxis, showDots) {
   if (demandChartInst) { demandChartInst.destroy(); }
   const ctx = document.getElementById('demandChart');
   if (!ctx) return;
@@ -2027,12 +2063,36 @@ function buildDemandChart(datasets, labels, hideXAxis) {
 const fixedDatasets = datasets.map(d => ({
   ...d,
   tension: 0,                 // no curve
-  borderWidth: 2,
-  fill: false,
+   fill: false,
   borderJoinStyle: 'miter',  // sharp corners
   borderCapStyle: 'butt',
-  pointRadius: 0,
-  pointHoverRadius: 3
+  // pointRadius: showDots ? 3 : 0,
+  // pointHoverRadius: showDots ? 3 : 3
+
+   showLine: showDots,              // true = line, false = no line
+  borderWidth:2, // line only in sparkline
+
+  // ✅ DOTS CONTROL
+  pointRadius: (ctx) => {
+  if (showDots) return 0; // sparkline mode → no dots
+
+  const total = ctx.dataset.data.length;
+
+  // random indexes generate (sirf ek baar per dataset)
+  if (!ctx.dataset._randomDots) {
+    const count = 2; // 👈 kitne dots chahiye (3 ya 4)
+    const indexes = new Set();
+
+    while (indexes.size < Math.min(count, total)) {
+      indexes.add(Math.floor(Math.random() * total));
+    }
+
+    ctx.dataset._randomDots = [...indexes];
+  }
+
+  return ctx.dataset._randomDots.includes(ctx.dataIndex) ? 3 : 0;
+},                  // 👈 ALWAYS show dots
+  pointHoverRadius: 3,
 }));
  demandChartInst = new Chart(ctx.getContext('2d'), {
   type: 'line',
@@ -2070,15 +2130,7 @@ const fixedDatasets = datasets.map(d => ({
       }
     },
 
-   elements: {
-  line: {
-    tension: 0,
-    borderJoinStyle: 'miter'
-  },
-  point: {
-    radius: 0   // ❗ important
-  }
-}
+   
   }
 });
 
@@ -2363,15 +2415,14 @@ function applyDashboardData(d) {
     ...app,
     data: Array.from({length: perfPts}, () => Math.max(1, Math.round((app.data[0] || 50) * (0.3 + Math.random() * 0.9))))
   }));
-
+const finalPerfApps = perfApps; // ✅ ALWAYS keep data
   // buildPerfChart(perfApps, perfLabels, isSingleDay);
-const finalPerfApps = showSparkline ? perfApps : perfApps.map(app => ({
-  ...app,
-  data: []   // ❗ empty = no line
-}));
-buildPerfChart(finalPerfApps, perfLabels, isSingleDay);
-
-  // --- DEMAND COMPARISON ---
+  // const finalPerfApps = showSparkline ? perfApps : perfApps.map(app => ({
+  //   ...app,
+  //   data: []   // ❗ empty = no line
+  // }));
+  buildPerfChart(finalPerfApps, perfLabels, isSingleDay, showSparkline);
+    // --- DEMAND COMPARISON ---
   const dc = d.demand_comparison || {};
   // Update metric header cards
   for (let i = 1; i <= 5; i++) {
@@ -2416,16 +2467,32 @@ buildPerfChart(finalPerfApps, perfLabels, isSingleDay);
 }));
 
 const pts = pattern.map(f => Math.round((peak / (maxPeak||1)) * 100 * f));
-      return {
-        label,
-        data: pts,
-        borderColor: demandColors[i % demandColors.length],
-        backgroundColor: 'transparent',
-        tension: 0,
-        pointRadius: 0,
-        pointHoverRadius: 0,
-        borderWidth: 1
-      };
+return {
+  label,
+  data: pts,
+  borderColor: demandColors[i % demandColors.length],
+  backgroundColor: 'transparent',
+  tension: 0,
+
+  showLine: showSparkline,
+  borderWidth: showSparkline ? 1 : 0,
+
+  // ✅ IMPORTANT: dots control
+  pointRadius: showSparkline ? 0 : 3,
+  pointHoverRadius: 4,
+  pointBackgroundColor: demandColors[i % demandColors.length],
+  pointBorderWidth: 0
+};
+      // return {
+      //   label,
+      //   data: pts,
+      //   borderColor: demandColors[i % demandColors.length],
+      //   backgroundColor: 'transparent',
+      //   tension: 0,
+      //   pointRadius: 0,
+      //   pointHoverRadius: 0,
+      //   borderWidth: 1
+      // };
     });
   } else {
     // Static fallback
@@ -2437,11 +2504,12 @@ const pts = pattern.map(f => Math.round((peak / (maxPeak||1)) * 100 * f));
       { label:'Unfilled',           data:Array.from({length:dPts},()=>rndD(5,30)),    borderColor:'#f9a825', backgroundColor:'transparent', tension:0.4, pointRadius:0, pointHoverRadius:4, borderWidth:2 }
     ];
   }
-  const finalDemandDatasets = showSparkline ? demandDatasets : demandDatasets.map(d => ({
-  ...d,
-  data: []   // ❗ hide line
-}));
-  buildDemandChart(finalDemandDatasets, demandLabels, isSingleDay);
+//   const finalDemandDatasets = showSparkline ? demandDatasets : demandDatasets.map(d => ({
+//   ...d,
+//   data: []   // ❗ hide line
+// }));
+const finalDemandDatasets = demandDatasets;
+  buildDemandChart(finalDemandDatasets, demandLabels, isSingleDay, showSparkline);
 
   // --- TOP ADVERTISERS ---
   const ta = d.top_advertisers || {};
@@ -2499,7 +2567,7 @@ const pts = pattern.map(f => Math.round((peak / (maxPeak||1)) * 100 * f));
 }
 
 // ===== DASHBOARD DATE FILTER STATE =====
-let dashboardDateFilter = 'last_30_days';
+let dashboardDateFilter = 'today';
 
 // ===== FETCH /stats AND APPLY =====
 // Loader control
@@ -2840,7 +2908,7 @@ function toggleSubnav(el) {
   let dpStart = null, dpEnd = null, dpHovered = null;
   let dpSelectingEnd = false;
   let dpViewYear, dpViewMonth;
-  let dpCurrentPreset = 'last30';
+  let dpCurrentPreset = 'today';
 
   function today() { const d = new Date(); d.setHours(0,0,0,0); return d; }
   function addDays(d, n) { const r = new Date(d); r.setDate(r.getDate()+n); return r; }
@@ -3053,10 +3121,9 @@ function toggleSubnav(el) {
     }
   });
 
-  // Init — last30 is default; set calendar view to the month where the range START falls
+  // Init — today is default
   const t2=today();
-  applyPreset('last30');
-  // dpStart is now set to 29 days ago; show that month in calendar
+  applyPreset('today');
   dpViewYear=dpStart.getFullYear();
   dpViewMonth=dpStart.getMonth();
   updateChip();

@@ -466,6 +466,8 @@ function toggleAdmSub(el) {
     const invEl = document.getElementById('mcm-invitation-status');
     if (invEl && sf.mcm_invitation_status && sf.mcm_invitation_status.trim()) {
       invEl.textContent = sf.mcm_invitation_status.trim();
+      invEl.style.color = sf.mcm_invitation_status.toLowerCase().includes('accepted')
+        ? 'var(--green)' : 'var(--red)';
     }
 
     // MCM delegation type
