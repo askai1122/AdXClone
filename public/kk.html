@@ -147,7 +147,7 @@
         formKey = `${month}monthreciptform`;
       }
 
-      fetch("https://adsense-xq8u.onrender.com/get-data")
+      fetch("/stats")
         .then((res) => res.json())
         .then((allData) => {
           const sectionData = allData[formKey];
