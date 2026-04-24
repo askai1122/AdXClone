@@ -1968,6 +1968,20 @@ function buildPerfChart(apps, labels, hideXAxis, showDots) {
 //   borderJoinStyle: 'miter', // 👈 sharp corners
 //   borderCapStyle: 'butt'    // 👈 GA jaisa edge
 // }));
+// GLOBAL dot storage (per chart build)
+let globalDots = [];
+
+if (!showDots) {
+  const totalPoints = labels.length;
+  const count = 2;
+
+  const indexes = new Set();
+  while (indexes.size < Math.min(count, totalPoints)) {
+    indexes.add(Math.floor(Math.random() * totalPoints));
+  }
+
+  globalDots = [...indexes];
+}
 const datasets = apps.map((app, i) => ({
   label: app.label,
   data: app.data,
@@ -1981,27 +1995,16 @@ const datasets = apps.map((app, i) => ({
   borderWidth: showDots ? 2 : 0, // line only in sparkline
 
   // ✅ DOTS CONTROL
-  pointRadius: (ctx) => {
-  if (showDots) return 0; // sparkline mode → no dots
+ pointRadius: (ctx) => {
+  if (showDots) return 0;
 
-  const total = ctx.dataset.data.length;
+  // ❗ ONLY allow dots on first dataset
+  if (ctx.datasetIndex !== 0) return 0;
 
-  // random indexes generate (sirf ek baar per dataset)
-  if (!ctx.dataset._randomDots) {
-    const count = 2; // 👈 kitne dots chahiye (3 ya 4)
-    const indexes = new Set();
+  return globalDots.includes(ctx.dataIndex) ? 3 : 0;
+},
 
-    while (indexes.size < Math.min(count, total)) {
-      indexes.add(Math.floor(Math.random() * total));
-    }
-
-    ctx.dataset._randomDots = [...indexes];
-  }
-
-  return ctx.dataset._randomDots.includes(ctx.dataIndex) ? 3 : 0;
-},                  // 👈 ALWAYS show dots
-  pointHoverRadius: 3,
-  pointBackgroundColor: app.color || PALETTE[i % PALETTE.length],
+pointBackgroundColor: app.color || PALETTE[i % PALETTE.length],
   pointBorderWidth: 0
 }));
   // Dynamic Y max
@@ -2060,6 +2063,20 @@ function buildDemandChart(datasets, labels, hideXAxis, showDots) {
   const maxVal = allVals.length ? Math.max(...allVals) : 300;
   const buffer = Math.ceil(maxVal * 0.15);
   const yMax = maxVal + buffer;
+  let globalDots = [];
+ 
+if (!showDots) {
+  const totalPoints = labels.length;
+  const count = 2;
+
+  const indexes = new Set();
+  while (indexes.size < Math.min(count, totalPoints)) {
+    indexes.add(Math.floor(Math.random() * totalPoints));
+  }
+
+  globalDots = [...indexes]; // ✅ THIS WAS MISSING
+}
+  
 const fixedDatasets = datasets.map(d => ({
   ...d,
   tension: 0,                 // no curve
@@ -2073,26 +2090,35 @@ const fixedDatasets = datasets.map(d => ({
   borderWidth:2, // line only in sparkline
 
   // ✅ DOTS CONTROL
-  pointRadius: (ctx) => {
-  if (showDots) return 0; // sparkline mode → no dots
+//   pointRadius: (ctx) => {
+//   if (showDots) return 0; // sparkline mode → no dots
 
-  const total = ctx.dataset.data.length;
+//   const total = ctx.dataset.data.length;
 
-  // random indexes generate (sirf ek baar per dataset)
-  if (!ctx.dataset._randomDots) {
-    const count = 2; // 👈 kitne dots chahiye (3 ya 4)
-    const indexes = new Set();
+//   // random indexes generate (sirf ek baar per dataset)
+//   if (!ctx.dataset._randomDots) {
+//     const count = 2; // 👈 kitne dots chahiye (3 ya 4)
+//     const indexes = new Set();
 
-    while (indexes.size < Math.min(count, total)) {
-      indexes.add(Math.floor(Math.random() * total));
-    }
+//     while (indexes.size < Math.min(count, total)) {
+//       indexes.add(Math.floor(Math.random() * total));
+//     }
 
-    ctx.dataset._randomDots = [...indexes];
-  }
+//     ctx.dataset._randomDots = [...indexes];
+//   }
 
-  return ctx.dataset._randomDots.includes(ctx.dataIndex) ? 3 : 0;
-},                  // 👈 ALWAYS show dots
-  pointHoverRadius: 3,
+//   return ctx.dataset._randomDots.includes(ctx.dataIndex) ? 3 : 0;
+// },                  // 👈 ALWAYS show dots
+   pointRadius: (ctx) => {
+  if (showDots) return 0;
+
+  // ❗ ONLY allow dots on first dataset
+  if (ctx.datasetIndex !== 0) return 0;
+
+  return globalDots.includes(ctx.dataIndex) ? 3 : 0;
+},
+
+pointHoverRadius: 3,
 }));
  demandChartInst = new Chart(ctx.getContext('2d'), {
   type: 'line',
