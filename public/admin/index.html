@@ -646,7 +646,7 @@
     <div class="card">
       <div class="card-title">Multiple Customer Management (MCM)</div>
       <p style="font-size:13px;color:#666;margin-bottom:16px;">Configure the MCM parent publisher details displayed on the MCM page.</p>
-      <form class="form-grid" id="mcmSettingsForm" onsubmit="saveForm(event,'settingsform','/api/settingsform')">
+      <form class="form-grid" id="mcmSettingsForm" onsubmit="saveForm(event,'mcm_settings','/api/mcm_settings')">
         <div class="form-group"><label>Site Name (shown on Sites page)</label><input name="site_name" placeholder="e.g. anushkamobile.in"></div>
         <div class="form-group"><label>MCM Parent Publisher URL</label><input name="mcm_parent_url" placeholder="e.g. objctv.one"></div>
         <div class="form-group"><label>MCM Network Code</label><input name="mcm_network_code" placeholder="e.g. 193858494"></div>
@@ -749,6 +749,7 @@ async function loadAll() {
       how_you_get_paid:        'howYouGetPaidForm',
       transactionform:         'transactionformPay',
       settingsform:            'settingsformPay',
+      mcm_settings:            'mcmSettingsForm',
       currentmonthtrans:       'currentmonthtransForm',
       lastmonthtrans:          'lastmonthtransForm',
       thirdmonthtrans:         'thirdmonthtransForm',
@@ -756,18 +757,7 @@ async function loadAll() {
       secondmonthreciptform:   'secondmonthreciptformForm',
       thirdmonthreciptform:    'thirdmonthreciptformForm',
     };
-    // Also populate the MCM settings form with the same settingsform data
-    const sfData = d['settingsform'] || {};
-    const mcmForm = document.getElementById('mcmSettingsForm');
-    if (mcmForm) {
-      mcmForm.querySelectorAll('input, textarea, select').forEach(el => {
-        if (el.name && el.type !== 'hidden') el.value = '';
-      });
-      ['site_name','mcm_parent_url','mcm_network_code'].forEach(field => {
-        const el = mcmForm.querySelector(`[name="${field}"]`);
-        if (el && sfData[field]) el.value = sfData[field];
-      });
-    }
+    // mcmSettingsForm is now pre-filled automatically via formMap (mcm_settings table)
 
     Object.entries(formMap).forEach(([key, formId]) => {
       const data = d[key] || {};
