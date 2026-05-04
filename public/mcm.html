@@ -446,7 +446,7 @@ function toggleAdmSub(el) {
   try {
     const res = await fetch('/stats?date_filter=today');
     const d = await res.json();
-    const sf = d.settingsform || {};
+    const sf = d.mcm_settings || d.settingsform || {};
     const dd = d.overview_form || {};
 
     // MCM parent URL

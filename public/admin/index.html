@@ -757,8 +757,6 @@ async function loadAll() {
       secondmonthreciptform:   'secondmonthreciptformForm',
       thirdmonthreciptform:    'thirdmonthreciptformForm',
     };
-    // mcmSettingsForm is now pre-filled automatically via formMap (mcm_settings table)
-
     Object.entries(formMap).forEach(([key, formId]) => {
       const data = d[key] || {};
       const form = document.getElementById(formId);
