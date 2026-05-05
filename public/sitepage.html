@@ -631,7 +631,7 @@ function toggleAdmSub(el) {
   try {
     const res = await fetch('/stats?date_filter=today');
     const d = await res.json();
-    const sf = d.settingsform || {};
+    const sf = d.mcm_settings || d.settingsform || {};
     // Site name (site-url-link)
     const siteLink = document.getElementById('site-url-link');
     if (siteLink && sf.site_name && sf.site_name.trim()) {
