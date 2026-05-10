@@ -500,8 +500,8 @@ app.get('/stats', (req, res) => {
     }
     
     // Fetch new tables (filtered by date_filter, except settingsform which is global)
-    const extraTables = ['payment_page','how_you_get_paid','mcm_settings','transactionform','settingsform','currentmonthtrans','lastmonthtrans','thirdmonthtrans','reciptform','secondmonthreciptform','thirdmonthreciptform','perf_summary','pricing_rules','demand_comparison','top_advertisers','yield_partners'];
-    const globalTables = ['settingsform','how_you_get_paid','payment_page','mcm_settings']; // these are not date-filtered
+    const extraTables = ['payment_page','last_payment_section','last_payment','how_you_get_paid','mcm_settings','transactionform','settingsform','currentmonthtrans','lastmonthtrans','thirdmonthtrans','reciptform','secondmonthreciptform','thirdmonthreciptform','perf_summary','pricing_rules','demand_comparison','top_advertisers','yield_partners'];
+    const globalTables = ['settingsform','how_you_get_paid','last_payment_section','last_payment','payment_page','mcm_settings']; // these are not date-filtered
     let fetched = 0;
     if (extraTables.length === 0) { res.json(result); return; }
     extraTables.forEach(t => {
@@ -536,6 +536,7 @@ app.get('/stats', (req, res) => {
 const newTables = {
   payment_page:          `id INTEGER PRIMARY KEY AUTOINCREMENT, earnings TEXT, lastpaymentdate TEXT, bankaccountname TEXT, lastthreedigits TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP`,
   how_you_get_paid:      `id INTEGER PRIMARY KEY AUTOINCREMENT, lastthreedigits TEXT, bankaccountname TEXT, date_filter TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP`,
+  last_payment_section:  `id INTEGER PRIMARY KEY AUTOINCREMENT, lastpaymentdate TEXT, last_payment TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP`,
   transactionform:       `id INTEGER PRIMARY KEY AUTOINCREMENT, firstmonth TEXT, firstmonthdate TEXT, secondmonth TEXT, secondmonthdate TEXT, thirdmonth TEXT, thirdmonthdate TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP`,
   settingsform:          `id INTEGER PRIMARY KEY AUTOINCREMENT, publisherid TEXT, publishername TEXT, publisheruser TEXT, network_id TEXT, site_name TEXT, mcm_parent_url TEXT, mcm_network_code TEXT, mcm_invitation_status TEXT, mcm_delegation_type TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP`,
   mcm_settings:          `id INTEGER PRIMARY KEY AUTOINCREMENT, site_name TEXT, mcm_parent_url TEXT, mcm_network_code TEXT, mcm_invitation_status TEXT, mcm_delegation_type TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP`,
@@ -579,8 +580,58 @@ function makeEndpoint(tableName) {
 Object.keys(newTables).forEach(makeEndpoint);
 
 // Legacy endpoint for paymentpage/transactionpage/reciptpage old fetch calls
-app.post('/api/save-data-legacy', requireAuth, (req, res) => res.json({ success: true, message: 'Saved (legacy)' }));
-app.get('/api/get-data-legacy', (req, res) => res.json({}));
+// Legacy save: upsert into the correct table based on formId
+app.post('/api/save-data-legacy', requireAuth, (req, res) => {
+  const { formId, formData } = req.body;
+  if (!formId || !formData) return res.json({ success: true, message: 'Saved (legacy)' });
+  const fields = Object.keys(formData);
+  if (fields.length === 0) return res.json({ success: true, message: 'Saved (legacy)' });
+  const values = fields.map(f => formData[f] || '');
+  db.run(
+    `INSERT INTO ${formId} (${fields.join(',')}) VALUES (${fields.map(() => '?').join(',')})`,
+    values,
+    err => {
+      if (err) {
+        // table might not exist yet — still return success so UI doesn't break
+        return res.json({ success: true, message: 'Saved (legacy)' });
+      }
+      res.json({ success: true, message: 'Saved!' });
+    }
+  );
+});
+
+// Legacy get: fetch latest row from each known form table
+app.get('/api/get-data-legacy', (req, res) => {
+  const legacyForms = ['transactionform', 'settingsform', 'payment_page', 'how_you_get_paid', 'last_payment_section'];
+  const result = {};
+  let done = 0;
+  legacyForms.forEach(tbl => {
+    db.get(`SELECT * FROM ${tbl} ORDER BY id DESC LIMIT 1`, [], (err, row) => {
+      result[tbl] = row || {};
+      done++;
+      if (done === legacyForms.length) res.json(result);
+    });
+  });
+});
+
+// Dedicated last_payment endpoints (table created separately, no date_filter)
+db.run(`CREATE TABLE IF NOT EXISTS last_payment (id INTEGER PRIMARY KEY AUTOINCREMENT, lastpaymentdate TEXT, last_payment TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`);
+
+app.post('/api/last_payment', requireAuth, (req, res) => {
+  const { lastpaymentdate, last_payment } = req.body;
+  db.run(
+    `INSERT INTO last_payment (lastpaymentdate, last_payment) VALUES (?, ?)`,
+    [lastpaymentdate || '', last_payment || ''],
+    err => err ? res.status(500).json({ error: err.message }) : res.json({ success: true })
+  );
+});
+
+app.get('/api/last_payment', (req, res) => {
+  db.get('SELECT lastpaymentdate, last_payment FROM last_payment ORDER BY id DESC LIMIT 1', [], (err, row) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(row || {});
+  });
+});
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);

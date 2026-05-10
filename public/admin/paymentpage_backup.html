@@ -446,11 +446,6 @@
                       
 
                     </div>
-
-                    <div class="col-6 col-md-3">
-                      <label for="lastpayment" class="form-label text-dark">Last Payment Amount</label>
-                      <input type="text" class="form-control" id="lastpayment" name="last_payment" placeholder="$262.53" />
-                    </div>
                   
                    
                   
@@ -557,49 +552,6 @@
         </div>
        
       </div>
-
-      <!-- How You Get Paid + Last Payment -->
-      <div class="row mb-4 col-lg-12 col-sm-12 m-auto">
-        <div class="col-lg-6 col-xl-6 mb-2">
-          <div class="card shadow-sm">
-            <div class="card-body">
-              <div class="d-flex justify-content-between align-items-center mb-3">
-                <p class="card-titles mb-0 b-0" style="font-size: 1.125rem">How You Get Paid</p>
-              </div>
-              <form id="how_you_get_paid">
-              <div class="row text-center">
-                <div class="col-6 mb-3">
-                  <p class="text-muted mb-0">Bank Account Name</p>
-                  <input type="text" class="form-control" name="bankaccountname" placeholder="e.g. Faizan Ali" />
-                </div>
-                <div class="col-6 mb-3">
-                  <p class="text-muted mb-0">Last 3 Digits</p>
-                  <input type="text" class="form-control" name="lastthreedigits" placeholder="e.g. 736" />
-                </div>
-                <div class="col-12 mt-3">
-                  <button type="submit" class="btn btn-primary">Save</button>
-                </div>
-              </div>
-              </form>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-lg-6 col-xl-6 mb-2">
-          <div class="card shadow-sm">
-            <div class="card-body">
-              <div class="card-title">Last Payment Date &amp; Earning</div>
-              <form class="form-grid" id="last_paymentForm" onsubmit="saveForm(event,'last_payment','/api/last_payment')">
-                <div class="form-group"><label>Last Date</label><input class="form-control" name="lastpaymentdate" placeholder="21,Jun"></div>
-                <div class="form-group"><label>Earnings</label><input class="form-control" name="last_payment" placeholder="$323"></div>
-                <button class="btn btn-primary mt-3" type="submit">💾 Save Payment Date</button>
-                <div class="msg" id="msg-last_paymentForm"></div>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-
     </div>
     <footer class="text-end" style="padding-right: 15px">
       <p class=""><span style="font-size: 17px">&copy;</span>  2025 Google</p>
@@ -617,69 +569,12 @@ function adxLogout() {
   window.location.href = '/admin/login';
 }
 </script>
-
-<script>
-function saveForm(e, tableName, apiUrl) {
-  e.preventDefault();
-  const form = e.target;
-  const formId = form.id;
-  const data = {};
-  form.querySelectorAll('input').forEach(i => { data[i.name] = i.value; });
-  const msgEl = document.getElementById('msg-' + formId);
-  fetch(apiUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  })
-  .then(r => r.json())
-  .then(res => {
-    if (msgEl) { msgEl.textContent = res.success ? '✅ Saved!' : '❌ Error'; setTimeout(() => { msgEl.textContent = ''; }, 3000); }
-  })
-  .catch(() => { if (msgEl) msgEl.textContent = '❌ Network error'; });
-}
-
-// Load last_payment saved values on page load
-document.addEventListener('DOMContentLoaded', function() {
-  fetch('/api/last_payment')
-    .then(r => r.json())
-    .then(data => {
-      if (!data) return;
-      const form = document.getElementById('last_paymentForm');
-      if (!form) return;
-      if (data.lastpaymentdate) form.querySelector('[name="lastpaymentdate"]').value = data.lastpaymentdate;
-      if (data.last_payment)    form.querySelector('[name="last_payment"]').value    = data.last_payment;
-    });
-});
-</script>
 </body>
 </html>
 
 <script>
     // Balance Form
     
-
-    document.querySelector("#how_you_get_paid").addEventListener("submit", function (e) {
-      e.preventDefault();
-      const formId = this.getAttribute("id");
-      const formData = {};
-      this.querySelectorAll("input").forEach((input) => { formData[input.name] = input.value; });
-      fetch("/api/save-data-legacy", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ formId, formData }),
-      }).then((res) => res.json()).then((msg) => { alert(msg.message); });
-    });
-
-    document.querySelector("#last_payment_section").addEventListener("submit", function (e) {
-      e.preventDefault();
-      const formId = this.getAttribute("id");
-      const formData = {};
-      this.querySelectorAll("input").forEach((input) => { formData[input.name] = input.value; });
-      fetch("/api/save-data-legacy", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ formId, formData }),
-      }).then((res) => res.json()).then((msg) => { alert(msg.message); });
-    });
-
     document.querySelector("#transactionform").addEventListener("submit", function (e) {
       e.preventDefault();
   
