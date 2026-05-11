@@ -833,11 +833,24 @@ if (allData.overview_form?.network_id) {
                         if (element.tagName === "INPUT" || element.tagName === "TEXTAREA") {
                             element.value = value ?? "";
                         } else {
+                            if ((key === "lastpaymentdate" || key === "last_payment") && (value === null || value === undefined || value === "")) return;
                             element.textContent = value ?? "";
                         }
                     });
                 });
             });
+
+            const lastPayment = allData.last_payment || allData.last_payment_section || allData.payment_page || {};
+            if (lastPayment.lastpaymentdate) {
+                document.querySelectorAll('[name="lastpaymentdate"]').forEach(el => {
+                    el.textContent = lastPayment.lastpaymentdate;
+                });
+            }
+            if (lastPayment.last_payment) {
+                document.querySelectorAll('[name="last_payment"]').forEach(el => {
+                    el.textContent = lastPayment.last_payment;
+                });
+            }
 
             // ✅ Progress bar (keep same logic, but safer fallback)
             const maxBalance = 100;
@@ -882,9 +895,6 @@ if (allData.overview_form?.network_id) {
 }
           // Initial call
           loadData();
-      
-          // Refresh data every 5 seconds
-          setInterval(loadData, 5000);
       });
       </script>
       
