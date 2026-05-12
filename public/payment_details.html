@@ -911,7 +911,6 @@ function toggleHeader(element) {
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     loadData();
-    setInterval(loadData, 5000); // Refresh every 5 seconds
   });
 
   function loadData() {
@@ -929,7 +928,7 @@ function toggleHeader(element) {
 
   const parseNumber = (val) => {
     if (!val) return 0;
-    return parseFloat(val.toString().replace(/,/g, "")) || 0;
+    return parseFloat(val.toString().replace(/[^0-9.-]/g, "")) || 0;
   };
 
   function getLastDayOfMonth(year, month) {
@@ -1016,7 +1015,8 @@ function toggleHeader(element) {
       ];
 
       const monthsContainer = document.getElementById("months-container");
-      monthsContainer.innerHTML = "";
+      if (!monthsContainer) return;
+      const nextRows = [];
 
       const today = new Date();
       const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -1157,8 +1157,8 @@ function toggleHeader(element) {
                     <p class="mb-0 th-ending-balance" style="font-size:16px">Ending balance: $${endingBalance}</p>
                   </div>
                     <div class="col-3">Date</div>
-                    <div class="col-3">Description</div>
-                    <div class="col-6 text-end">Amount (USD)</div>
+                    <div class="col-5">Description</div>
+                    <div class="col-4 text-end">Amount (USD)</div>
                 </div>
 
                 ${transactionsHtml}
@@ -1175,8 +1175,10 @@ function toggleHeader(element) {
           </div>
         `;
 
-        monthsContainer.innerHTML += rowHtml;
+        nextRows.push(rowHtml);
       }
+
+      monthsContainer.innerHTML = nextRows.join("");
 
     })
     .catch((err) => {
@@ -1219,6 +1221,7 @@ function toggleHeader(element) {
         const sidebar = document.getElementById('sidebar');
         const mainContent = document.getElementById('mainContent');
         const sidebarToggle = document.getElementById('sidebarToggle');
+        if (!sidebar || !mainContent || !sidebarToggle) return;
 
         // Function to set sidebar state based on screen size
         function setSidebarState() {
