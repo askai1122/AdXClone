@@ -2613,6 +2613,8 @@ const finalDemandDatasets = demandDatasets;
 
 // ===== DASHBOARD DATE FILTER STATE =====
 let dashboardDateFilter = 'today';
+const dashboardDataCache = {};
+const dashboardDataPending = {};
 
 // ===== FETCH /stats AND APPLY =====
 // Loader control
@@ -2633,16 +2635,41 @@ async function loadDashboard(dateFilter) {
   const df = dateFilter || dashboardDateFilter;
   dashboardDateFilter = df;
   try {
-    const res = await fetch('/stats?date_filter=' + df);
-    if (!res.ok) throw new Error('stats fetch failed');
-    const data = await res.json();
+    const data = await getDashboardData(df);
     applyDashboardData(data);
   } catch(e) {
     console.warn('Dashboard data load failed, using static defaults:', e);
     applyDashboardData({});
   } finally {
     hidePageLoader();
+    if (df === 'today') prefetchDashboardData('yesterday');
   }
+}
+
+async function getDashboardData(df) {
+  if (dashboardDataCache[df]) return dashboardDataCache[df];
+  if (!dashboardDataPending[df]) {
+    dashboardDataPending[df] = fetch('/stats?date_filter=' + df)
+      .then((res) => {
+        if (!res.ok) throw new Error('stats fetch failed');
+        return res.json();
+      })
+      .then((data) => {
+        dashboardDataCache[df] = data;
+        return data;
+      })
+      .finally(() => {
+        delete dashboardDataPending[df];
+      });
+  }
+  return dashboardDataPending[df];
+}
+
+function prefetchDashboardData(df) {
+  if (dashboardDataCache[df] || dashboardDataPending[df]) return;
+  getDashboardData(df).catch((e) => {
+    console.warn('Dashboard prefetch failed:', e);
+  });
 }
 
 // ===== DYNAMIC DATE LABELS FOR CHARTS =====
